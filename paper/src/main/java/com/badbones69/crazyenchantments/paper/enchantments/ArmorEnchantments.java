@@ -25,6 +25,7 @@ import org.bukkit.Particle;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
+import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -36,13 +37,18 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityResurrectEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.enginehub.linbus.stream.token.LinToken;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -302,6 +308,35 @@ public class ArmorEnchantments implements Listener {
 
                 damager.damage(5D);
             }
+            //Stuff for Imperium
+            if (EnchantUtils.isEventActive(CEnchantments.SHUFFLE, player, armor, enchants)) {
+                Player target = (Player) damager;
+                ItemStack[] hotbar = new ItemStack[9];
+                for (int i = 0; i < 9; i++) {
+                    hotbar[i] = target.getInventory().getItem(i);
+                }
+
+                List<ItemStack> items = Arrays.asList(hotbar);
+                Collections.shuffle(items);
+                ItemStack[] newHotbar = items.toArray(hotbar);
+
+                for (int i = 0; i < 9; i++) {
+                    target.getInventory().setItem(i, newHotbar[i]);
+                }
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.POISONED, player, armor, enchants)) {
+                Player target = (Player) damager;
+                Integer duration = CEnchantments.POISONED.getChance() / 8;
+                PotionEffect poison = new PotionEffect(PotionEffectType.POISON, duration, 2, true, false, true);
+                target.addPotionEffect(poison);
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.HARDENED, player, armor, enchants)) {
+                @Nullable ItemStack @NotNull [] playerArmor = player.getInventory().getArmorContents();
+                for (ItemStack equipment : playerArmor) {
+                    ItemMeta meta = equipment.getItemMeta();
+                }
+            }
+            //Stuff for Imperium
         }
 
         if (!(damager instanceof Player)) return;
