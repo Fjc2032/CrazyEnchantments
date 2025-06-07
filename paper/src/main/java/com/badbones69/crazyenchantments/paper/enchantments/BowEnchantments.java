@@ -15,6 +15,7 @@ import com.badbones69.crazyenchantments.paper.api.utils.EventUtils;
 import com.badbones69.crazyenchantments.paper.controllers.settings.EnchantmentBookSettings;
 import com.badbones69.crazyenchantments.paper.support.PluginSupport;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.damage.DamageSource;
@@ -35,6 +36,7 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
@@ -185,6 +187,17 @@ public class BowEnchantments implements Listener {
                 event.setDamage(event.getDamage() * ((bowEnchantment.isLevelAddedToAmplifier() ? enchantedArrow.getLevel(enchantment) : 0) + bowEnchantment.getDamageAmplifier()));
             }
         }
+        //Imperium
+        if (EnchantUtils.isEventActive(CEnchantments.LONGBOW, enchantedArrow.getShooter(), enchantedArrow.bow(), enchantedArrow.enchantments())) {
+            if (entity.getActiveItem().equals(ItemStack.of(Material.BOW))) {
+                event.setDamage(event.getDamage() * ((double) CEnchantments.LONGBOW.getChance() / 10));
+            }
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.UNFOCUS, enchantedArrow.getShooter(), enchantedArrow.bow(), enchantedArrow.enchantments())) {
+            entity.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, CEnchantments.UNFOCUS.getChance() / 10, 1, true, true, true));
+            event.setDamage(event.getDamage() * 1.5);
+        }
+        //Imperium
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
