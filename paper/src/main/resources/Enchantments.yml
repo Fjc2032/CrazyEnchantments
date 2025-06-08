@@ -2482,10 +2482,10 @@ Enchantments:
       Base: 30
       Increase: 10
     Info:
-      Name: '&e&l§nLongbow &r&7(I-II)'
+      Name: '&e&lLongbow &r&7(I-IV)'
       Description:
         - '&eIncreased damage to players'
-        - '&with a bow in hand.'
+        - '&ewith a bow in hand.'
         - '&7Bow Enchantment'
         - 'Ultimate'
     Categories:
