@@ -2475,23 +2475,21 @@ Enchantments:
   Longbow:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&9Longbow'
-    MaxPower: 5
+    Name: '&e&l§nLongbow'
+    MaxPower: 4
     Enchantment-Type: 'Bow'
     Chance-System:
       Base: 30
       Increase: 10
     Info:
-      Name: '&9Longbow &7(&bI-II&7)'
+      Name: '&e&l§nLongbow &r&7(I-II)'
       Description:
-        - "&7Increases damage by a set amount to anyone"
-        - "&7holding a bow. Damage increases per level."
-        - "&7Found in: "
-        - "&7 - &9&lRare"
-        - "&7 - &6&lLegendary"
+        - '&eIncreased damage to players'
+        - '&with a bow in hand.'
+        - '&7Bow Enchantment'
+        - 'Ultimate'
     Categories:
-      - 'Rare'
-      - 'Legendary'
+      - 'Ultimate'
   Unfocus:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
