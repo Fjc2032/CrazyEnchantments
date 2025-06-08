@@ -132,7 +132,9 @@ public enum CEnchantments {
     POISONED("Poisoned", "Armor", 10, 5),
     HARDENED("Hardened", "Armor", 30, 10),
     LONGBOW("Longbow", "Bow", 30, 10),
-    UNFOCUS("Unfocus", "Bow", 10, 5)
+    UNFOCUS("Unfocus", "Bow", 10, 5),
+    WARD("Ward", "Armor", 10, 5),
+    VIRUS("Virus", "Bow", 16, 4)
     ;
 
 
