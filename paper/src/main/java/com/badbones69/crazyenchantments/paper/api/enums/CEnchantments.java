@@ -134,7 +134,14 @@ public enum CEnchantments {
     LONGBOW("Longbow", "Bow", 30, 10),
     UNFOCUS("Unfocus", "Bow", 10, 5),
     WARD("Ward", "Armor", 10, 5),
-    VIRUS("Virus", "Bow", 16, 4)
+    VIRUS("Virus", "Bow", 16, 4),
+    OBBYDESTROYER("ObbyDestroyer", "Pickaxe", 20, 15),
+    ENDERSLAYER("Enderslayer", "Sword", 50, 10),
+    REAPER("Reaper", "Axe", 10, 3),
+    NETHERSLAYER("Netherslayer", "Sword", 50, 10),
+    SHACKLE("Shackle", "Sword", 70, 10),
+    REFORGED("Reforged", "Tool", 10, 10),
+    GREATSWORD("Greatsword", "Sword", 40, 10)
     ;
 
 

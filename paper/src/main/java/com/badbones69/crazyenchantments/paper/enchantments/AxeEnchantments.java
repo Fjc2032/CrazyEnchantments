@@ -30,6 +30,7 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -113,6 +114,15 @@ public class AxeEnchantments implements Listener {
             };
 
             this.methods.removeDurability(armorItem, player);
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.REAPER, damager, item, enchantments)) {
+            Collection<PotionEffect> effects = new ArrayList<>();
+            effects.add(new PotionEffect(PotionEffectType.WITHER, CEnchantments.REAPER.getChance() / 5, 1));
+            effects.add(new PotionEffect(PotionEffectType.BLINDNESS, CEnchantments.REAPER.getChance() / 5, 1));
+            entity.addPotionEffects(effects);
+
+            int damageAmount = damager.getExpToLevel();
+            event.setDamage(event.getDamage() * (1 + (double) damageAmount / 1000));
         }
     }
 
