@@ -2437,6 +2437,7 @@ Enchantments:
         - '&6Enchantable Items: &aBow'
     Categories:
       - 'Legendary'
+  #Imperium Enchants Do not change this line.
   Shuffle:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
@@ -2454,6 +2455,7 @@ Enchantments:
         - "&7 - &8&lCommon"
     Categories:
       - 'Common'
+  #Imperium Enchants Do not change this line.
   Poisoned:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
@@ -2472,6 +2474,7 @@ Enchantments:
     Categories:
       - 'Rare'
       - 'Legendary'
+  #Imperium Enchants Do not change this line.
   Longbow:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
@@ -2490,6 +2493,7 @@ Enchantments:
         - 'Ultimate'
     Categories:
       - 'Ultimate'
+  #Imperium Enchants Do not change this line.
   Unfocus:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
@@ -2510,3 +2514,56 @@ Enchantments:
     Categories:
       - 'Rare'
       - 'Legendary'
+Ward:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&a&l§nWard'
+    MaxPower: 4
+    Enchantment-Type: 'Armour'
+    Chance-System:
+      Base: 10
+      Increase: 5
+    Info:
+      Name: '&a&lWard &r&7(I-IV)'
+      Description:
+        - "&eA chance to absorb enemy"
+        - "&edamage and heal you."
+        - '&7Armour Enchantment'
+        - 'Unique'
+    Categories:
+      - 'Unique'
+Virus:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&a&l§nVirus'
+    MaxPower: 4
+    Enchantment-Type: 'Bow'
+    Chance-System:
+      Base: 16
+      Increase: 4
+    Info:
+      Name: '&a&lVirus &r&7(I-IV)'
+      Description:
+        - "&eMultiplies all Wither and Posion effects"
+        - "&eon the affected target."
+        - '&7Bow Enchantment'
+        - 'Unique'
+    Categories:
+      - 'Unique'
+ObbyDestroyer:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&a&l§nObbyDestroyer'
+    MaxPower: 5
+    Enchantment-Type: 'Pickaxe'
+    Chance-System:
+      Base: 20
+      Increase: 15
+    Info:
+      Name: '&a&lObbyDestroyer &r&7(I-V)'
+      Description:
+        - "&eA Chance to instantly break obsidian blocks."
+        - '&7Pickaxe Enchantment'
+        - 'Unique'
+    Categories:
+      - 'Unique'
