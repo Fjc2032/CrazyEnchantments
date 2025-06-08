@@ -13,6 +13,7 @@ import com.badbones69.crazyenchantments.paper.api.utils.EventUtils;
 import com.badbones69.crazyenchantments.paper.controllers.settings.EnchantmentBookSettings;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Item;
@@ -193,6 +194,20 @@ public class PickaxeEnchantments implements Listener {
         if (!EnchantUtils.isEventActive(CEnchantments.EXPERIENCE, player, item, enchants)) return;
 
         event.setExpToDrop(event.getExpToDrop() + (enchants.get(CEnchantments.EXPERIENCE.getEnchantment()) + 2));
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onObsidianBlockBreak(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+
+        Block block = event.getClickedBlock();
+        if (block == null) return;
+
+        if (!block.getType().equals(Material.OBSIDIAN)) return;
+        player.playSound(player, Sound.BLOCK_CALCITE_BREAK, 10, 10);
+        block.setType(Material.AIR);
+
+
     }
 
     private HashSet<Block> getOreBlocks(Location loc, int amount) {
