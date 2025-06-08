@@ -40,6 +40,8 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 
 public class BowEnchantments implements Listener {
@@ -178,7 +180,8 @@ public class BowEnchantments implements Listener {
         for (BowEnchantment bowEnchantment : this.bowEnchantmentManager.getBowEnchantments()) {
             CEnchantments enchantment = bowEnchantment.getEnchantment();
 
-            if (!EnchantUtils.isEventActive(enchantment, enchantedArrow.getShooter(), enchantedArrow.bow(), enchantedArrow.enchantments())) continue;
+            if (!EnchantUtils.isEventActive(enchantment, enchantedArrow.getShooter(), enchantedArrow.bow(), enchantedArrow.enchantments()))
+                continue;
 
             if (bowEnchantment.isPotionEnchantment()) {
                 bowEnchantment.getPotionEffects().forEach(effect -> entity.addPotionEffect(new PotionEffect(effect.potionEffect(), effect.duration(),
@@ -197,8 +200,16 @@ public class BowEnchantments implements Listener {
             entity.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, CEnchantments.UNFOCUS.getChance() / 10, 1, true, true, true));
             event.setDamage(event.getDamage() * 1.5);
         }
-        //Imperium
+        if (EnchantUtils.isEventActive(CEnchantments.VIRUS, enchantedArrow.getShooter(), enchantedArrow.bow(), enchantedArrow.enchantments())) {
+            if (entity.hasPotionEffect(PotionEffectType.POISON) || entity.hasPotionEffect(PotionEffectType.WITHER)) {
+                Collection<PotionEffect> effects = new ArrayList<>();
+                effects.add(new PotionEffect(PotionEffectType.POISON, CEnchantments.VIRUS.getChance(), 1));
+                effects.add(new PotionEffect(PotionEffectType.WITHER, CEnchantments.VIRUS.getChance(), 2));
+                entity.addPotionEffects(effects);
+            }
+        }
     }
+        //Imperium
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onWebBreak(BlockBreakEvent event) {
