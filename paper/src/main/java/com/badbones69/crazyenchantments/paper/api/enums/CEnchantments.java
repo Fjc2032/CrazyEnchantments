@@ -141,7 +141,16 @@ public enum CEnchantments {
     NETHERSLAYER("Netherslayer", "Sword", 50, 10),
     SHACKLE("Shackle", "Sword", 70, 10),
     REFORGED("Reforged", "Tool", 10, 10),
-    GREATSWORD("Greatsword", "Sword", 40, 10)
+    GREATSWORD("Greatsword", "Sword", 40, 10),
+    TRICKSTER("Trickster", "Armor", 25, 6),
+    PUMMEL("Pummel", "Axe", 30, 5),
+    FARCAST("Farcast", "Bow", 10, 5),
+    MARKSMAN("Marksman", "Bow", 60, 10),
+    ANGELIC("Angelic", "Armor", 20, 5),
+    JELLYLEGS("Jellylegs", "Boots", 10, 3),
+    CLEAVE("Cleave", "Axes", 15, 5),
+    DOMINATE("Dominate", "Swords", 10, 3),
+    ENDERWALKER("Enderwalker", "Boots", 8, 3)
     ;
 
 

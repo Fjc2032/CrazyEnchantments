@@ -209,6 +209,19 @@ public class BowEnchantments implements Listener {
             }
         }
     }
+
+    //Kinda buggy, might not work well
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onTargetAttack(EntityDamageByEntityEvent event) {
+        EnchantedArrow enchantedArrow = this.bowUtils.getEnchantedArrow((Arrow) event.getDamager());
+        if (EnchantUtils.isEventActive(CEnchantments.FARCAST, enchantedArrow.getShooter(), enchantedArrow.bow(), enchantedArrow.enchantments())) {
+            if (!(event.getDamager() instanceof LivingEntity target)) return;
+            if (!(event.getEntity() instanceof Player player)) return;
+            Vector direction = (player.getLocation().toVector().subtract(target.getLocation().toVector().subtract(new Vector(10, 1, 10))));
+            direction.normalize().multiply(1 + (CEnchantments.FASTTURN.getChance() / 20));
+            target.setVelocity(direction);
+        }
+    }
         //Imperium
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)

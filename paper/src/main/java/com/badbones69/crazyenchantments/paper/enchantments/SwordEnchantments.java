@@ -334,6 +334,10 @@ public class SwordEnchantments implements Listener {
                 event.setDamage(event.getDamage() * (damager.getVelocity().normalize().length() / 2));
             }
         }
+        if (EnchantUtils.isEventActive(CEnchantments.DOMINATE, damager, item, enchantments)) {
+            if (!(event.getEntity() instanceof LivingEntity target)) return;
+            target.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 10, CEnchantments.DOMINATE.getChance() / 20));
+        }
         //IMPERIUM
     }
 

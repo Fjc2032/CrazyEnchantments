@@ -47,6 +47,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 import org.enginehub.linbus.stream.token.LinToken;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -350,6 +351,27 @@ public class ArmorEnchantments implements Listener {
                     player.setHealth(playerHealth + amount);
                 }
             }
+            if (EnchantUtils.isEventActive(CEnchantments.TRICKSTER, player, armor, enchants)) {
+                Location playerPos = player.getLocation();
+                Location targetPos = event.getEntity().getLocation();
+
+                Vector direction = playerPos.toVector().subtract(targetPos.toVector());
+                direction.normalize().multiply(2);
+                player.setVelocity(direction);
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.MARKSMAN, player, armor, enchants)) {
+                if (!player.getActiveItem().getType().equals(Material.BOW)) return;
+                event.setDamage(event.getDamage() + ((double) CEnchantments.MARKSMAN.getChance() / 100));
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.ANGELIC, player, armor, enchants)) {
+                player.setHealth(player.getHealth() + (1 + ((double) CEnchantments.ANGELIC.getChance() / 20)));
+            }
+             if (EnchantUtils.isEventActive(CEnchantments.ENDERWALKER, player, armor, enchants)) {
+                 if (!(event.getEntity() instanceof Player victim)) return;
+                if (victim.hasPotionEffect(PotionEffectType.POISON)) victim.removePotionEffect(PotionEffectType.POISON);
+                if (victim.hasPotionEffect(PotionEffectType.WITHER)) victim.removePotionEffect(PotionEffectType.WITHER);
+                victim.setHealth(victim.getHealth() + (1 + ((double) CEnchantments.ENDERWALKER.getChance() / 20)));
+            }
             //Stuff for Imperium
         }
 
@@ -454,5 +476,6 @@ public class ArmorEnchantments implements Listener {
         if (!DamageCause.FALL.equals(event.getCause())) return;
 
         event.setCancelled(true);
+
     }
 }
