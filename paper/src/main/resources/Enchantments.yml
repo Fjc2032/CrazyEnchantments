@@ -2514,6 +2514,7 @@ Enchantments:
     Categories:
       - 'Rare'
       - 'Legendary'
+#Imperium Enchants Do not change this line.
 Ward:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
@@ -2532,6 +2533,7 @@ Ward:
         - 'Unique'
     Categories:
       - 'Unique'
+#Imperium Enchants Do not change this line.
 Virus:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
@@ -2550,6 +2552,7 @@ Virus:
         - 'Unique'
     Categories:
       - 'Unique'
+#Imperium Enchants Do not change this line.
 ObbyDestroyer:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
