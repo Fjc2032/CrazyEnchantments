@@ -26,7 +26,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
+import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -115,6 +117,7 @@ public class AxeEnchantments implements Listener {
 
             this.methods.removeDurability(armorItem, player);
         }
+        //Imperium
         if (EnchantUtils.isEventActive(CEnchantments.REAPER, damager, item, enchantments)) {
             Collection<PotionEffect> effects = new ArrayList<>();
             effects.add(new PotionEffect(PotionEffectType.WITHER, CEnchantments.REAPER.getChance() / 5, 1));
@@ -124,6 +127,22 @@ public class AxeEnchantments implements Listener {
             int damageAmount = damager.getExpToLevel();
             event.setDamage(event.getDamage() * (1 + (double) damageAmount / 1000));
         }
+        if (EnchantUtils.isEventActive(CEnchantments.PUMMEL, damager, item, enchantments)) {
+            if (!(event.getDamager() instanceof LivingEntity target)) return;
+            target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 6, 1));
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.CLEAVE, damager, item, enchantments)) {
+            World world = event.getDamager().getWorld();
+            if (!(event.getEntity() instanceof LivingEntity victim)) return;
+            BoundingBox region = new BoundingBox(damager.getX(), damager.getY(), damager.getZ(), victim.getX() + 3, victim.getY(), victim.getZ() + 3);
+            Collection<Entity> targets = world.getNearbyEntities(region);
+
+            for (Entity target : targets) {
+                if (!(target instanceof LivingEntity)) return;
+                ((LivingEntity) target).damage(event.getDamage() * ((double) CEnchantments.CLEAVE.getChance() / 20));
+            }
+        }
+        //Imperium
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
