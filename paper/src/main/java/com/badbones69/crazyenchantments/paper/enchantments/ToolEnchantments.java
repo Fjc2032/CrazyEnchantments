@@ -73,4 +73,7 @@ public class ToolEnchantments implements Listener {
             player.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, potionTime, 5));
         }
     }
+    private void reforgedTrigger(Player player, ItemStack tool) {
+        int dura = tool.getType().getMaxDurability();
+    }
 }
