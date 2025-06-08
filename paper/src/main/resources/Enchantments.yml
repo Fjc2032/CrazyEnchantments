@@ -2437,3 +2437,78 @@ Enchantments:
         - '&6Enchantable Items: &aBow'
     Categories:
       - 'Legendary'
+  Shuffle:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&8Shuffle'
+    MaxPower: 3
+    Enchantment-Type: 'Armor'
+    Chance-System:
+      Base: 7
+      Increase: 7
+    Info:
+      Name: '&8&lShuffle &7(&bI-&bII&7)'
+      Description:
+        - "&7Shuffles your opponent's hotbar"
+        - "&7Found in: "
+        - "&7 - &8&lCommon"
+    Categories:
+      - 'Common'
+  Poisoned:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&9Poisoned'
+    MaxPower: 4
+    Enchantment-Type: 'Armor'
+    Chance-System:
+      Base: 10
+      Increase: 5
+    Info:
+      Name: '&9&lPoisoned &7(&bI-II&7)'
+      Description:
+        - "&7Poisons your opponent"
+        - "&7Found in: "
+        - "&7 - &9&lRare"
+    Categories:
+      - 'Rare'
+      - 'Legendary'
+  Longbow:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&9Longbow'
+    MaxPower: 5
+    Enchantment-Type: 'Bow'
+    Chance-System:
+      Base: 30
+      Increase: 10
+    Info:
+      Name: '&9Longbow &7(&bI-II&7)'
+      Description:
+        - "&7Increases damage by a set amount to anyone"
+        - "&7holding a bow. Damage increases per level."
+        - "&7Found in: "
+        - "&7 - &9&lRare"
+        - "&7 - &6&lLegendary"
+    Categories:
+      - 'Rare'
+      - 'Legendary'
+  Unfocus:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&9Unfocus'
+    MaxPower: 4
+    Enchantment-Type: 'Bow'
+    Chance-System:
+      Base: 10
+      Increase: 5
+    Info:
+      Name: '&9Unfocus &7(&bI-II&7)'
+      Description:
+        - "&7Inflicts nausea to the target."
+        - "&7Also multiplies bow damage by &b1.5X."
+        - "&7Found in: "
+        - "&7 - &9&lRare"
+        - "&7 - &6&lLegendary"
+    Categories:
+      - 'Rare'
+      - 'Legendary'
