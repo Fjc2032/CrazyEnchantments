@@ -19,6 +19,11 @@ import com.badbones69.crazyenchantments.paper.controllers.BossBarController;
 import com.badbones69.crazyenchantments.paper.controllers.settings.EnchantmentBookSettings;
 import com.badbones69.crazyenchantments.paper.scheduler.FoliaRunnable;
 import com.badbones69.crazyenchantments.paper.support.PluginSupport;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.monster.Blaze;
+import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.ZombifiedPiglin;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.damage.DamageSource;
@@ -39,6 +44,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -303,6 +309,32 @@ public class SwordEnchantments implements Listener {
         if (EnchantUtils.isEventActive(CEnchantments.FAMISHED, damager, item, enchantments)) {
             en.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 10 * 20, 1));
         }
+        //IMPERIUM
+        if (EnchantUtils.isEventActive(CEnchantments.ENDERSLAYER, damager, item, enchantments)) {
+            if (!(event.getEntity() instanceof EnderMan) || !(event.getEntity() instanceof EnderDragon)) return;
+            double damage = event.getDamage();
+            event.setDamage(damage * ((double) CEnchantments.ENDERSLAYER.getChance() / 20));
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.NETHERSLAYER, damager, item, enchantments)) {
+            if (!(event.getEntity() instanceof Blaze) || !(event.getEntity() instanceof ZombifiedPiglin)) return;
+            double damage = event.getDamage();
+            event.setDamage(damage * ((double) CEnchantments.NETHERSLAYER.getChance() / 20));
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.SHACKLE, damager, item, enchantments)) {
+            if (event.getEntity() instanceof Player) return;
+            Location playerPos = damager.getLocation();
+            Vector vector = damager.getLocation().toVector().subtract(en.getLocation().toVector());
+            vector.normalize().multiply(1);
+            en.setVelocity(vector);
+            
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.GREATSWORD, damager, item, enchantments)) {
+            if (!(event.getEntity() instanceof Player target)) return;
+            if (target.getActiveItem().getType().equals(Material.BOW)) {
+                event.setDamage(event.getDamage() * (damager.getVelocity().normalize().length() / 2));
+            }
+        }
+        //IMPERIUM
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
