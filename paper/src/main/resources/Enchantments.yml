@@ -2570,3 +2570,116 @@ ObbyDestroyer:
         - 'Unique'
     Categories:
       - 'Unique'
+#Imperium Enchants Do not change this line.
+Enderslayer:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&b&l§nEnderslayer'
+    MaxPower: 5
+    Enchantment-Type: 'Sword'
+    Chance-System:
+      Base: 50
+      Increase: 10
+    Info:
+      Name: '&b&lEnderslayer &r&7(I-V)'
+      Description:
+        - "&eIncreased damage to the endermen and the ender dragon."
+        - '&7Sword Enchantment'
+        - 'Elite'
+    Categories:
+      - 'Elite'
+#Imperium Enchants Do not change this line.
+Reaper:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&b&l§nReaper'
+    MaxPower: 4
+    Enchantment-Type: 'Axe'
+    Chance-System:
+      Base: 10
+      Increase: 3
+    Info:
+      Name: '&b&lReaper &r&7(I-IV)'
+      Description:
+        - "&ea chance to give your opponent"
+        - "&ewither and blindness effects"
+        - "&eWhile dealing damage."
+        - '&7Sword Enchantment'
+        - 'Elite'
+    Categories:
+      - 'Elite'
+#Imperium Enchants Do not change this line.
+Netherslayer:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&b&l§nNetherslaye'
+    MaxPower: 5
+    Enchantment-Type: 'Sword'
+    Chance-System:
+      Base: 50
+      Increase: 10
+    Info:
+      Name: '&b&lNetherslayer &r&7(I-V)'
+      Description:
+        - "&eIncreased damage to the Blazes and Pigmen."
+        - '&7Sword Enchantment'
+        - 'Elite'
+    Categories:
+      - 'Elite'
+#Imperium Enchants Do not change this line.
+Shackle:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&b&l§nShackle'
+    MaxPower: 3
+    Enchantment-Type: 'Sword'
+    Chance-System:
+      Base: 70
+      Increase: 10
+    Info:
+      Name: '&b&lShackle &r&7(I-III)'
+      Description:
+        - "&eYour attacks pull mobs toward you."
+        - '&7Sword Enchantment'
+        - 'Elite'
+    Categories:
+      - 'Elite'
+#Imperium Enchants Do not change this line.
+Reforged:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&b&l§nReforged'
+    MaxPower: 9
+    Enchantment-Type: 'Tool'
+    Chance-System:
+      Base: 10
+      Increase: 10
+    Info:
+      Name: '&b&lReforged &r&7(I-IX)'
+      Description:
+        - "&eProtects weapons and tool durability,"
+        - "&eitems will take longer to break."
+        - "&eWhile dealing damage."
+        - '&7Tool Enchantment'
+        - 'Elite'
+    Categories:
+      - 'Elite'
+#Imperium Enchants Do not change this line.
+Greatsword:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&b&l§nGreatsword'
+    MaxPower: 5
+    Enchantment-Type: 'Sword'
+    Chance-System:
+      Base: 40
+      Increase: 10
+    Info:
+      Name: '&b&lGreatsword &r&7(I-V)'
+      Description:
+        - "&eMutliplies damage Against players"
+        - "&ewho are wielding a BOW."
+        - '&7Sword Enchantment'
+        - 'Elite'
+    Categories:
+      - 'Elite'
