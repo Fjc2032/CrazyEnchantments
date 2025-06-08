@@ -18,6 +18,7 @@ import com.badbones69.crazyenchantments.paper.controllers.settings.ProtectionCry
 import com.badbones69.crazyenchantments.paper.support.PluginSupport;
 import com.badbones69.crazyenchantments.paper.tasks.processors.ArmorProcessor;
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -334,6 +335,19 @@ public class ArmorEnchantments implements Listener {
                 @Nullable ItemStack @NotNull [] playerArmor = player.getInventory().getArmorContents();
                 for (ItemStack equipment : playerArmor) {
                     ItemMeta meta = equipment.getItemMeta();
+                }
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.WARD, player, armor, enchants)) {
+                AttributeInstance maxhealth = (AttributeInstance) player.getAttribute(Attribute.MAX_HEALTH);
+                if (maxhealth == null) return;
+                double amount = event.getDamage();
+                double playerHealth = player.getHealth();
+                double playerMaxHealth = maxhealth.getValue();
+                event.setCancelled(true);
+                if (playerHealth + amount > playerMaxHealth) {
+                    player.setHealth(playerHealth + (amount / 2));
+                } else {
+                    player.setHealth(playerHealth + amount);
                 }
             }
             //Stuff for Imperium
