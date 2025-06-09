@@ -19,6 +19,7 @@ import com.badbones69.crazyenchantments.paper.support.PluginSupport;
 import com.badbones69.crazyenchantments.paper.tasks.processors.ArmorProcessor;
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.item.AxeItem;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -26,7 +27,6 @@ import org.bukkit.Particle;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
-import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -40,8 +40,10 @@ import org.bukkit.event.entity.EntityResurrectEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -335,7 +337,12 @@ public class ArmorEnchantments implements Listener {
             if (EnchantUtils.isEventActive(CEnchantments.HARDENED, player, armor, enchants)) {
                 @Nullable ItemStack @NotNull [] playerArmor = player.getInventory().getArmorContents();
                 for (ItemStack equipment : playerArmor) {
+                    if (equipment == null) return;
                     ItemMeta meta = equipment.getItemMeta();
+                    Damageable damage = (Damageable) meta;
+                    damage.setDamage(damage.getDamage() - (CEnchantments.HARDENED.getChance() / 20));
+                    if (damage.getDamage() <= 0) return;
+                    equipment.setItemMeta(meta);
                 }
             }
             if (EnchantUtils.isEventActive(CEnchantments.WARD, player, armor, enchants)) {
@@ -366,12 +373,37 @@ public class ArmorEnchantments implements Listener {
             if (EnchantUtils.isEventActive(CEnchantments.ANGELIC, player, armor, enchants)) {
                 player.setHealth(player.getHealth() + (1 + ((double) CEnchantments.ANGELIC.getChance() / 20)));
             }
-             if (EnchantUtils.isEventActive(CEnchantments.ENDERWALKER, player, armor, enchants)) {
-                 if (!(event.getEntity() instanceof Player victim)) return;
+            if (EnchantUtils.isEventActive(CEnchantments.ENDERWALKER, player, armor, enchants)) {
+                if (!(event.getEntity() instanceof Player victim)) return;
                 if (victim.hasPotionEffect(PotionEffectType.POISON)) victim.removePotionEffect(PotionEffectType.POISON);
                 if (victim.hasPotionEffect(PotionEffectType.WITHER)) victim.removePotionEffect(PotionEffectType.WITHER);
                 victim.setHealth(victim.getHealth() + (1 + ((double) CEnchantments.ENDERWALKER.getChance() / 20)));
             }
+            if (EnchantUtils.isEventActive(CEnchantments.TANK, player, armor, enchants)) {
+                @NotNull ItemStack weapon = damager.getActiveItem();
+                @NotNull Collection<ItemStack> axes = new ArrayList<>();
+                axes.add(ItemStack.of(Material.WOODEN_AXE));
+                axes.add(ItemStack.of(Material.STONE_AXE));
+                axes.add(ItemStack.of(Material.IRON_AXE));
+                axes.add(ItemStack.of(Material.GOLDEN_AXE));
+                axes.add(ItemStack.of(Material.DIAMOND_AXE));
+                axes.add(ItemStack.of(Material.NETHERITE_AXE));
+                for (ItemStack item : axes) {
+                    if (weapon.equals(item)) {
+                        event.setDamage(event.getDamage() - (event.getDamage() * ((double) CEnchantments.TANK.getChance() / 20)));
+                        player.sendMessage("TANK activated.");
+                    }
+                }
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.CREEPERARMOR, player, armor, enchants)) {
+                if (player.getLastDamageCause().getCause().equals(DamageCause.BLOCK_EXPLOSION) || player.getLastDamageCause().getCause().equals(DamageCause.ENTITY_EXPLOSION)) {
+                    event.setDamage(0);
+                }
+                if (CEnchantments.CREEPERARMOR.getChance() >= 15) {
+                    player.setHealth(player.getHealth() + (double) CEnchantments.CREEPERARMOR.getChanceIncrease() / 10);
+                }
+            }
+
             //Stuff for Imperium
         }
 
