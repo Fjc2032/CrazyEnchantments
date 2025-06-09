@@ -148,9 +148,17 @@ public enum CEnchantments {
     MARKSMAN("Marksman", "Bow", 60, 10),
     ANGELIC("Angelic", "Armor", 20, 5),
     JELLYLEGS("Jellylegs", "Boots", 10, 3),
-    CLEAVE("Cleave", "Axes", 15, 5),
+    CLEAVE("Cleave", "Axe", 15, 5),
     DOMINATE("Dominate", "Swords", 10, 3),
-    ENDERWALKER("Enderwalker", "Boots", 8, 3)
+    ENDERWALKER("Enderwalker", "Boots", 8, 3),
+    INFERNAL("Infernal", "Bow", 7, 4),
+    TANK("Tank", "Armor", 16, 4),
+    BLOCK("Block", "Sword", 11, 11),
+    CORRUPT("Corrupt", "Axe", 20, 7),
+    CREEPERARMOR("CreeperArmor", "Armor", 10, 3),
+    DEMONIC("Demonic", "Sword", 10, 3),
+    METAPHYSICAL("Metaphysical", "Boots", 50, 10),
+    DISTANCE("Distance", "Sword", 14, 3)
     ;
 
 
