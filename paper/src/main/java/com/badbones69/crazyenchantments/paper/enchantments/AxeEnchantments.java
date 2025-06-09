@@ -12,6 +12,7 @@ import com.badbones69.crazyenchantments.paper.api.utils.EntityUtils;
 import com.badbones69.crazyenchantments.paper.api.utils.EventUtils;
 import com.badbones69.crazyenchantments.paper.controllers.settings.EnchantmentBookSettings;
 import com.badbones69.crazyenchantments.paper.support.PluginSupport;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -26,6 +27,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 import org.bukkit.World;
@@ -141,6 +143,14 @@ public class AxeEnchantments implements Listener {
                 if (!(target instanceof LivingEntity)) return;
                 ((LivingEntity) target).damage(event.getDamage() * ((double) CEnchantments.CLEAVE.getChance() / 20));
             }
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.CORRUPT, damager, item, enchantments)) {
+            damager.sendMessage("Corrupt activated");
+            if (!(event.getEntity() instanceof LivingEntity target)) return;
+            target.damage(event.getDamage());
+            Bukkit.getScheduler().runTaskLater(plugin, () -> target.damage(event.getDamage()), 40L);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> target.damage(event.getDamage()), 60L);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> target.damage(event.getDamage()), 80L);
         }
         //Imperium
     }

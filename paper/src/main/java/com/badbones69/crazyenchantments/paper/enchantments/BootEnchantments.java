@@ -4,18 +4,24 @@ import com.badbones69.crazyenchantments.paper.CrazyEnchantments;
 import com.badbones69.crazyenchantments.paper.Starter;
 import com.badbones69.crazyenchantments.paper.api.enums.CEnchantments;
 import com.badbones69.crazyenchantments.paper.api.managers.WingsManager;
+import com.badbones69.crazyenchantments.paper.api.utils.EnchantUtils;
 import com.badbones69.crazyenchantments.paper.api.utils.WingsUtils;
 import com.badbones69.crazyenchantments.paper.controllers.settings.EnchantmentBookSettings;
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 
 public class BootEnchantments implements Listener {
@@ -122,4 +128,24 @@ public class BootEnchantments implements Listener {
         player.setAllowFlight(false);
         this.wingsManager.removeFlyingPlayer(player);
     }
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onFallInterceptByEnchant(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+        if (!EnchantUtils.isArmorEventActive(player, CEnchantments.JELLYLEGS, player.getInventory().getBoots())) return;
+        if (!EntityDamageEvent.DamageCause.FALL.equals(event.getCause())) return;
+
+        event.setCancelled(true);
+        player.sendMessage("JELLYLEGS: Fall damage cancelled!");
+    }
+    @EventHandler()
+    public void onAttack(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof Player target)) return;
+        if (!EnchantUtils.isArmorEventActive(target, CEnchantments.METAPHYSICAL, target.getInventory().getBoots())) return;
+        if (target.hasPotionEffect(PotionEffectType.SLOWNESS)) target.removePotionEffect(PotionEffectType.SLOWNESS);
+        if (CEnchantments.METAPHYSICAL.getChance() >= 80) {
+            if (target.hasPotionEffect(PotionEffectType.SLOWNESS)) target.removePotionEffect(PotionEffectType.SLOWNESS);
+        }
+    }
+
+
 }

@@ -208,6 +208,9 @@ public class BowEnchantments implements Listener {
                 entity.addPotionEffects(effects);
             }
         }
+        if (EnchantUtils.isEventActive(CEnchantments.INFERNAL, enchantedArrow.getShooter(), enchantedArrow.bow(), enchantedArrow.enchantments())) {
+            event.getEntity().setFireTicks(CEnchantments.INFERNAL.getChance());
+        }
     }
 
     //Kinda buggy, might not work well
