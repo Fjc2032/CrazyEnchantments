@@ -2466,7 +2466,7 @@ Enchantments:
       Base: 10
       Increase: 5
     Info:
-      Name: '&9&lPoisoned &7(&bI-II&7)'
+      Name: '&9§lPoisoned &7(&bI-II&7)'
       Description:
         - "&7Poisons your opponent"
         - "&7Found in: "
@@ -2478,14 +2478,14 @@ Enchantments:
   Longbow:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&e&l§nLongbow'
+    Name: '&eLongbow'
     MaxPower: 4
     Enchantment-Type: 'Bow'
     Chance-System:
       Base: 30
       Increase: 10
     Info:
-      Name: '&e&lLongbow &r&7(I-IV)'
+      Name: '&e§lLongbow &r&7(I-IV)'
       Description:
         - '&eIncreased damage to players'
         - '&ewith a bow in hand.'
@@ -2504,7 +2504,7 @@ Enchantments:
       Base: 10
       Increase: 5
     Info:
-      Name: '&9Unfocus &7(&bI-II&7)'
+      Name: '&9&lUnfocus &7(&bI-II&7)'
       Description:
         - "&7Inflicts nausea to the target."
         - "&7Also multiplies bow damage by &b1.5X."
@@ -2518,14 +2518,14 @@ Enchantments:
 Ward:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&a&l§nWard'
+    Name: '&aWard'
     MaxPower: 4
     Enchantment-Type: 'Armour'
     Chance-System:
       Base: 10
       Increase: 5
     Info:
-      Name: '&a&lWard &r&7(I-IV)'
+      Name: '&a§lWard &r&7(I-IV)'
       Description:
         - "&eA chance to absorb enemy"
         - "&edamage and heal you."
@@ -2537,7 +2537,7 @@ Ward:
 Virus:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&a&l§nVirus'
+    Name: '&aVirus'
     MaxPower: 4
     Enchantment-Type: 'Bow'
     Chance-System:
@@ -2556,7 +2556,7 @@ Virus:
 ObbyDestroyer:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&a&l§nObbyDestroyer'
+    Name: '&aObbyDestroyer'
     MaxPower: 5
     Enchantment-Type: 'Pickaxe'
     Chance-System:
@@ -2574,7 +2574,7 @@ ObbyDestroyer:
 Enderslayer:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&b&l§nEnderslayer'
+    Name: '&bEnderslayer'
     MaxPower: 5
     Enchantment-Type: 'Sword'
     Chance-System:
@@ -2592,14 +2592,14 @@ Enderslayer:
 Reaper:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&b&l§nReaper'
+    Name: '&bReaper'
     MaxPower: 4
     Enchantment-Type: 'Axe'
     Chance-System:
       Base: 10
       Increase: 3
     Info:
-      Name: '&b&lReaper &r&7(I-IV)'
+      Name: '&bReaper &r&7(I-IV)'
       Description:
         - "&ea chance to give your opponent"
         - "&ewither and blindness effects"
@@ -2612,7 +2612,7 @@ Reaper:
 Netherslayer:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&b&l§nNetherslaye'
+    Name: '&bNetherslaye'
     MaxPower: 5
     Enchantment-Type: 'Sword'
     Chance-System:
@@ -2630,7 +2630,7 @@ Netherslayer:
 Shackle:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&b&l§nShackle'
+    Name: '&bShackle'
     MaxPower: 3
     Enchantment-Type: 'Sword'
     Chance-System:
@@ -2648,7 +2648,7 @@ Shackle:
 Reforged:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&b&l§nReforged'
+    Name: '&bReforged'
     MaxPower: 9
     Enchantment-Type: 'Tool'
     Chance-System:
@@ -2668,7 +2668,7 @@ Reforged:
 Greatsword:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&b&l§nGreatsword'
+    Name: '&bGreatsword'
     MaxPower: 5
     Enchantment-Type: 'Sword'
     Chance-System:
@@ -2683,3 +2683,302 @@ Greatsword:
         - 'Elite'
     Categories:
       - 'Elite'
+#Imperium Enchants Do not change this line.
+Trickster:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&bTrickster'
+    MaxPower: 8
+    Enchantment-Type: 'Armor'
+    Chance-System:
+      Base: 25
+      Increase: 6
+    Info:
+      Name: '&b&lTrickster &r&7(I-VIII)'
+      Description:
+        - "&eWhen attacked you have a chance to teleport"
+        - "&edirectly behind your opponent."
+        - '&7Armour Enchantment'
+        - 'Elite'
+    Categories:
+      - 'Elite'
+#Imperium Enchants Do not change this line.
+Pummel:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&bPummel'
+    MaxPower: 3
+    Enchantment-Type: 'Axe'
+    Chance-System:
+      Base: 30
+      Increase: 5
+    Info:
+      Name: '&b&lPummel &r&7(I-III)'
+      Description:
+        - "&echance to slow nearby enemies"
+        - "&efor a short period."
+        - '&7Axe Enchantment'
+        - 'Elite'
+    Categories:
+      - 'Elite'
+#Imperium Enchants Do not change this line.
+Farcast:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&bFarcast'
+    MaxPower: 5
+    Enchantment-Type: 'Bow'
+    Chance-System:
+      Base: 10
+      Increase: 5
+    Info:
+      Name: '&b&lFarcast &r&7(I-V)'
+      Description:
+        - "&eA chance to knockback melee attackers"
+        - "&eby a few blocks when they hit you"
+        - "&eincreased chance when on low health."
+        - '&7Bow Enchantment'
+        - 'Elite'
+    Categories:
+      - 'Elite'
+#Imperium Enchants Do not change this line.
+Marksman:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&eMarksman'
+    MaxPower: 4
+    Enchantment-Type: 'Armor'
+    Chance-System:
+      Base: 60
+      Increase: 10
+    Info:
+      Name: '&e&lMarksman &r&7(I-IV)'
+      Description:
+        - "&eIncreases damage dealt with bows"
+        - '&7Armour Enchantment'
+        - 'Ultimate'
+    Categories:
+      - 'Ultimate'
+#Imperium Enchants Do not change this line.
+Angelic:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&eAngelic'
+    MaxPower: 5
+    Enchantment-Type: 'Armor'
+    Chance-System:
+      Base: 20
+      Increase: 5
+    Info:
+      Name: '&e&lAngelic &r&7(I-V)'
+      Description:
+        - "&eheals health when damaged"
+        - '&7Armour Enchantment'
+        - 'Ultimate'
+    Categories:
+      - 'Ultimate'
+#Imperium Enchants Do not change this line.
+Jellylegs:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&eJelly legs'
+    MaxPower: 3
+    Enchantment-Type: 'Boots'
+    Chance-System:
+      Base: 10
+      Increase: 3
+    Info:
+      Name: '&e&lJelly legs &r&7(I-III)'
+      Description:
+        - "&eChance to negate fall damage."
+        - '&7boots Enchantment'
+        - 'Ultimate'
+    Categories:
+      - 'Ultimate'
+#Imperium Enchants Do not change this line.
+Cleave:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&eCleave'
+    MaxPower: 7
+    Enchantment-Type: 'Axe'
+    Chance-System:
+      Base: 15
+      Increase: 5
+    Info:
+      Name: '&e&lCleave &r&7(I-VII)'
+      Description:
+        - "&eDamages players within a radius"
+        - "&ethat increases with level of enchant."
+        - '&7Axe Enchantment'
+        - 'Ultimate'
+    Categories:
+      - 'Ultimate'
+#Imperium Enchants Do not change this line.
+Dominate:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&eDominate'
+    MaxPower: 4
+    Enchantment-Type: 'Swords'
+    Chance-System:
+      Base: 10
+      Increase: 3
+    Info:
+      Name: '&e&lDominate &r&7(I-IV)'
+      Description:
+        - "&eChance to weaken players when attacked."
+        - "&eCausing them to deal less damage."
+        - '&7Swords Enchantment'
+        - 'Ultimate'
+    Categories:
+      - 'Ultimate'
+#Imperium Enchants Do not change this line.
+Enderwalker:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&eEnderwalker'
+    MaxPower: 5
+    Enchantment-Type: 'Boots'
+    Chance-System:
+      Base: 8
+      Increase: 3
+    Info:
+      Name: '&e&lEnderwalker &r&7(I-V)'
+      Description:
+        - "&eheals health when damaged"
+        - '&7Armour Enchantment'
+        - 'Ultimate'
+    Categories:
+      - 'Ultimate'
+#Imperium Enchants Do not change this line.
+Tank:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&eTank'
+    MaxPower: 4
+    Enchantment-Type: 'Armor'
+    Chance-System:
+      Base: 20
+      Increase: 5
+    Info:
+      Name: '&e&lTank &r&7(I-IV)'
+      Description:
+        - "&eChance to decrase damage from enemy"
+        - "&eAxes by 2% per level."
+        - '&7Armour Enchantment'
+        - 'Ultimate'
+    Categories:
+      - 'Ultimate'
+#Imperium Enchants Do not change this line.
+Block:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&eBlock'
+    MaxPower: 3
+    Enchantment-Type: 'Sword'
+    Chance-System:
+      Base: 11
+      Increase: 11
+    Info:
+      Name: '&e&lBlock &r&7(I-III)'
+      Description:
+        - "&echance to negate and attack and"
+        - "&edeal up to 4 damage back."
+        - '&7Sword Enchantment'
+        - 'Ultimate'
+    Categories:
+      - 'Ultimate'
+#Imperium Enchants Do not change this line.
+Corrupt:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&eCorrupt'
+    MaxPower: 4
+    Enchantment-Type: 'Axe'
+    Chance-System:
+      Base: 20
+      Increase: 7
+    Info:
+      Name: '&e&lCorrupt &r&7(I-IV)'
+      Description:
+        - "&eDeals damage over time."
+        - '&7Axe Enchantment'
+        - 'Ultimate'
+    Categories:
+      - 'Ultimate'
+#Imperium Enchants Do not change this line.
+CreeperArmor:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&eCreeperArmor'
+    MaxPower: 3
+    Enchantment-Type: 'Armor'
+    Chance-System:
+      Base: 10
+      Increase: 3
+    Info:
+      Name: '&e&lCreeperArmor &r&7(I-III)'
+      Description:
+        - "&eChance to fullt negate explosive damage."
+        - "&eAt higher levels a chance to heal."
+        - '&7Armour Enchantment'
+        - 'Ultimate'
+    Categories:
+      - 'Ultimate'
+#Imperium Enchants Do not change this line.
+Demonic:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&eDemonic'
+    MaxPower: 3
+    Enchantment-Type: 'Sword'
+    Chance-System:
+      Base: 10
+      Increase: 3
+    Info:
+      Name: '&e&lDemonic &r&7(I-III)'
+      Description:
+        - "&eA chance to remove fire resistance from your enemy."
+        - '&7Sword Enchantment'
+        - 'Ultimate'
+    Categories:
+      - 'Ultimate'
+#Imperium Enchants Do not change this line.
+Metaphysical:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&eMetaphysical'
+    MaxPower: 4
+    Enchantment-Type: 'Boots'
+    Chance-System:
+      Base: 50
+      Increase: 10
+    Info:
+      Name: '&e&lMetaphysical &r&7(I-IV)'
+      Description:
+        - "&eA chance to be cured of"
+        - "&eslowness when attacked"
+        - '&7Boots Enchantment'
+        - 'Ultimate'
+    Categories:
+      - 'Ultimate'
+#Imperium Enchants Do not change this line.
+Distance:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&eDistance'
+    MaxPower: 4
+    Enchantment-Type: 'Sword'
+    Chance-System:
+      Base: 14
+      Increase: 3
+    Info:
+      Name: '&e&lDistance &r&7(I-IV)'
+      Description:
+        - "&ea chance to distance yourself from"
+        - "&eyour enemies and gain regenerations"
+        - '&7swords Enchantment'
+        - 'Ultimate'
+    Categories:
+      - 'Ultimate'
