@@ -145,7 +145,7 @@ public enum CEnchantments {
     TRICKSTER("Trickster", "Armor", 25, 6),
     PUMMEL("Pummel", "Axe", 30, 5),
     FARCAST("Farcast", "Bow", 10, 5),
-    MARKSMAN("Marksman", "Bow", 60, 10),
+    MARKSMAN("Marksman", "Armor", 60, 10),
     ANGELIC("Angelic", "Armor", 20, 5),
     JELLYLEGS("Jellylegs", "Boots", 10, 3),
     CLEAVE("Cleave", "Axe", 15, 5),
