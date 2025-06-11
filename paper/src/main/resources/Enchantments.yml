@@ -2556,14 +2556,14 @@ Virus:
 ObbyDestroyer:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&aObbyDestroyer'
+    Name: '&aObsidian Destroyer'
     MaxPower: 5
     Enchantment-Type: 'Pickaxe'
     Chance-System:
       Base: 20
       Increase: 15
     Info:
-      Name: '&a&lObbyDestroyer &r&7(I-V)'
+      Name: '&a&lObsidian Destroyer &r&7(I-V)'
       Description:
         - "&eA Chance to instantly break obsidian blocks."
         - '&7Pickaxe Enchantment'
@@ -2574,14 +2574,14 @@ ObbyDestroyer:
 Enderslayer:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&bEnderslayer'
+    Name: '&bEnder slayer'
     MaxPower: 5
     Enchantment-Type: 'Sword'
     Chance-System:
       Base: 50
       Increase: 10
     Info:
-      Name: '&b&lEnderslayer &r&7(I-V)'
+      Name: '&b&lEnder slayer &r&7(I-V)'
       Description:
         - "&eIncreased damage to the endermen and the ender dragon."
         - '&7Sword Enchantment'
@@ -2612,14 +2612,14 @@ Reaper:
 Netherslayer:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&bNetherslaye'
+    Name: '&bNether slayer'
     MaxPower: 5
     Enchantment-Type: 'Sword'
     Chance-System:
       Base: 50
       Increase: 10
     Info:
-      Name: '&b&lNetherslayer &r&7(I-V)'
+      Name: '&b&lNether slayer &r&7(I-V)'
       Description:
         - "&eIncreased damage to the Blazes and Pigmen."
         - '&7Sword Enchantment'
@@ -2837,14 +2837,14 @@ Dominate:
 Enderwalker:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&eEnderwalker'
+    Name: '&eEnder walker'
     MaxPower: 5
     Enchantment-Type: 'Boots'
     Chance-System:
       Base: 8
       Increase: 3
     Info:
-      Name: '&e&lEnderwalker &r&7(I-V)'
+      Name: '&e&lEnder walker &r&7(I-V)'
       Description:
         - "&eheals health when damaged"
         - '&7Armour Enchantment'
@@ -2911,14 +2911,14 @@ Corrupt:
 CreeperArmor:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&eCreeperArmor'
+    Name: '&eCreeper Armor'
     MaxPower: 3
     Enchantment-Type: 'Armor'
     Chance-System:
       Base: 10
       Increase: 3
     Info:
-      Name: '&e&lCreeperArmor &r&7(I-III)'
+      Name: '&e&lCreeper Armor &r&7(I-III)'
       Description:
         - "&eChance to fullt negate explosive damage."
         - "&eAt higher levels a chance to heal."
