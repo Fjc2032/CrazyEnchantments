@@ -22,6 +22,7 @@ import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 public class BootEnchantments implements Listener {
@@ -128,14 +129,13 @@ public class BootEnchantments implements Listener {
         player.setAllowFlight(false);
         this.wingsManager.removeFlyingPlayer(player);
     }
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onFallInterceptByEnchant(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
-        if (!EnchantUtils.isArmorEventActive(player, CEnchantments.JELLYLEGS, player.getInventory().getBoots())) return;
+        if (!this.enchantmentBookSettings.getEnchantments(player.getEquipment().getBoots()).containsKey(CEnchantments.JELLYLEGS.getEnchantment())) return;
         if (!EntityDamageEvent.DamageCause.FALL.equals(event.getCause())) return;
 
         event.setCancelled(true);
-        player.sendMessage("JELLYLEGS: Fall damage cancelled!");
     }
     @EventHandler()
     public void onAttack(EntityDamageByEntityEvent event) {
@@ -145,6 +145,18 @@ public class BootEnchantments implements Listener {
         if (CEnchantments.METAPHYSICAL.getChance() >= 80) {
             if (target.hasPotionEffect(PotionEffectType.SLOWNESS)) target.removePotionEffect(PotionEffectType.SLOWNESS);
         }
+    }
+    @EventHandler()
+    public void onAttack1(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+        if (!(event.getDamager() instanceof Player attacker)) return;
+        if (!EnchantUtils.isArmorEventActive(attacker, CEnchantments.QUIVER, attacker.getInventory().getBoots())) return;
+
+        Vector vector = player.getLocation().getDirection();
+        vector.setY(player.getY() + ((double) CEnchantments.QUIVER.getChance() / 100));
+        vector.multiply(3).normalize();
+
+        player.setVelocity(vector);
     }
 
 
