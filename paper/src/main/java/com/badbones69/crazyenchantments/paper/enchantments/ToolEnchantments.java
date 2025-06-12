@@ -23,6 +23,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Objects;
@@ -95,10 +96,18 @@ public class ToolEnchantments implements Listener {
         int damage = damageable.getDamage();
         int modifier = CEnchantments.REFORGED.getChance() * player.getExpToLevel();
         int newDurability = damage - modifier;
+        if (newDurability < 0) return;
         damageable.setDamage(newDurability);
         if (damageable.getDamage() < 0) return;
         tool.setItemMeta(meta);
         player.sendMessage("Your tool has been reforged!");
         player.sendMessage("New durability: " + newDurability);
+    }
+    private void keepDurability(@NotNull Player player, @Nullable ItemStack tool) {
+        if (tool == null) return;
+        ItemMeta meta = tool.getItemMeta();
+        Damageable damageable = (Damageable) meta;
+        damageable.setUnbreakable(true);
+        tool.setItemMeta(meta);
     }
 }
