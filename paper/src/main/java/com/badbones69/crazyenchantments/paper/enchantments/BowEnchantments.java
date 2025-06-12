@@ -17,6 +17,7 @@ import com.badbones69.crazyenchantments.paper.support.PluginSupport;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
@@ -37,6 +38,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
@@ -211,20 +213,24 @@ public class BowEnchantments implements Listener {
         if (EnchantUtils.isEventActive(CEnchantments.INFERNAL, enchantedArrow.getShooter(), enchantedArrow.bow(), enchantedArrow.enchantments())) {
             event.getEntity().setFireTicks(CEnchantments.INFERNAL.getChance());
         }
-    }
+        if (EnchantUtils.isEventActive(CEnchantments.SNIPER, enchantedArrow.getShooter(), enchantedArrow.bow(), enchantedArrow.enchantments())) {
+            BoundingBox headshotZone = entity.getBoundingBox();
+            World world = event.getEntity().getWorld();
+            for (Entity target : world.getNearbyEntities(headshotZone)) {
+                if ((target instanceof Arrow)) continue;
+                if (target.getLocation().getBlockY() <= headshotZone.getMaxY() && target.getLocation().getBlockY() > headshotZone.getCenterY()) continue;
+                event.setDamage(event.getDamage() * (2.5 + ((double) CEnchantments.SNIPER.getChance() / 20)));
+            }
 
-    //Kinda buggy, might not work well
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onTargetAttack(EntityDamageByEntityEvent event) {
-        EnchantedArrow enchantedArrow = this.bowUtils.getEnchantedArrow((Arrow) event.getDamager());
+        }
         if (EnchantUtils.isEventActive(CEnchantments.FARCAST, enchantedArrow.getShooter(), enchantedArrow.bow(), enchantedArrow.enchantments())) {
-            if (!(event.getDamager() instanceof LivingEntity target)) return;
-            if (!(event.getEntity() instanceof Player player)) return;
-            Vector direction = (player.getLocation().toVector().subtract(target.getLocation().toVector().subtract(new Vector(10, 1, 10))));
-            direction.normalize().multiply(1 + (CEnchantments.FASTTURN.getChance() / 20));
+            if (!(event.getEntity() instanceof Player target)) return;
+            Vector direction = (enchantedArrow.getShooter().getLocation().toVector().subtract(target.getLocation().toVector().subtract(new Vector(10, 1, 10))));
+            direction.normalize().multiply(1 + (CEnchantments.FARCAST.getChance() / 20));
             target.setVelocity(direction);
         }
     }
+
         //Imperium
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
