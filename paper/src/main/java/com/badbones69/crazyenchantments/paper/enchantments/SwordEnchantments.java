@@ -351,6 +351,10 @@ public class SwordEnchantments implements Listener {
             damager.setVelocity(damager.getLocation().getDirection().multiply(-2).normalize());
             damager.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, CEnchantments.DISTANCE.getChance() / 10, 1));
         }
+        if (EnchantUtils.isEventActive(CEnchantments.INVERSION, damager, item, enchantments)) {
+            event.setCancelled(true);
+            damager.setHealth(damager.getHealth() + ((double) CEnchantments.INVERSION.getChance() / 10));
+        }
         //IMPERIUM
     }
 
