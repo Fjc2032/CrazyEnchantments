@@ -20,10 +20,7 @@ import com.badbones69.crazyenchantments.paper.tasks.processors.ArmorProcessor;
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.item.AxeItem;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Particle;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
@@ -49,6 +46,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 import org.enginehub.linbus.stream.token.LinToken;
 import org.jetbrains.annotations.NotNull;
@@ -403,7 +401,32 @@ public class ArmorEnchantments implements Listener {
                     player.setHealth(player.getHealth() + (double) CEnchantments.CREEPERARMOR.getChanceIncrease() / 10);
                 }
             }
+            if (EnchantUtils.isEventActive(CEnchantments.FAT, player, armor, enchants)) {
+                event.setDamage(event.getDamage() - ((double) CEnchantments.FAT.getChance() / 10));
+                if (CEnchantments.FAT.getChance() > 20) player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 10, 2));
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.DEATHBRINGER, player, armor, enchants)) {
+                event.setDamage(event.getDamage() * 2);
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.DESTRUCTION, player, armor, enchants)) {
+                World world = player.getWorld();
+                BoundingBox region = player.getBoundingBox();
+                region.expand(8, 0, 8);
+                Collection<Entity> nearbyEntities = world.getNearbyEntities(region);
 
+                for (Entity target : nearbyEntities) {
+                    if (!(target instanceof LivingEntity)) return;
+                    ((LivingEntity) target).setLastDamage(event.getDamage() / 2);
+                    target.sendMessage("**Destruction**");
+                }
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.DEATHGOD, player, armor, enchants)) {
+                if (player.getHealth() < (CEnchantments.DEATHGOD.getChance() + 4)) player.setHealth(player.getHealth() + (CEnchantments.DEATHGOD.getChance() + 5));
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.DIMINISH, player, armor, enchants)) {
+                double lastAttack = player.getLastDamage();
+                event.setDamage(lastAttack / 2);
+            }
             //Stuff for Imperium
         }
 
