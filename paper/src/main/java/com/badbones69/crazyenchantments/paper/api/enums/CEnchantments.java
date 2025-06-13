@@ -158,7 +158,19 @@ public enum CEnchantments {
     CREEPERARMOR("CreeperArmor", "Armor", 10, 3),
     DEMONIC("Demonic", "Sword", 10, 3),
     METAPHYSICAL("Metaphysical", "Boots", 50, 10),
-    DISTANCE("Distance", "Sword", 14, 3)
+    DISTANCE("Distance", "Sword", 14, 3),
+    //SNIPER(Exists, but was redone. Putting comment here for tracking purposes.)
+    FAT("Fat", "Armor", 12, 2),
+    DEATHBRINGER("Deathbringer", "Armor", 14, 7),
+    DESTRUCTION("Destruction", "Armor", 10, 5),
+    DEATHGOD("DeathGod", "Armor", 8, 3),
+    INSANITY("Insanity", "Axe", 50, 8),
+    DIMINISH("Diminish", "Armor", 20, 6),
+    BARBARIAN("Barbarian", "Axe", 20, 4),
+    ABIDING("Abiding", "Tool"),
+    QUIVER("Quiver", "Boots", 10, 7),
+    INVERSION("Inversion", "Sword", 20, 4),
+    BLEED("Bleed", "Axe", 28, 4)
     ;
 
 
