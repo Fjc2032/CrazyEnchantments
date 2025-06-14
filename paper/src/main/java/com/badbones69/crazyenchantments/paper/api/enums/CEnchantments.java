@@ -170,7 +170,16 @@ public enum CEnchantments {
     ABIDING("Abiding", "Tool"),
     QUIVER("Quiver", "Boots", 10, 7),
     INVERSION("Inversion", "Sword", 20, 4),
-    BLEED("Bleed", "Axe", 28, 4)
+    BLEED("Bleed", "Axe", 28, 4),
+    DEVOUR("Devour", "Axe", 10, 5),
+    ARMORED("Armored", "Armor", 60, 10),
+    CLARITY("Clarity", "Armor"),
+    SILENCE("Silence", "Sword", 30, 10),
+    KILLAURA("Killaura", "Sword", 18, 5),
+    STUN("Stun", "Sword", 10, 10),
+    JUDGEMENT("Judgement", "Armor", 10, 10),
+    BLACKSMITH("Blacksmith", "Axe", 30, 10)
+
     ;
 
 
