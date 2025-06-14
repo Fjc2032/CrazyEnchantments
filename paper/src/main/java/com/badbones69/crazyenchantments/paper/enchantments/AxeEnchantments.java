@@ -5,6 +5,7 @@ import com.badbones69.crazyenchantments.paper.Methods;
 import com.badbones69.crazyenchantments.paper.Starter;
 import com.badbones69.crazyenchantments.paper.api.CrazyManager;
 import com.badbones69.crazyenchantments.paper.api.enums.CEnchantments;
+import com.badbones69.crazyenchantments.paper.api.enums.pdc.Enchant;
 import com.badbones69.crazyenchantments.paper.api.objects.CEnchantment;
 import com.badbones69.crazyenchantments.paper.api.builders.ItemBuilder;
 import com.badbones69.crazyenchantments.paper.api.utils.EnchantUtils;
@@ -26,7 +27,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -57,6 +61,8 @@ public class AxeEnchantments implements Listener {
 
     @NotNull
     private final CrazyManager crazyManager = this.starter.getCrazyManager();
+
+    private Enchant enchant;
 
     // Plugin Support.
     @NotNull
@@ -194,6 +200,26 @@ public class AxeEnchantments implements Listener {
                 }
             }, 80L);
         }
+        if (EnchantUtils.isEventActive(CEnchantments.DEVOUR, damager, item, enchantments)) {
+            while (EnchantUtils.isEventActive(CEnchantments.BLEED, damager, item, enchantments)) {
+                if (!(event.getEntity() instanceof Player player)) return;
+                player.damage(event.getDamage() * (1 + ((double) CEnchantments.DEVOUR.getChance() / 10)));
+                damager.sendMessage("** Devour - BLEED STACK **");
+            }
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.BLACKSMITH, damager, item, enchantments)) {
+            ItemStack[] equipment = damager.getEquipment().getArmorContents();
+            for (ItemStack armor : equipment) {
+                if (armor == null) return;
+                ItemMeta meta = armor.getItemMeta();
+                Damageable damageable = (Damageable) meta;
+                int modifier = damageable.getDamage() - (2 + enchant.getLevel("Blacksmith"));
+                if (modifier < 0) return;
+                damageable.setDamage(modifier);
+                armor.setItemMeta(meta);
+                damager.playSound((net.kyori.adventure.sound.Sound) Sound.BLOCK_CALCITE_BREAK);
+            }
+        }
         //Imperium
     }
 
@@ -246,5 +272,13 @@ public class AxeEnchantments implements Listener {
         }};
 
         bad.forEach(player::removePotionEffect);
+    }
+
+    public Enchant getEnchant() {
+        return enchant;
+    }
+
+    public void setEnchant(Enchant enchant) {
+        this.enchant = enchant;
     }
 }

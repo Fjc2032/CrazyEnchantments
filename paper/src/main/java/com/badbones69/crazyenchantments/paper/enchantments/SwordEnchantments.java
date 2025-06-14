@@ -8,6 +8,7 @@ import com.badbones69.crazyenchantments.paper.api.economy.Currency;
 import com.badbones69.crazyenchantments.paper.api.economy.CurrencyAPI;
 import com.badbones69.crazyenchantments.paper.api.enums.CEnchantments;
 import com.badbones69.crazyenchantments.paper.api.enums.Messages;
+import com.badbones69.crazyenchantments.paper.api.enums.pdc.Enchant;
 import com.badbones69.crazyenchantments.paper.api.events.RageBreakEvent;
 import com.badbones69.crazyenchantments.paper.api.objects.CEPlayer;
 import com.badbones69.crazyenchantments.paper.api.objects.CEnchantment;
@@ -23,8 +24,10 @@ import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.monster.Blaze;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.ZombifiedPiglin;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
@@ -44,13 +47,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SwordEnchantments implements Listener {
 
@@ -68,6 +69,9 @@ public class SwordEnchantments implements Listener {
 
     @NotNull
     private final Methods methods = this.starter.getMethods();
+
+    private Enchant enchant;
+    private CEnchantments cEnchantments;
 
     // Plugin Support.
     @NotNull
@@ -355,6 +359,33 @@ public class SwordEnchantments implements Listener {
             event.setCancelled(true);
             damager.setHealth(damager.getHealth() + ((double) CEnchantments.INVERSION.getChance() / 10));
         }
+        if (EnchantUtils.isEventActive(CEnchantments.SILENCE, damager, item, enchantments)) {
+            if (!(en instanceof Player target)) return;
+
+            int oldChance = (30 * (enchant.getLevel("Silence")));
+
+            ItemStack[] playerItems = target.getInventory().getContents();
+
+            for (ItemStack targetItem : playerItems) {
+                @NotNull Map<CEnchantment, Integer> enchantmentIntegerMap = this.enchantmentBookSettings.getEnchantments(targetItem);
+                @NotNull Set<CEnchantment> enchantmentSet = enchantmentIntegerMap.keySet();
+
+                for (CEnchantment enchantment : enchantmentSet) {
+                    @NotNull List<BukkitTask> silenceTask = new ArrayList<>();
+                    silenceTask.add(Bukkit.getScheduler().runTaskTimer(plugin, () -> enchantment.setChance(0), 20L, 20L));
+
+                    for (BukkitTask task : silenceTask) {
+                        Bukkit.getScheduler().runTaskLater(plugin, task::cancel, 60L);
+                        enchantment.setChance(oldChance);
+                    }
+                }
+            }
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.STUN, damager, item, enchantments)) {
+            if (!en.hasPotionEffect(PotionEffectType.SLOWNESS)) en.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, CEnchantments.STUN.getChance() / 7, enchant.getLevel("Stun")));
+            if (!en.hasPotionEffect(PotionEffectType.WEAKNESS)) en.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, CEnchantments.STUN.getChance() / 7, enchant.getLevel("Stun")));
+            if (damager.hasPotionEffect(PotionEffectType.SLOWNESS)) damager.removePotionEffect(PotionEffectType.SLOWNESS);
+        }
         //IMPERIUM
     }
 
@@ -413,6 +444,14 @@ public class SwordEnchantments implements Listener {
                         this.pluginSupport.isFriendly(entity, damager)).forEach(entity ->
                         ((Player) entity).addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10 * 20, 1)));
             }
+            if (EnchantUtils.isEventActive(CEnchantments.KILLAURA, damager, item, enchantments)) {
+                World world = event.getEntity().getWorld();
+                Collection<LivingEntity> entities = world.getNearbyLivingEntities(event.getEntity().getLocation(), 1);
+                for (LivingEntity entity : entities) {
+                    if (entity instanceof Player) return;
+                    entity.setHealth(0);
+                }
+            }
         }
     }
 
@@ -442,5 +481,17 @@ public class SwordEnchantments implements Listener {
         } else {
             player.sendMessage(message.getMessage());
         }
+    }
+
+    public void setEnchant(Enchant enchant) {
+        this.enchant = enchant;
+    }
+
+    public CEnchantments getcEnchantments() {
+        return cEnchantments;
+    }
+
+    public void setcEnchantments(CEnchantments cEnchantments) {
+        this.cEnchantments = cEnchantments;
     }
 }
