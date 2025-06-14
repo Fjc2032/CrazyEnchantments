@@ -6,6 +6,7 @@ import com.badbones69.crazyenchantments.paper.Starter;
 import com.badbones69.crazyenchantments.paper.api.CrazyManager;
 import com.badbones69.crazyenchantments.paper.api.enums.CEnchantments;
 import com.badbones69.crazyenchantments.paper.api.enums.pdc.DataKeys;
+import com.badbones69.crazyenchantments.paper.api.enums.pdc.Enchant;
 import com.badbones69.crazyenchantments.paper.api.events.AuraActiveEvent;
 import com.badbones69.crazyenchantments.paper.api.managers.ArmorEnchantmentManager;
 import com.badbones69.crazyenchantments.paper.api.objects.ArmorEnchantment;
@@ -68,6 +69,8 @@ public class ArmorEnchantments implements Listener {
 
     @NotNull
     private final CrazyManager crazyManager = this.starter.getCrazyManager();
+
+    private Enchant enchant;
 
     // Settings.
     @NotNull
@@ -426,6 +429,30 @@ public class ArmorEnchantments implements Listener {
             if (EnchantUtils.isEventActive(CEnchantments.DIMINISH, player, armor, enchants)) {
                 double lastAttack = player.getLastDamage();
                 event.setDamage(lastAttack / 2);
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.ARMORED, player, armor, enchants)) {
+                Collection<ItemStack> swords = new ArrayList<>();
+                swords.add(ItemStack.of(Material.WOODEN_SWORD));
+                swords.add(ItemStack.of(Material.STONE_SWORD));
+                swords.add(ItemStack.of(Material.IRON_SWORD));
+                swords.add(ItemStack.of(Material.GOLDEN_SWORD));
+                swords.add(ItemStack.of(Material.DIAMOND_SWORD));
+                swords.add(ItemStack.of(Material.NETHERITE_SWORD));
+
+                for (ItemStack sword : swords) {
+                    if (damager.getActiveItem() == sword) {
+                        double modifier = (event.getDamage() * 0.02);
+                        if (modifier < 0) return;
+                        event.setDamage(event.getDamage() - (modifier * enchant.getLevel("Armored")));
+                    }
+                }
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.CLARITY, player, armor, enchants)) {
+                if (player.hasPotionEffect(PotionEffectType.BLINDNESS)) player.removePotionEffect(PotionEffectType.BLINDNESS);
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.JUDGEMENT, player, armor, enchants)) {
+                if (!damager.hasPotionEffect(PotionEffectType.POISON)) damager.addPotionEffect(new PotionEffect(PotionEffectType.POISON, CEnchantments.JUDGEMENT.getChance() / 5, enchant.getLevel("Judgement")));
+                if (!player.hasPotionEffect(PotionEffectType.REGENERATION)) player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, CEnchantments.JUDGEMENT.getChance() / 5, enchant.getLevel("Judgement")));
             }
             //Stuff for Imperium
         }
