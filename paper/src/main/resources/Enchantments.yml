@@ -34,19 +34,12 @@ Enchantments:
       Name: '&e&lGlowing &7(&bI&7)'
       #The description of what it does.
       Description:
-        - '&7Give you night vision'
-        - '&7when you put it on you.'
-        - ''
-        - '&6Found in:'
-        - '&7 - &a&l&nCommon'
-        - '&7 - &9&l&nRare'
-        - '&7 - &4&l&nLegendary'
-        - '&6Enchantable Items: &aHelmets'
+        - '&egives permenate night vision'
+        - '&7helmets Enchantment'
+        - 'Simple'
     #All the categories the Enchantment can be found in
     Categories:
-      - 'Common'
-      - 'Rare'
-      - 'Legendary'
+      - 'Simple'
   #Do not change this line.
   BurnShield:
     Enabled: true
