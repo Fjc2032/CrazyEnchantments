@@ -71,6 +71,20 @@ public class ToolEnchantments implements Listener {
 
         this.methods.addItemToInventory(player, event.getItems());
     }
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onBlockBreak(BlockBreakEvent event) {
+        Player player = event.getPlayer();
+        ItemStack item = this.methods.getItemInHand(player);
+        Map<CEnchantment, Integer> enchantments = this.enchantmentBookSettings.getEnchantments(item);
+        
+        int potionTime = 20;
+
+        if (EnchantUtils.isEventActive(CEnchantments.OXYGENATE, player, item, enchantments)) {
+            player.removePotionEffect(PotionEffectType.WATER_BREATHING);
+            player.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, potionTime, 5));
+        }
+
+    }
 
     private void updateEffects(Player player) {
         ItemStack item = this.methods.getItemInHand(player);
@@ -82,11 +96,6 @@ public class ToolEnchantments implements Listener {
             int power = enchantments.get(CEnchantments.HASTE.getEnchantment());
             player.removePotionEffect(PotionEffectType.HASTE);
             player.addPotionEffect(new PotionEffect(PotionEffectType.HASTE, potionTime, power - 1));
-        }
-
-        if (EnchantUtils.isEventActive(CEnchantments.OXYGENATE, player, item, enchantments)) {
-            player.removePotionEffect(PotionEffectType.WATER_BREATHING);
-            player.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, potionTime, 5));
         }
     }
     private void reforgedTrigger(Player player, ItemStack tool) {

@@ -51,6 +51,9 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
+import java.util.UUID;
+import java.util.HashMap;
 import java.util.*;
 
 public class SwordEnchantments implements Listener {
@@ -86,6 +89,9 @@ public class SwordEnchantments implements Listener {
     // Economy Management.
     @NotNull
     private final CurrencyAPI currencyAPI = this.starter.getCurrencyAPI();
+	
+    //cooldown used in Insomnia 
+    private final Map<UUID, Long> playerCooldowns = new HashMap<>();
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerDamage(EntityDamageByEntityEvent event) {
@@ -251,6 +257,33 @@ public class SwordEnchantments implements Listener {
 
             if (damager.getHealth() + event.getDamage() / 2 >= maxHealth) damager.setHealth(maxHealth);
         }
+
+	//Imperium Enchants: Insomnia VVV
+        if (EnchantUtils.isEventActive(CEnchantments.INSOMNIA, damager, item, enchantments)) {
+            //get UUID
+            UUID playerUUID = damager.getUniqueId();
+
+            //get enchantment level
+            int level = enchantmentBookSettings.getLevel(item, CEnchantments.INSOMNIA.getEnchantment());
+            long cooldown = Math.max(10000L - (level * 300L), 3000L);
+            int duration = (level * 800);  //0 + 40 per level;
+
+            // Check if the player is on cooldown
+            if (System.currentTimeMillis() - playerCooldowns.getOrDefault(playerUUID, 0L) < cooldown) {
+                return; //skip if cooldown
+            }
+
+            //effects
+            if (event.getEntity() instanceof LivingEntity target) {
+                target.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, duration, enchantments.get(CEnchantments.INSOMNIA.getEnchantment()) - 1));
+                target.addPotionEffect(new PotionEffect(PotionEffectType.MINING_FATIGUE, duration, enchantments.get(CEnchantments.INSOMNIA.getEnchantment()) - 1));
+                target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, duration, enchantments.get(CEnchantments.INSOMNIA.getEnchantment()) - 1));
+            }
+
+            //start cooldown store time
+            playerCooldowns.put(playerUUID, System.currentTimeMillis());
+        }
+        //Insomnia ^^^
 
         if (EnchantUtils.isEventActive(CEnchantments.BLINDNESS, damager, item, enchantments)) {
             en.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 3 * 20, enchantments.get(CEnchantments.BLINDNESS.getEnchantment()) - 1));

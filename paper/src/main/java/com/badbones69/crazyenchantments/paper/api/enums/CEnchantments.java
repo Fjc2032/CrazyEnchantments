@@ -83,7 +83,6 @@ public enum CEnchantments {
     FORTIFY("Fortify", "Armor", 10, 5),
     OVERLOAD("OverLoad", "Armor"),
     BLIZZARD("Blizzard", "Armor"),
-    INSOMNIA("Insomnia", "Armor", 10, 5),
     ACIDRAIN("AcidRain", "Armor", 5, 5),
     SANDSTORM("SandStorm", "Armor", 5, 5),
     SMOKEBOMB("SmokeBomb", "Armor", 5, 5),
@@ -187,7 +186,7 @@ public enum CEnchantments {
     ARROWBREAK("Arrowbreak", "Axe", 10, 10),
     ARROWDEFLECT("Arrowdeflect", "Armor", 10, 10),
     ARROWLIFESTEAL("ArrowLifesteal", "Bow", 10, 10),
-
+    INSOMNIA("Insomnia", "Swords", 10, 2),
     //SUGGESTED - Imperium
     SWARM("Swarm", "Sword"),
 

@@ -714,10 +714,11 @@ public class CrazyManager {
         enchants.get(CEnchantments.NINJA).put(PotionEffectType.HEALTH_BOOST, -1);
         enchants.get(CEnchantments.NINJA).put(PotionEffectType.SPEED, -1);
 
-        enchants.put(CEnchantments.INSOMNIA, new HashMap<>());
-        enchants.get(CEnchantments.INSOMNIA).put(PotionEffectType.NAUSEA, -1);
-        enchants.get(CEnchantments.INSOMNIA).put(PotionEffectType.MINING_FATIGUE, -1);
-        enchants.get(CEnchantments.INSOMNIA).put(PotionEffectType.SLOWNESS, -1);
+        //depricated Insomnia 
+        //enchants.put(CEnchantments.INSOMNIA, new HashMap<>());
+        //enchants.get(CEnchantments.INSOMNIA).put(PotionEffectType.NAUSEA, -1);
+        //enchants.get(CEnchantments.INSOMNIA).put(PotionEffectType.MINING_FATIGUE, -1);
+        //enchants.get(CEnchantments.INSOMNIA).put(PotionEffectType.SLOWNESS, -1);
 
         enchants.put(CEnchantments.ANTIGRAVITY, new HashMap<>());
         enchants.get(CEnchantments.ANTIGRAVITY).put(PotionEffectType.JUMP_BOOST, 1);
