@@ -588,7 +588,7 @@ public class ArmorEnchantments implements Listener {
 
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onBookApply(BookApplyEvent event) {
         CEnchantment target = event.getEnchantment();
 
