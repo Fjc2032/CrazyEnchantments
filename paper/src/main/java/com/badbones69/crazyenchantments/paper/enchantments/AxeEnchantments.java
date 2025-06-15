@@ -15,9 +15,11 @@ import com.badbones69.crazyenchantments.paper.controllers.settings.EnchantmentBo
 import com.badbones69.crazyenchantments.paper.support.PluginSupport;
 import net.Indyuce.mmoitems.particle.api.ParticleType;
 import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.block.state.BlockState;
 import org.bukkit.*;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -218,6 +220,12 @@ public class AxeEnchantments implements Listener {
                 damageable.setDamage(modifier);
                 armor.setItemMeta(meta);
                 damager.playSound((net.kyori.adventure.sound.Sound) Sound.BLOCK_CALCITE_BREAK);
+            }
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.ARROWBREAK, damager, item, enchantments)) {
+            if (event.getDamageSource().getDamageType().equals(DamageType.ARROW)) {
+                event.setCancelled(true);
+                damager.playSound((net.kyori.adventure.sound.Sound) Sound.BLOCK_ANVIL_DESTROY);
             }
         }
         //Imperium
