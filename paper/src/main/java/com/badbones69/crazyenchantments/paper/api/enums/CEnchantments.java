@@ -114,8 +114,8 @@ public enum CEnchantments {
     //	----------------PickAxes----------------  \\
     VEINMINER("VeinMiner", "Pickaxe"),
     BLAST("Blast", "Pickaxe"),
-    AUTOSMELT("AutoSmelt", "Pickaxe", 25, 25),
-    EXPERIENCE("Experience", "Pickaxe", 25, 25),
+    AUTOSMELT("AutoSmelt", "Pickaxe", 30, 35),
+    EXPERIENCE("Experience", "Pickaxe", 15, 15),
     FURNACE("Furnace", "Pickaxe"),
     //	----------------Tools----------------  \\
     HASTE("Haste", "Tool"),
