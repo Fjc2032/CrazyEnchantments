@@ -4,33 +4,28 @@
 ## 1.9 and up players use these sounds: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
 ###################################################################
 Settings:
-  Prefix: '&8[&aCrazyEnchantments&8]: ' #The prefix in the messages
+  Prefix: '&7[CE&7]: ' #The prefix in the messages
   Toggle-Metrics: true #Turn on and off if your server stats are sent to https://bstats.org/ - Requires a restart!
   Player-Info-Backup-Message: true #Toggle this on and off if you wish to see when the player's data gets backed up.
   Reset-Players-Max-Health: true #This is for some servers that get a health duplication glitch from plugins like CombatTagPlus(v1.2.3 down)
   Refresh-Potion-Effects-On-World-Change: false #In the odd chance potion effects disappear on world change.
-  InvName: '&4&l&nCrazy Enchanter' #The name of the /CE inventory
+  InvName: '&f&lᴀʀᴏᴜʀᴀ &r&8ᴇɴᴄʜᴀɴᴛᴇʀ' #The name of the /CE inventory
   Enchantment-Book-Item: 'BOOK' #The item that the enchantment book is.
   Enchantment-Book-Glowing: true #Toggle on or off if the book will have an enchanted look.
-  GUISize: 54 #The size of the GUI, must be a factor of 9
+  GUISize: 27 #The size of the GUI, must be a factor of 9
   CESuccessOverride: -1 #0-100, -1 for no override. Chance of success using a CE Book
   CEFailureOverride: -1 #0-100, -1 for no override. Chance of destroying a CE Book
   EnchantmentBookLore: #The lore on the enchantments books.
-    - '&7Drag book and drop on Item.'
-    - '&7Right click for more Info.'
-    - ''
+    - '&a%success_rate%% Success Rate'
+    - '&c%destroy_rate%% Destroy Rate'
     - '%description%'
-    - ''
-    - '&4%destroy_rate%% Destroy Chance'
-    - '&a%success_rate%% Success Chance'
+    - '&7Drag n drop onto item to enchant.'
   LostBook: #Lost book options.
     Item: 'BOOK' #The item the lost books are.
-    Name: '&8&l&nA Lost %category%&8&l&n Book' #The name of the lost books.
+    Name: '%category%&8&l&n' #The name of the lost books.
     Lore: #The lore of the lost books.
-      - '&7This book has been lost for centuries'
-      - '&7It is said to be an enchantment book from %category%'
-      - '&7But you must clean it off to find out what kind it is.'
-      - '&7&l(&6&l!&7&l) &7Right Click to clean off.'
+      - '&7Right Click while holding to receive a random'
+      - '&7Simple enchantment book.'
   Scrambler:
     Item: 'SUNFLOWER' #The item it will be.
     Glowing: true #If it has a glowing effect.
@@ -50,7 +45,7 @@ Settings:
           - '&7Whatever percents the item lands on'
           - '&7will be the new percents on your book.'
     InGUI: false #If you can buy it in the GUI.
-    Slot: 1 #The slot the item will be in.
+    Slot: 27 #The slot the item will be in.
     GUIName: '&e&lThe Grand Scrambler' #Name of the item in the GUI.
     GUILore: #The lore of the item in the GUI.
       - '&7The &e&lThe Grand Scrambler &7will allow'
@@ -61,7 +56,7 @@ Settings:
       - '&eCost: &e&l$800'
   Slot_Crystal:
     InGUI: false #If it's in the GUI.
-    Slot: 14 #Slot it is in
+    Slot: 26 #Slot it is in
     Item: 'EMERALD' #Item it is
     Glowing: true #If it has a glowing effect.
     Name: '&5&lSlot &b&lCrystal' #Name of the item
@@ -81,7 +76,7 @@ Settings:
   GKitz: #GKitz GUI option.
     InGUI: false #If you can open the GKitz GUI from the main /ce gui.
     Enabled: true #If the GKitz option is enabled on the server.
-    Slot: 1 #The slot it will be in.
+    Slot: 25 #The slot it will be in.
     Item: 'DIAMOND_CHESTPLATE' #The item it is.
     Glowing: true #If it has a glowing effect.
     Name: '&c&lGKitz' #The name of the item.
@@ -89,7 +84,7 @@ Settings:
       - '&b>>&7&nClick to open&b<<'
   ProtectionCrystal:
     InGUI: false #If it's in the GUI.
-    Slot: 1 #Slot it is in
+    Slot: 24 #Slot it is in
     Item: 'EMERALD' #Item it is
     Glowing: true #If it has a glowing effect.
     Protected: '&6Ancient Protection' #The lore that goes on the item that is protected.
@@ -113,12 +108,14 @@ Settings:
       - '&eCost: &e&l$500'
   BlackSmith: #Options for the Black Smith
     InGUI: true #In the GUI.
-    Slot: 24 #Slot it is in.
-    Item: 'ANVIL' #Item that shows in the GUI
+    Slot: 18 #Slot it is in.
+    Item: 'END_PORTAL_FRAME' #Item that shows in the GUI
     Glowing: false #If it has a glowing effect.
-    Name: '&7&lThe &b&lBlack &9&lSmith' #Name of the Item in the GUI
+    Name: '&fOpen &b&lAlchemist &r&7(Click)' #Name of the Item in the GUI
     Lore: #Lore on the item.
-      - '&b>>&7&nClick to open&b<<'
+      - '&7Combine Books and Magic Dusts.'
+      - ''
+      - '&b&lClick to open'
     GUIName: '&8&lThe Black Smith' #Name of the Black Smith's GUI
     Results:
       None: '&c&lNo Results' #Name of the item when there are no results in the Black Smith
@@ -137,12 +134,14 @@ Settings:
         Book-Upgrade: 5 #Leveling up the power of a book
   Tinker: #Settings for Info item in the GUI
     InGUI: true #Toggle whether it is in the /CE GUI or not
-    Slot: 22 #Slot it is in
-    Item: 'NETHER_STAR' #Item it is
+    Slot: 10 #Slot it is in
+    Item: 'ANVIL' #Item it is
     Glowing: false #If it has a glowing effect.
-    Name: '&7&lThe &b&lCrazy &9&lTinkerer' #Name of the Item
+    Name: '&fOpen &b&lTinkerer &r&7(Click)' #Name of the Item
     Lore: #Lore of the item
-      - '&b>>&7&nClick to open&b<<'
+      - '&7Tinker books for Magic Dusts and EXP.'
+      - ''
+      - '&b&lClick to open'
   Info: #Settings for Info item in the GUI
     InGUI: true #Toggle whether it is in the /CE GUI or not
     Slot: 23 #Slot it is in
@@ -150,7 +149,7 @@ Settings:
     Glowing: true #If it has a glowing effect.
     Name: '&eInfo on the Enchantments' #Name of the Item
     Lore: #Lore of the item
-      - '&b>>&7&nClick to view&b<<'
+      - '&b&lClick to view'
   Dust: #Settings for the Magical Dust
     MysteryDust:
       Item: 'GUNPOWDER' #Item mystery dust is
@@ -176,7 +175,7 @@ Settings:
         - '&eCost: &a&l$500'
         - '&7Dust allows you to bring'
         - '&7up your &aSuccess Rate&7.'
-      Slot: 25 #Slot number it is on
+      Slot: 22 #Slot number it is on
       Item: 'SUGAR' #Item the dust is
       Name: '&aMagical Angel Dust' #Name of the dust
       Lore: #Lore for the dust
@@ -193,7 +192,7 @@ Settings:
         - '&eCost: &a&l$500'
         - '&7Dust allows you to bring'
         - '&7down your &4Destroy Rate&7.'
-      Slot: 34 #Slot number it is on
+      Slot: 21 #Slot number it is on
       Item: 'REDSTONE' #Item the dust is
       Name: '&eMagical Fixing Dust' #Name of the dust
       Lore: #Lore for the dust
@@ -223,7 +222,7 @@ Settings:
     InGUI: true #Toggle being able to buy in the /CE GUI. Cost is controlled in the SignOptions section
     GUIName: '&7Black Scroll'
     Glowing: false #If it has a glowing effect.
-    Slot: 21 #Slot you can buy the scroll at
+    Slot: 20 #Slot you can buy the scroll at
     Lore: #Lore of the item in the GUI
       - '&eCost: &a&l$1000'
       - '&7Black Scrolls allow you to'
@@ -244,7 +243,7 @@ Settings:
     InGUI: true #Toggle being able to buy in the /CE GUI. Cost is controlled in the SignOptions section
     GUIName: '&7White Scroll'
     Glowing: false #If it has a glowing effect.
-    Slot: 30 #Slot you can buy the scroll at
+    Slot: 19 #Slot you can buy the scroll at
     Lore: #Lore of the scroll in the GUI
       - '&eCost: &a&l$2000'
       - '&7White Scrolls allow you to'
@@ -260,7 +259,7 @@ Settings:
     InGUI: false #Toggle being able to buy in the /CE GUI. Cost is controlled in the SignOptions section
     GUIName: '&dTransmog Scroll'
     Glowing: false #If it has a glowing effect.
-    Slot: 30 #Slot you can buy the scroll at
+    Slot: 1 #Slot you can buy the scroll at
     Lore: #Lore of the scroll in the GUI
       - '&eCost: &a&l$200'
       - '&7This scroll allows you to organize'
@@ -406,77 +405,50 @@ Settings:
   #Placeholders: %vault% %xp_level% %xp_total%
   #####################
   GUICustomization: #This allows you to customize unclickable items into your GUI.
-    - 'Slot:1, Item:BLACK_STAINED_GLASS_PANE, Name: '
-    - 'Slot:2, Item:BLACK_STAINED_GLASS_PANE, Name: '
-    - 'Slot:3, Item:BLACK_STAINED_GLASS_PANE, Name: '
-    - 'Slot:4, Item:BLACK_STAINED_GLASS_PANE, Name: '
-    - 'Slot:5, Item:BLACK_STAINED_GLASS_PANE, Name: '
-    - 'Slot:6, Item:BLACK_STAINED_GLASS_PANE, Name: '
-    - 'Slot:7, Item:BLACK_STAINED_GLASS_PANE, Name: '
-    - 'Slot:8, Item:BLACK_STAINED_GLASS_PANE, Name: '
-    - 'Slot:9, Item:BLACK_STAINED_GLASS_PANE, Name: '
-    - 'Slot:10, Item:BLACK_STAINED_GLASS_PANE, Name: '
-    - 'Slot:18, Item:BLACK_STAINED_GLASS_PANE, Name: '
-    - 'Slot:19, Item:BLACK_STAINED_GLASS_PANE, Name: '
-    - 'Slot:27, Item:BLACK_STAINED_GLASS_PANE, Name: '
-    - 'Slot:28, Item:BLACK_STAINED_GLASS_PANE, Name: '
-    - 'Slot:36, Item:BLACK_STAINED_GLASS_PANE, Name: '
-    - 'Slot:37, Item:BLACK_STAINED_GLASS_PANE, Name: '
-    - 'Slot:45, Item:BLACK_STAINED_GLASS_PANE, Name: '
-    - 'Slot:46, Item:BLACK_STAINED_GLASS_PANE, Name: '
-    - 'Slot:47, Item:BLACK_STAINED_GLASS_PANE, Name: '
-    - 'Slot:48, Item:BLACK_STAINED_GLASS_PANE, Name: '
-    - 'Slot:49, Item:BLACK_STAINED_GLASS_PANE, Name: '
-    - 'Slot:50, Item:BLACK_STAINED_GLASS_PANE, Name: '
-    - 'Slot:51, Item:BLACK_STAINED_GLASS_PANE, Name: '
-    - 'Slot:52, Item:BLACK_STAINED_GLASS_PANE, Name: '
-    - 'Slot:53, Item:BLACK_STAINED_GLASS_PANE, Name: '
-    - 'Slot:54, Item:BLACK_STAINED_GLASS_PANE, Name: '
-    - 'Slot:11, Item:WHITE_STAINED_GLASS_PANE, Name: '
-    - 'Slot:12, Item:WHITE_STAINED_GLASS_PANE, Name: '
-    - 'Slot:13, Item:WHITE_STAINED_GLASS_PANE, Name: '
-    - 'Slot:14, Item:WHITE_STAINED_GLASS_PANE, Name: '
-    - 'Slot:15, Item:WHITE_STAINED_GLASS_PANE, Name: '
-    - 'Slot:16, Item:WHITE_STAINED_GLASS_PANE, Name: '
-    - 'Slot:17, Item:WHITE_STAINED_GLASS_PANE, Name: '
-    - 'Slot:20, Item:WHITE_STAINED_GLASS_PANE, Name: '
-    - 'Slot:26, Item:WHITE_STAINED_GLASS_PANE, Name: '
-    - 'Slot:29, Item:WHITE_STAINED_GLASS_PANE, Name: '
-    - 'Slot:35, Item:WHITE_STAINED_GLASS_PANE, Name: '
-    - 'Slot:38, Item:WHITE_STAINED_GLASS_PANE, Name: '
-    - 'Slot:39, Item:WHITE_STAINED_GLASS_PANE, Name: '
-    - 'Slot:40, Item:WHITE_STAINED_GLASS_PANE, Name: '
-    - 'Slot:41, Item:WHITE_STAINED_GLASS_PANE, Name: '
-    - 'Slot:42, Item:WHITE_STAINED_GLASS_PANE, Name: '
-    - 'Slot:43, Item:WHITE_STAINED_GLASS_PANE, Name: '
-    - 'Slot:44, Item:WHITE_STAINED_GLASS_PANE, Name: '
+    - 'Slot:1, Item:GRAY_STAINED_GLASS_PANE, Name:§f'
+    - 'Slot:2, Item:GRAY_STAINED_GLASS_PANE, Name:§f'
+    - 'Slot:8, Item:GRAY_STAINED_GLASS_PANE, Name:§f'
+    - 'Slot:9, Item:GRAY_STAINED_GLASS_PANE, Name:§f'
+    - 'Slot:11, Item:GRAY_STAINED_GLASS_PANE, Name:§f'
+    - 'Slot:12, Item:GRAY_STAINED_GLASS_PANE, Name:§f'
+    - 'Slot:14, Item:GRAY_STAINED_GLASS_PANE, Name:§f'
+    - 'Slot:16, Item:GRAY_STAINED_GLASS_PANE, Name:§f'
+    - 'Slot:17, Item:GRAY_STAINED_GLASS_PANE, Name:§f'
+    - 'Slot:19, Item:GRAY_STAINED_GLASS_PANE, Name:§f'
+    - 'Slot:20, Item:GRAY_STAINED_GLASS_PANE, Name:§f'
+    - 'Slot:22, Item:GRAY_STAINED_GLASS_PANE, Name:§f'
+    - 'Slot:24, Item:GRAY_STAINED_GLASS_PANE, Name:§f'
+    - 'Slot:25, Item:GRAY_STAINED_GLASS_PANE, Name:§f'
+    - 'Slot:26, Item:GRAY_STAINED_GLASS_PANE, Name:§f'
+    - 'Slot:27, Item:GRAY_STAINED_GLASS_PANE, Name:§f'
 Categories: #You can make as many different categories as you want
-  Common: #Name of the category
-    Name: '&a&l&nCommon' #Name in the GUI
-    Slot: 31 #The Slot number the item will be in
-    InGUI: true #Toggle if it's in the GUI or not.
+  Simple: #Name of the category
+    Name: '&f&lSimple Enchantment &7&r(Right Click)' #Name in the GUI
+    Slot: 3 #The Slot number the item will be in
+    InGUI: false #Toggle if it's in the GUI or not.
     Lore: #The lore of the Item
-      - '&eCost: &6&l20 &6XP Levels'
-    Item: 'LIME_STAINED_GLASS_PANE' #The id for the item
-    Glowing: true #If it has a glowing effect.
-    Cost: 20 #How much each book will cost to buy.
-    Currency: XP_Level #The currency you wish to use.
+      - '&7Examine to recieve a random &fsimple'
+      - '&fsimple &7 enchantment book.'
+      - ''
+      - '&b&lCOST &r&f400 EXP &7(you need %xp% more EXP) '
+    Item: 'White_STAINED_GLASS_PANE' #The id for the item
+    Glowing: false #If it has a glowing effect.
+    Cost: 400 #How much each book will cost to buy.
+    Currency: XP_Total #The currency you wish to use.
     Rarity: 1 #This allows the enchantments to be ordered with the Transmog Scrolls. The higher the number the rarer it is. Try and have each category have different rarities.
     LostBook: #Controls the Lost Book shop for this tier
-      InGUI: false #If it shows in the /CE Gui
-      Slot: 31 #Slot it will be in
-      Item: 'BOOK' #The item that is shown in the GUI
+      InGUI: true #If it shows in the /CE Gui
+      Slot: 3 #Slot it will be in
+      Item: 'White_STAINED_GLASS_PANE' #The item that is shown in the GUI
       Glowing: false #Is it enchanted
-      Name: '&8&l&nLost&c&l Tier1 &8&l&nBooks' #Name of the item
+      Name: '&f&lSimple Enchantment &7&r(Right Click)' #Name of the item
       Lore: #Lore on the item
-        - '&7These are lost books that are'
-        - '&7Said to be &c&lTier1 &7Enchantment books.'
-        - '&7But no one has tried to clean the books yet.'
-        - '&7Will you be the one to clean the books?'
+        - '&7Examine to recieve a random'
+        - '&fsimple &7enchantment book.'
         - ''
-        - '&c&lCost: &6&l$1000'
-      Cost: 1000
-      Currency: Vault
+        - '&b&lCOST &r&f400 EXP &7(you need %xp% more EXP) '
+      Cost: 400
+      Currency: xp_total
       FireworkToggle: true #Toggle on and off if when opening a lost book a firework effect happens
       FireworkColors: 'Red, White, Blue' #The colors of the firework
       Sound-Toggle: false
@@ -488,20 +460,254 @@ Categories: #You can make as many different categories as you want
       DestroyPercent: #The range for the destroy rate that the enchantment will have
         Max: 10 #The max destroy rate
         Min: 0 #The min destroy rate
-      MaxLvlToggle: true #Turn on and off Max Level cap
+      MaxLvlToggle: false #Turn on and off Max Level cap
       LvlRange: #The range of levels that can be found in the Category.
-        Max: 2
+        Max: 10
+        Min: 1
+  unique: #Name of the category
+    Name: '&a&lUnique Enchantment &7&r(Right Click)' #Name in the GUI
+    Slot: 4 #The Slot number the item will be in
+    InGUI: false #Toggle if it's in the GUI or not.
+    Lore: #The lore of the Item
+      - '&7random unique enchantment book'
+    Item: 'White_STAINED_GLASS_PANE' #The id for the item
+    Glowing: true #If it has a glowing effect.
+    Cost: 800 #How much each book will cost to buy.
+    Currency: XP_Total #The currency you wish to use.
+    Rarity: 1 #This allows the enchantments to be ordered with the Transmog Scrolls. The higher the number the rarer it is. Try and have each category have different rarities.
+    LostBook: #Controls the Lost Book shop for this tier
+      InGUI: true #If it shows in the /CE Gui
+      Slot: 4 #Slot it will be in
+      Item: 'LIME_STAINED_GLASS_PANE' #The item that is shown in the GUI
+      Glowing: false #Is it enchanted
+      Name: '&a&lUnique Enchantment &7&r(Right Click)' #Name of the item
+      Lore: #Lore on the item
+        - '&7Examine to recieve a random'
+        - '&aunique &7enchantment book.'
+        - ''
+        - '&b&lCOST &r&f800 EXP &7(you need %xp% more EXP) '
+      Cost: 800
+      Currency: xp_total
+      FireworkToggle: true #Toggle on and off if when opening a lost book a firework effect happens
+      FireworkColors: 'Red, White, Blue' #The colors of the firework
+      Sound-Toggle: true
+      Sound: 'BLOCK_ANVIL_PLACE'
+    EnchOptions: #Enchantment Options
+      SuccessPercent: #The range for the success rate that the enchantment will have
+        Max: 90 #The max success rate
+        Min: 40 #The min success rate
+      DestroyPercent: #The range for the destroy rate that the enchantment will have
+        Max: 10 #The max destroy rate
+        Min: 0 #The min destroy rate
+      MaxLvlToggle: false #Turn on and off Max Level cap
+      LvlRange: #The range of levels that can be found in the Category.
+        Max: 10
+        Min: 1
+  Elite: #Name of the category
+    Name: '&b&lElite Enchantment &7&r(Right Click)' #Name in the GUI
+    Slot: 5 #The Slot number the item will be in
+    InGUI: false #Toggle if it's in the GUI or not.
+    Lore: #The lore of the Item
+      - '&7random elite enchantment book'
+    Item: 'White_STAINED_GLASS_PANE' #The id for the item
+    Glowing: true #If it has a glowing effect.
+    Cost: 2500 #How much each book will cost to buy.
+    Currency: XP_Total #The currency you wish to use.
+    Rarity: 1 #This allows the enchantments to be ordered with the Transmog Scrolls. The higher the number the rarer it is. Try and have each category have different rarities.
+    LostBook: #Controls the Lost Book shop for this tier
+      InGUI: true #If it shows in the /CE Gui
+      Slot: 5 #Slot it will be in
+      Item: 'LIGHT_BLUE_STAINED_GLASS_PANE' #The item that is shown in the GUI
+      Glowing: false #Is it enchanted
+      Name: '&b&lElite Enchantment &7&r(Right Click)' #Name of the item
+      Lore: #Lore on the item
+        - '&7Examine to recieve a random'
+        - '&belite &7enchantment book.'
+        - ''
+        - '&b&lCOST &r&f2500 EXP &7(you need %xp% more EXP) '
+      Cost: 2500
+      Currency: xp_total
+      FireworkToggle: true #Toggle on and off if when opening a lost book a firework effect happens
+      FireworkColors: 'Red, White, Blue' #The colors of the firework
+      Sound-Toggle: false
+      Sound: 'BLOCK_ANVIL_PLACE'
+    EnchOptions: #Enchantment Options
+      SuccessPercent: #The range for the success rate that the enchantment will have
+        Max: 90 #The max success rate
+        Min: 40 #The min success rate
+      DestroyPercent: #The range for the destroy rate that the enchantment will have
+        Max: 10 #The max destroy rate
+        Min: 0 #The min destroy rate
+      MaxLvlToggle: false #Turn on and off Max Level cap
+      LvlRange: #The range of levels that can be found in the Category.
+        Max: 10
+        Min: 1
+  Ultimate: #Name of the category
+    Name: '&e&lUltimate Enchantment &7&r(Right Click)' #Name in the GUI
+    Slot: 6 #The Slot number the item will be in
+    InGUI: false #Toggle if it's in the GUI or not.
+    Lore: #The lore of the Item
+      - 'random ultimate enchantmnet book'
+    Item: 'White_STAINED_GLASS_PANE' #The id for the item
+    Glowing: true #If it has a glowing effect.
+    Cost: 5000 #How much each book will cost to buy.
+    Currency: XP_Total #The currency you wish to use.
+    Rarity: 1 #This allows the enchantments to be ordered with the Transmog Scrolls. The higher the number the rarer it is. Try and have each category have different rarities.
+    LostBook: #Controls the Lost Book shop for this tier
+      InGUI: true #If it shows in the /CE Gui
+      Slot: 6 #Slot it will be in
+      Item: 'YELLOW_STAINED_GLASS_PANE' #The item that is shown in the GUI
+      Glowing: false #Is it enchanted
+      Name: '&e&lUltimate Enchantment &7&r(Right Click)' #Name of the item
+      Lore: #Lore on the item
+        - '&7Examine to recieve a random'
+        - '&eultimate &7enchantment book.'
+        - ''
+        - '&b&lCOST &r&f5000 EXP &7(you need %xp% more EXP) '
+      Cost: 5000
+      Currency: xp_total
+      FireworkToggle: true #Toggle on and off if when opening a lost book a firework effect happens
+      FireworkColors: 'Red, White, Blue' #The colors of the firework
+      Sound-Toggle: false
+      Sound: 'BLOCK_ANVIL_PLACE'
+    EnchOptions: #Enchantment Options
+      SuccessPercent: #The range for the success rate that the enchantment will have
+        Max: 90 #The max success rate
+        Min: 40 #The min success rate
+      DestroyPercent: #The range for the destroy rate that the enchantment will have
+        Max: 10 #The max destroy rate
+        Min: 0 #The min destroy rate
+      MaxLvlToggle: false #Turn on and off Max Level cap
+      LvlRange: #The range of levels that can be found in the Category.
+        Max: 10
+        Min: 1
+  Legendarytest: #Name of the category
+    Name: '&6&lLegendary Enchantment &7&r(Right Click)' #Name in the GUI
+    Slot: 7 #The Slot number the item will be in
+    InGUI: false #Toggle if it's in the GUI or not.
+    Lore: #The lore of the Item
+      - 'random legendary enchantment book'
+    Item: 'book' #The id for the item
+    Glowing: true #If it has a glowing effect.
+    Cost: 25000 #How much each book will cost to buy.
+    Currency: XP_Total #The currency you wish to use.
+    Rarity: 1 #This allows the enchantments to be ordered with the Transmog Scrolls. The higher the number the rarer it is. Try and have each category have different rarities.
+    LostBook: #Controls the Lost Book shop for this tier
+      InGUI: true #If it shows in the /CE Gui
+      Slot: 7 #Slot it will be in
+      Item: 'ORANGE_STAINED_GLASS_PANE' #The item that is shown in the GUI
+      Glowing: false #Is it enchanted
+      Name: '&6&lLegendary Enchantment &7&r(Right Click)' #Name of the item
+      Lore: #Lore on the item
+        - '&7Examine to recieve a random'
+        - '&6legendary &7enchantment book.'
+        - ''
+        - '&b&lCOST &r&f25000 EXP &7(you need %xp% more EXP) '
+      Cost: 25000
+      Currency: xp_total
+      FireworkToggle: true #Toggle on and off if when opening a lost book a firework effect happens
+      FireworkColors: 'Red, White, Blue' #The colors of the firework
+      Sound-Toggle: false
+      Sound: 'BLOCK_ANVIL_PLACE'
+    EnchOptions: #Enchantment Options
+      SuccessPercent: #The range for the success rate that the enchantment will have
+        Max: 90 #The max success rate
+        Min: 40 #The min success rate
+      DestroyPercent: #The range for the destroy rate that the enchantment will have
+        Max: 10 #The max destroy rate
+        Min: 0 #The min destroy rate
+      MaxLvlToggle: false #Turn on and off Max Level cap
+      LvlRange: #The range of levels that can be found in the Category.
+        Max: 10
+        Min: 1
+  Heroic: #Name of the category
+    Name: '&d&lHeroic Enchantment &7&r(Right Click)' #Name in the GUI
+    Slot: 13 #The Slot number the item will be in
+    InGUI: false #Toggle if it's in the GUI or not.
+    Lore: #The lore of the Item
+      - 'random heroic enchantment'
+    Item: 'White_STAINED_GLASS_PANE' #The id for the item
+    Glowing: true #If it has a glowing effect.
+    Cost: 50000 #How much each book will cost to buy.
+    Currency: XP_Total #The currency you wish to use.
+    Rarity: 1 #This allows the enchantments to be ordered with the Transmog Scrolls. The higher the number the rarer it is. Try and have each category have different rarities.
+    LostBook: #Controls the Lost Book shop for this tier
+      InGUI: true #If it shows in the /CE Gui
+      Slot: 13 #Slot it will be in
+      Item: 'PURPLE_STAINED_GLASS_PANE' #The item that is shown in the GUI
+      Glowing: false #Is it enchanted
+      Name: '&d&lHeroic Enchantment &7&r(Right Click)' #Name of the item
+      Lore: #Lore on the item
+        - '&7Examine to recieve a random'
+        - '&dheroic &7enchantment book.'
+        - ''
+        - '&b&lCOST &r&f50000 EXP &7(you need %xp% more EXP) '
+      Cost: 50000
+      Currency: xp_total
+      FireworkToggle: true #Toggle on and off if when opening a lost book a firework effect happens
+      FireworkColors: 'Red, White, Blue' #The colors of the firework
+      Sound-Toggle: false
+      Sound: 'BLOCK_ANVIL_PLACE'
+    EnchOptions: #Enchantment Options
+      SuccessPercent: #The range for the success rate that the enchantment will have
+        Max: 90 #The max success rate
+        Min: 40 #The min success rate
+      DestroyPercent: #The range for the destroy rate that the enchantment will have
+        Max: 10 #The max destroy rate
+        Min: 0 #The min destroy rate
+      MaxLvlToggle: false #Turn on and off Max Level cap
+      LvlRange: #The range of levels that can be found in the Category.
+        Max: 10
+        Min: 1
+  Seasonal: #Name of the category
+    Name: 'easter seasonal enchant' #Name in the GUI
+    Slot: 15 #The Slot number the item will be in
+    InGUI: false #Toggle if it's in the GUI or not.
+    Lore: #The lore of the Item
+      - 'random easter seasonal enchant'
+    Item: 'book' #The id for the item
+    Glowing: true #If it has a glowing effect.
+    Cost: 75000 #How much each book will cost to buy.
+    Currency: XP_Total #The currency you wish to use.
+    Rarity: 1 #This allows the enchantments to be ordered with the Transmog Scrolls. The higher the number the rarer it is. Try and have each category have different rarities.
+    LostBook: #Controls the Lost Book shop for this tier
+      InGUI: true #If it shows in the /CE Gui
+      Slot: 15 #Slot it will be in
+      Item: 'PINK_STAINED_GLASS_PANE' #The item that is shown in the GUI
+      Glowing: true #Is it enchanted
+      Name: '&e&lEaster Seasonal Enchantment &7&r(Right Click)' #Name of the item
+      Lore: #Lore on the item
+        - '&7Examine to recieve a random'
+        - '&eeaster &7enchantment book.'
+        - ''
+        - '&b&lCOST &r&f75000 EXP &7(you need %xp% more EXP) '
+      Cost: 75000
+      Currency: xp_total
+      FireworkToggle: true #Toggle on and off if when opening a lost book a firework effect happens
+      FireworkColors: 'Red, White, Blue' #The colors of the firework
+      Sound-Toggle: false
+      Sound: 'BLOCK_ANVIL_PLACE'
+    EnchOptions: #Enchantment Options
+      SuccessPercent: #The range for the success rate that the enchantment will have
+        Max: 90 #The max success rate
+        Min: 40 #The min success rate
+      DestroyPercent: #The range for the destroy rate that the enchantment will have
+        Max: 10 #The max destroy rate
+        Min: 0 #The min destroy rate
+      MaxLvlToggle: false #Turn on and off Max Level cap
+      LvlRange: #The range of levels that can be found in the Category.
+        Max: 10
         Min: 1
   Rare:
     Name: '&9&l&nRare'
     Slot: 32
-    InGUI: true
+    InGUI: false
     Lore:
       - '&eCost: &6&l40 &6XP Levels'
     Item: 'BLUE_STAINED_GLASS_PANE'
     Glowing: true
-    Cost: 40
-    Currency: XP_Level
+    Cost: 4000
+    Currency: XP_Total
     Rarity: 2
     LostBook:
       InGUI: false
@@ -536,7 +742,7 @@ Categories: #You can make as many different categories as you want
   Legendary:
     Name: '&4&l&nLegendary'
     Slot: 33
-    InGUI: true
+    InGUI: false
     Lore:
       - '&eCost: &6&l60 &6XP Levels'
     Item: 'RED_STAINED_GLASS_PANE'
@@ -577,7 +783,7 @@ Categories: #You can make as many different categories as you want
   Mythical:
     Name: '&5&l&nMythical'
     Slot: 41
-    InGUI: true
+    InGUI: false
     Lore:
       - '&eCost: &6&l120 &6XP Levels'
     Item: 'AMETHYST_CLUSTER'
@@ -615,3 +821,4 @@ Categories: #You can make as many different categories as you want
       LvlRange:
         Max: 10
         Min: 1
+

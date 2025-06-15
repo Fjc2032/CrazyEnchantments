@@ -12,6 +12,7 @@ import com.badbones69.crazyenchantments.paper.api.managers.ArmorEnchantmentManag
 import com.badbones69.crazyenchantments.paper.api.managers.BowEnchantmentManager;
 import com.badbones69.crazyenchantments.paper.api.managers.ShopManager;
 import com.badbones69.crazyenchantments.paper.api.managers.WingsManager;
+import com.badbones69.crazyenchantments.paper.api.objects.CEnchantment;
 import com.badbones69.crazyenchantments.paper.api.utils.BowUtils;
 import com.badbones69.crazyenchantments.paper.controllers.EnchantmentControl;
 import com.badbones69.crazyenchantments.paper.controllers.settings.EnchantmentBookSettings;
@@ -23,9 +24,17 @@ import com.badbones69.crazyenchantments.paper.support.PluginSupport;
 import com.badbones69.crazyenchantments.paper.support.PluginSupport.SupportedPlugins;
 import com.badbones69.crazyenchantments.paper.support.SkullCreator;
 import com.badbones69.crazyenchantments.paper.support.claims.SuperiorSkyBlockSupport;
+import com.badbones69.crazyenchantments.paper.support.interfaces.mmoitems.CrazyEnchantStats;
+import com.badbones69.crazyenchantments.paper.support.interfaces.mmoitems.MMOItemsSupport;
+import com.badbones69.crazyenchantments.paper.support.interfaces.mmoitems.data.EnchantPluginBuilder;
 import com.badbones69.crazyenchantments.paper.support.misc.OraxenSupport;
+import net.Indyuce.mmoitems.MMOItems;
+import net.Indyuce.mmoitems.comp.enchants.EnchantPlugin;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.logging.Logger;
 
 public class Starter {
 
@@ -36,6 +45,8 @@ public class Starter {
     private CrazyManager crazyManager;
     private Methods methods;
     private SkullCreator skullCreator;
+
+    private Logger logger = Bukkit.getLogger();
 
     // Settings.
     private ProtectionCrystalSettings protectionCrystalSettings;
@@ -49,6 +60,11 @@ public class Starter {
     private PluginSupport pluginSupport;
     private VaultSupport vaultSupport;
     private OraxenSupport oraxenSupport;
+
+    private EnchantPluginBuilder<CEnchantment> enchantPluginBuilder;
+    private EnchantPlugin enchantPlugin;
+    private CrazyEnchantStats crazyEnchantStats;
+    private MMOItemsSupport mmoItemsSupport;
 
     // Plugin Managers.
     private ArmorEnchantmentManager armorEnchantmentManager;
@@ -166,6 +182,21 @@ public class Starter {
         return this.oraxenSupport;
     }
 
+    private void registerMMOItemStats() {
+        try {
+            if (!MMOItems.plugin.isEnabled()) getLogger().info("MMOItems is not loaded yet! Continuing anyway...");
+            MMOItems.plugin.registerEnchantPlugin(enchantPlugin);
+            MMOItems.plugin.getStats().register(crazyEnchantStats);
+            Bukkit.getLogger().info("MMOItems hook registration successful.");
+        } catch (Exception exception) {
+            Bukkit.getLogger().severe("Something went wrong while attempting to register the MMOItems registry!");
+            Bukkit.getLogger().severe(exception.toString());
+        }
+    }
+
+    public EnchantPlugin getEnchantPlugin() { return this.enchantPlugin; }
+    public CrazyEnchantStats getCrazyEnchantStats() { return this.crazyEnchantStats; }
+
     // Economy Management.
     public CurrencyAPI getCurrencyAPI() {
         return this.currencyAPI;
@@ -208,5 +239,17 @@ public class Starter {
     // Plugin Utils.
     public BowUtils getBowUtils() {
         return this.bowUtils;
+    }
+
+
+
+
+    //
+    public Logger getLogger() {
+        return logger;
+    }
+
+    public void setLogger(Logger logger) {
+        this.logger = logger;
     }
 }

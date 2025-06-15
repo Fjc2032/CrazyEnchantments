@@ -1,4 +1,4 @@
-name: '${name}'
+name: 'CrazyEnchantments'
 main: '${group}.${name}'
 
 authors:
@@ -7,7 +7,7 @@ authors:
   - TDL
 
 version: '${version}'
-api-version: '${apiVersion}'
+api-version: '1.21'
 description: '${description}'
 folia-supported: true
 

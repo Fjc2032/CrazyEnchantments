@@ -6,7 +6,10 @@ import com.badbones69.crazyenchantments.paper.Starter;
 import com.badbones69.crazyenchantments.paper.api.CrazyManager;
 import com.badbones69.crazyenchantments.paper.api.objects.CEnchantment;
 import com.badbones69.crazyenchantments.paper.api.objects.enchants.EnchantmentType;
+import com.badbones69.crazyenchantments.paper.controllers.settings.EnchantmentBookSettings;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
@@ -32,7 +35,7 @@ public enum CEnchantments {
     SNIPER("Sniper", "Bow", 25, 5),
     //	----------------Helmets----------------  \\
     GLOWING("Glowing", "Helmet"),
-    MERMAID("Mermaid", "Helmet"),
+    AQUATIC("Aquatic", "Helmet"),
     IMPLANTS("Implants", "Helmet", 5, 5),
     COMMANDER("Commander", "Helmet"),
     //	----------------Swords----------------  \\
@@ -59,7 +62,7 @@ public enum CEnchantments {
     DOUBLEDAMAGE("DoubleDamage", "Sword", 5, 1),
     DISORDER("Disorder", "Sword", 1, 0),
     CHARGE("Charge", "Sword"),
-    REVENGE("Revenge", "Sword"),
+    LIFEBLOOM("Lifebloom", "Sword"),
     FAMISHED("Famished", "Sword", 10, 5),
     //	----------------Armor----------------  \\
     HULK("Hulk", "Armor"),
@@ -125,7 +128,74 @@ public enum CEnchantments {
     TILLER("Tiller", "Hoe"),
     PLANTER("Planter", "Hoe"),
     //	----------------All----------------  \\
-    HELLFORGED("HellForged", "Damaged-Items", 5, 5);
+    HELLFORGED("HellForged", "Damaged-Items", 5, 5),
+
+    //NEW - Imperium
+    SHUFFLE("Shuffle", "Armor", 7, 7),
+    POISONED("Poisoned", "Armor", 10, 5),
+    HARDENED("Hardened", "Armor", 30, 10),
+    LONGBOW("Longbow", "Bow", 30, 10),
+    UNFOCUS("Unfocus", "Bow", 10, 5),
+    WARD("Ward", "Armor", 10, 5),
+    VIRUS("Virus", "Bow", 16, 4),
+    OBBYDESTROYER("ObbyDestroyer", "Pickaxe", 20, 15),
+    ENDERSLAYER("Enderslayer", "Sword", 50, 10),
+    REAPER("Reaper", "Axe", 10, 3),
+    NETHERSLAYER("Netherslayer", "Sword", 50, 10),
+    SHACKLE("Shackle", "Sword", 70, 10),
+    REFORGED("Reforged", "Tool", 10, 10),
+    GREATSWORD("Greatsword", "Sword", 40, 10),
+    TRICKSTER("Trickster", "Armor", 25, 6),
+    PUMMEL("Pummel", "Axe", 30, 5),
+    FARCAST("Farcast", "Bow", 10, 5),
+    MARKSMAN("Marksman", "Armor", 60, 10),
+    ANGELIC("Angelic", "Armor", 20, 5),
+    JELLYLEGS("Jellylegs", "Boots", 10, 3),
+    CLEAVE("Cleave", "Axe", 15, 5),
+    DOMINATE("Dominate", "Swords", 10, 3),
+    ENDERWALKER("Enderwalker", "Boots", 8, 3),
+    INFERNAL("Infernal", "Bow", 7, 4),
+    TANK("Tank", "Armor", 16, 4),
+    BLOCK("Block", "Sword", 11, 11),
+    CORRUPT("Corrupt", "Axe", 20, 7),
+    CREEPERARMOR("CreeperArmor", "Armor", 10, 3),
+    DEMONIC("Demonic", "Sword", 10, 3),
+    METAPHYSICAL("Metaphysical", "Boots", 50, 10),
+    DISTANCE("Distance", "Sword", 14, 3),
+    //SNIPER(Exists, but was redone. Putting comment here for tracking purposes.)
+    FAT("Fat", "Armor", 12, 2),
+    DEATHBRINGER("Deathbringer", "Armor", 14, 7),
+    DESTRUCTION("Destruction", "Armor", 10, 5),
+    DEATHGOD("DeathGod", "Armor", 8, 3),
+    INSANITY("Insanity", "Axe", 50, 8),
+    DIMINISH("Diminish", "Armor", 20, 6),
+    BARBARIAN("Barbarian", "Axe", 20, 4),
+    ABIDING("Abiding", "Tool"),
+    QUIVER("Quiver", "Boots", 10, 7),
+    INVERSION("Inversion", "Sword", 20, 4),
+    BLEED("Bleed", "Axe", 28, 4),
+    DEVOUR("Devour", "Axe", 10, 5),
+    ARMORED("Armored", "Armor", 60, 10),
+    CLARITY("Clarity", "Armor"),
+    SILENCE("Silence", "Sword", 30, 10),
+    KILLAURA("Killaura", "Sword", 18, 5),
+    STUN("Stun", "Sword", 10, 10),
+    JUDGEMENT("Judgement", "Armor", 10, 10),
+    BLACKSMITH("Blacksmith", "Axe", 30, 10),
+    CURSE("Curse", "Armor", 40, 10),
+    RAGDOLL("Ragdoll", "Armor", 30, 5),
+    ARROWBREAK("Arrowbreak", "Axe", 10, 10),
+    ARROWDEFLECT("Arrowdeflect", "Armor", 10, 10),
+    ARROWLIFESTEAL("ArrowLifesteal", "Bow", 10, 10),
+
+    //SUGGESTED - Imperium
+    SWARM("Swarm", "Sword"),
+
+    //HEROIC
+    MIGHTYCACTUS("MightyCactus", "Armor", 10, 10, true, CEnchantments.CACTUS.getEnchantment())
+
+    ;
+
 
     @NotNull
     private final CrazyEnchantments plugin = JavaPlugin.getPlugin(CrazyEnchantments.class);
@@ -139,11 +209,16 @@ public enum CEnchantments {
     @NotNull
     private final Methods methods = this.starter.getMethods();
 
+    @NotNull
+    private final EnchantmentBookSettings enchantmentBookSettings = this.starter.getEnchantmentBookSettings();
+
     private final String name;
     private final String typeName;
     private final boolean hasChanceSystem;
     private final int chance;
     private final int chanceIncrease;
+    private final CEnchantment oldEnchant;
+    private final boolean isHeroic;
 
     private CEnchantment cachedEnchantment = null;
 
@@ -163,13 +238,15 @@ public enum CEnchantments {
         this.chance = 0;
         this.chanceIncrease = 0;
         this.hasChanceSystem = false;
+        this.isHeroic = false;
+        this.oldEnchant = null;
     }
 
     /**
      * @param name Name of the enchantment.
      * @param typeName Type of items it goes on.
-     * @param chance The chance the enchantment has to active.
-     * @param chanceIncrease The amount the chance increases by every level.
+     * @param chance The chance the enchantment has to activate.
+     * @param chanceIncrease The amount the chance increases per level.
      */
     CEnchantments(String name, String typeName, int chance, int chanceIncrease) {
         this.name = name;
@@ -177,6 +254,43 @@ public enum CEnchantments {
         this.chance = chance;
         this.chanceIncrease = chanceIncrease;
         this.hasChanceSystem = true;
+        this.isHeroic = false;
+        this.oldEnchant = null;
+    }
+
+    /**
+     *
+     * @param name Name of the enchantment.
+     * @param typeName Type of items it goes on.
+     * @param isHeroic Whether the enchantment is heroic. False by default.
+     */
+    CEnchantments(String name, String typeName, boolean isHeroic) {
+        this.name = name;
+        this.typeName = typeName;
+        this.chance = 0;
+        this.chanceIncrease = 0;
+        this.hasChanceSystem = false;
+        this.isHeroic = isHeroic;
+        this.oldEnchant = null;
+    }
+
+    /**
+     *
+     * @param name Name of the enchantment.
+     * @param typeName Type of items it goes on.
+     * @param chance The chance the enchantment has to activate.
+     * @param chanceIncrease The amount the chance increases per level.
+     * @param isHeroic Whether the enchantment is heroic. False by default.
+     * @param oldEnchant The enchantment being replaced, if the enchantment is heroic.
+     */
+    CEnchantments(String name, String typeName, int chance, int chanceIncrease, boolean isHeroic, CEnchantment oldEnchant) {
+        this.name = name;
+        this.typeName = typeName;
+        this.chance = chance;
+        this.chanceIncrease = chanceIncrease;
+        this.hasChanceSystem = true;
+        this.isHeroic = isHeroic;
+        this.oldEnchant = oldEnchant;
     }
 
     
@@ -270,5 +384,21 @@ public enum CEnchantments {
      */
     public boolean hasChanceSystem() {
         return this.hasChanceSystem;
+    }
+
+    public boolean isHeroic() {
+        return this.isHeroic;
+    }
+
+    @ApiStatus.Experimental
+    public CEnchantment getOldEnchant(CEnchantments enchant) {
+        if (!enchant.isHeroic()) return null; else {
+            return this.oldEnchant;
+        }
+    }
+    @ApiStatus.Experimental
+    public void swapToHeroicEnchant(CEnchantments enchant, CEnchantment oldEnchant, ItemStack item) {
+        if (!enchant.isHeroic()) return;
+        if (enchantmentBookSettings.getEnchantments(item).containsKey(oldEnchant)) enchantmentBookSettings.removeEnchantment(item.getItemMeta(), oldEnchant);
     }
 }

@@ -10,6 +10,7 @@ base {
 }
 
 repositories {
+    mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public")
 
     maven("https://repo.md-5.net/content/repositories/snapshots")
@@ -23,6 +24,8 @@ repositories {
     maven("https://maven.enginehub.org/repo")
 
     maven("https://repo.oraxen.com/releases")
+
+    maven("https://nexus.phoenixdevt.fr/repository/maven-public/")
 }
 
 dependencies {
@@ -60,6 +63,10 @@ dependencies {
     compileOnly(libs.plotsquared)
 
     compileOnly(libs.mcmmo)
+
+    compileOnly ("io.lumine:MythicLib-dist:1.6.2-SNAPSHOT")
+
+    compileOnly("net.Indyuce:MMOItems-API:6.9.5-SNAPSHOT")
 }
 
 val component: SoftwareComponent = components["java"]

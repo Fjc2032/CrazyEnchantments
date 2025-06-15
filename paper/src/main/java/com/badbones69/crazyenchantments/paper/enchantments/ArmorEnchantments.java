@@ -6,7 +6,9 @@ import com.badbones69.crazyenchantments.paper.Starter;
 import com.badbones69.crazyenchantments.paper.api.CrazyManager;
 import com.badbones69.crazyenchantments.paper.api.enums.CEnchantments;
 import com.badbones69.crazyenchantments.paper.api.enums.pdc.DataKeys;
+import com.badbones69.crazyenchantments.paper.api.enums.pdc.Enchant;
 import com.badbones69.crazyenchantments.paper.api.events.AuraActiveEvent;
+import com.badbones69.crazyenchantments.paper.api.events.BookApplyEvent;
 import com.badbones69.crazyenchantments.paper.api.managers.ArmorEnchantmentManager;
 import com.badbones69.crazyenchantments.paper.api.objects.ArmorEnchantment;
 import com.badbones69.crazyenchantments.paper.api.objects.CEnchantment;
@@ -18,13 +20,13 @@ import com.badbones69.crazyenchantments.paper.controllers.settings.ProtectionCry
 import com.badbones69.crazyenchantments.paper.support.PluginSupport;
 import com.badbones69.crazyenchantments.paper.tasks.processors.ArmorProcessor;
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Particle;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.item.AxeItem;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -36,13 +38,22 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityResurrectEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.BoundingBox;
+import org.bukkit.util.Vector;
+import org.enginehub.linbus.stream.token.LinToken;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -60,6 +71,9 @@ public class ArmorEnchantments implements Listener {
 
     @NotNull
     private final CrazyManager crazyManager = this.starter.getCrazyManager();
+
+    private Enchant enchant;
+    private CEnchantments cEnchantments;
 
     // Settings.
     @NotNull
@@ -261,6 +275,7 @@ public class ArmorEnchantments implements Listener {
 
             if (player.getHealth() <= 4 && EnchantUtils.isEventActive(CEnchantments.ADRENALINE, player, armor, enchants)) {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 3 + (enchants.get(CEnchantments.ADRENALINE.getEnchantment())) * 20, 10));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 3 + (enchants.get(CEnchantments.ADRENALINE.getEnchantment())) * 20, 3));
             }
 
             if (player.getHealth() <= 8 && EnchantUtils.isEventActive(CEnchantments.ROCKET, player, armor, enchants)) {
@@ -302,6 +317,167 @@ public class ArmorEnchantments implements Listener {
 
                 damager.damage(5D);
             }
+            //Stuff for Imperium
+            if (EnchantUtils.isEventActive(CEnchantments.SHUFFLE, player, armor, enchants)) {
+                Player target = (Player) damager;
+                ItemStack[] hotbar = new ItemStack[9];
+                for (int i = 0; i < 9; i++) {
+                    hotbar[i] = target.getInventory().getItem(i);
+                }
+
+                List<ItemStack> items = Arrays.asList(hotbar);
+                Collections.shuffle(items);
+                ItemStack[] newHotbar = items.toArray(hotbar);
+
+                for (int i = 0; i < 9; i++) {
+                    target.getInventory().setItem(i, newHotbar[i]);
+                }
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.POISONED, player, armor, enchants)) {
+                Player target = (Player) damager;
+                Integer duration = CEnchantments.POISONED.getChance() / 8;
+                PotionEffect poison = new PotionEffect(PotionEffectType.POISON, duration, 2, true, false, true);
+                target.addPotionEffect(poison);
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.HARDENED, player, armor, enchants)) {
+                @Nullable ItemStack @NotNull [] playerArmor = player.getInventory().getArmorContents();
+                for (ItemStack equipment : playerArmor) {
+                    if (equipment == null) return;
+                    ItemMeta meta = equipment.getItemMeta();
+                    Damageable damage = (Damageable) meta;
+                    damage.setDamage(damage.getDamage() - (CEnchantments.HARDENED.getChance() / 20));
+                    if (damage.getDamage() <= 0) return;
+                    equipment.setItemMeta(meta);
+                }
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.WARD, player, armor, enchants)) {
+                AttributeInstance maxhealth = (AttributeInstance) player.getAttribute(Attribute.MAX_HEALTH);
+                if (maxhealth == null) return;
+                double amount = event.getDamage();
+                double playerHealth = player.getHealth();
+                double playerMaxHealth = maxhealth.getValue();
+                event.setCancelled(true);
+                if (playerHealth + amount > playerMaxHealth) {
+                    player.setHealth(playerHealth + (amount / 2));
+                } else {
+                    player.setHealth(playerHealth + amount);
+                }
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.TRICKSTER, player, armor, enchants)) {
+                Location playerPos = player.getLocation();
+                Location targetPos = event.getEntity().getLocation();
+
+                Vector direction = playerPos.toVector().subtract(targetPos.toVector());
+                direction.normalize().multiply(2);
+                player.setVelocity(direction);
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.MARKSMAN, player, armor, enchants)) {
+                if (!player.getActiveItem().getType().equals(Material.BOW)) return;
+                event.setDamage(event.getDamage() + ((double) CEnchantments.MARKSMAN.getChance() / 100));
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.ANGELIC, player, armor, enchants)) {
+                player.setHealth(player.getHealth() + (1 + ((double) CEnchantments.ANGELIC.getChance() / 20)));
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.ENDERWALKER, player, armor, enchants)) {
+                if (!(event.getEntity() instanceof Player victim)) return;
+                if (victim.hasPotionEffect(PotionEffectType.POISON)) victim.removePotionEffect(PotionEffectType.POISON);
+                if (victim.hasPotionEffect(PotionEffectType.WITHER)) victim.removePotionEffect(PotionEffectType.WITHER);
+                victim.setHealth(victim.getHealth() + (1 + ((double) CEnchantments.ENDERWALKER.getChance() / 20)));
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.TANK, player, armor, enchants)) {
+                @NotNull ItemStack weapon = damager.getActiveItem();
+                @NotNull Collection<ItemStack> axes = new ArrayList<>();
+                axes.add(ItemStack.of(Material.WOODEN_AXE));
+                axes.add(ItemStack.of(Material.STONE_AXE));
+                axes.add(ItemStack.of(Material.IRON_AXE));
+                axes.add(ItemStack.of(Material.GOLDEN_AXE));
+                axes.add(ItemStack.of(Material.DIAMOND_AXE));
+                axes.add(ItemStack.of(Material.NETHERITE_AXE));
+                for (ItemStack item : axes) {
+                    if (weapon.equals(item)) {
+                        event.setDamage(event.getDamage() - (event.getDamage() * ((double) CEnchantments.TANK.getChance() / 20)));
+                        player.sendMessage("TANK activated.");
+                    }
+                }
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.CREEPERARMOR, player, armor, enchants)) {
+                if (player.getLastDamageCause().getCause().equals(DamageCause.BLOCK_EXPLOSION) || player.getLastDamageCause().getCause().equals(DamageCause.ENTITY_EXPLOSION)) {
+                    event.setDamage(0);
+                }
+                if (CEnchantments.CREEPERARMOR.getChance() >= 15) {
+                    player.setHealth(player.getHealth() + (double) CEnchantments.CREEPERARMOR.getChanceIncrease() / 10);
+                }
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.FAT, player, armor, enchants)) {
+                event.setDamage(event.getDamage() - ((double) CEnchantments.FAT.getChance() / 10));
+                if (CEnchantments.FAT.getChance() > 20) player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 10, 2));
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.DEATHBRINGER, player, armor, enchants)) {
+                event.setDamage(event.getDamage() * 2);
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.DESTRUCTION, player, armor, enchants)) {
+                World world = player.getWorld();
+                BoundingBox region = player.getBoundingBox();
+                region.expand(8, 0, 8);
+                Collection<Entity> nearbyEntities = world.getNearbyEntities(region);
+
+                for (Entity target : nearbyEntities) {
+                    if (!(target instanceof LivingEntity)) return;
+                    ((LivingEntity) target).setLastDamage(event.getDamage() / 2);
+                    target.sendMessage("**Destruction**");
+                }
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.DEATHGOD, player, armor, enchants)) {
+                if (player.getHealth() < (CEnchantments.DEATHGOD.getChance() + 4)) player.setHealth(player.getHealth() + (CEnchantments.DEATHGOD.getChance() + 5));
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.DIMINISH, player, armor, enchants)) {
+                double lastAttack = player.getLastDamage();
+                event.setDamage(lastAttack / 2);
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.ARMORED, player, armor, enchants)) {
+                Collection<ItemStack> swords = new ArrayList<>();
+                swords.add(ItemStack.of(Material.WOODEN_SWORD));
+                swords.add(ItemStack.of(Material.STONE_SWORD));
+                swords.add(ItemStack.of(Material.IRON_SWORD));
+                swords.add(ItemStack.of(Material.GOLDEN_SWORD));
+                swords.add(ItemStack.of(Material.DIAMOND_SWORD));
+                swords.add(ItemStack.of(Material.NETHERITE_SWORD));
+
+                for (ItemStack sword : swords) {
+                    if (damager.getActiveItem() == sword) {
+                        double modifier = (event.getDamage() * 0.02);
+                        if (modifier < 0) return;
+                        event.setDamage(event.getDamage() - (modifier * enchant.getLevel("Armored")));
+                    }
+                }
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.CLARITY, player, armor, enchants)) {
+                if (player.hasPotionEffect(PotionEffectType.BLINDNESS)) player.removePotionEffect(PotionEffectType.BLINDNESS);
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.JUDGEMENT, player, armor, enchants)) {
+                if (!damager.hasPotionEffect(PotionEffectType.POISON)) damager.addPotionEffect(new PotionEffect(PotionEffectType.POISON, CEnchantments.JUDGEMENT.getChance() / 5, enchant.getLevel("Judgement")));
+                if (!player.hasPotionEffect(PotionEffectType.REGENERATION)) player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, CEnchantments.JUDGEMENT.getChance() / 5, enchant.getLevel("Judgement")));
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.CURSE, player, armor, enchants)) {
+                while (player.getHealth() < 6) {
+                    if (!player.hasPotionEffect(PotionEffectType.STRENGTH)) player.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, CEnchantments.CURSE.getChance() / 2, enchantmentBookSettings.getLevel(armor, CEnchantments.CURSE.getEnchantment())));
+                    if (!player.hasPotionEffect(PotionEffectType.RESISTANCE)) player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, CEnchantments.CURSE.getChance() / 2, enchantmentBookSettings.getLevel(armor, CEnchantments.CURSE.getEnchantment())));
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 20, 1));
+                }
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.RAGDOLL, player, armor, enchants)) {
+                Vector direction = player.getLocation().getDirection();
+                direction.normalize().multiply(2 + enchantmentBookSettings.getLevel(armor, CEnchantments.RAGDOLL.getEnchantment()));
+                player.setVelocity(direction);
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.ARROWDEFLECT, player, armor, enchants)) {
+                if (event.getDamager() instanceof Arrow) event.setCancelled(true);
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.MIGHTYCACTUS, player, armor, enchants)) {
+                event.setCancelled(true);
+                damager.damage(1 + enchantmentBookSettings.getLevel(armor, CEnchantments.MIGHTYCACTUS.getEnchantment()));
+            }
+            //Stuff for Imperium
         }
 
         if (!(damager instanceof Player)) return;
@@ -381,12 +557,16 @@ public class ArmorEnchantments implements Listener {
             Map<CEnchantment, Integer> enchantments = this.enchantmentBookSettings.getEnchantments(item);
 
             if (EnchantUtils.isEventActive(CEnchantments.SELFDESTRUCT, player, item, enchantments)) {
-                this.methods.explode(player);
-                List<ItemStack> items = event.getDrops().stream().filter(drop ->
-                        ProtectionCrystalSettings.isProtected(drop) && this.protectionCrystalSettings.isProtectionSuccessful(player)).toList();
+                if (player.getHealth() <= 2) {
+                    this.methods.explode(player);
+                    World world = player.getWorld();
+                    if (Boolean.TRUE.equals(world.getGameRuleValue(GameRule.KEEP_INVENTORY))) return;
+                    List<ItemStack> items = event.getDrops().stream().filter(drop ->
+                            ProtectionCrystalSettings.isProtected(drop) && this.protectionCrystalSettings.isProtectionSuccessful(player)).toList();
 
-                event.getDrops().clear();
-                event.getDrops().addAll(items);
+                    event.getDrops().clear();
+                    event.getDrops().addAll(items);
+                }
             }
 
             if (EnchantUtils.isEventActive(CEnchantments.RECOVER, player, item, enchantments)) {
@@ -405,5 +585,15 @@ public class ArmorEnchantments implements Listener {
         if (!DamageCause.FALL.equals(event.getCause())) return;
 
         event.setCancelled(true);
+
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onBookApply(BookApplyEvent event) {
+        CEnchantment target = event.getEnchantment();
+
+        if (target.equals(CEnchantments.MIGHTYCACTUS.getEnchantment())) {
+            cEnchantments.swapToHeroicEnchant(CEnchantments.MIGHTYCACTUS, target, event.getEnchantedItem());
+        }
     }
 }

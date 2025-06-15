@@ -8,6 +8,7 @@ import com.badbones69.crazyenchantments.paper.api.economy.Currency;
 import com.badbones69.crazyenchantments.paper.api.economy.CurrencyAPI;
 import com.badbones69.crazyenchantments.paper.api.enums.CEnchantments;
 import com.badbones69.crazyenchantments.paper.api.enums.Messages;
+import com.badbones69.crazyenchantments.paper.api.enums.pdc.Enchant;
 import com.badbones69.crazyenchantments.paper.api.events.RageBreakEvent;
 import com.badbones69.crazyenchantments.paper.api.objects.CEPlayer;
 import com.badbones69.crazyenchantments.paper.api.objects.CEnchantment;
@@ -19,7 +20,14 @@ import com.badbones69.crazyenchantments.paper.controllers.BossBarController;
 import com.badbones69.crazyenchantments.paper.controllers.settings.EnchantmentBookSettings;
 import com.badbones69.crazyenchantments.paper.scheduler.FoliaRunnable;
 import com.badbones69.crazyenchantments.paper.support.PluginSupport;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.monster.Blaze;
+import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.ZombifiedPiglin;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
@@ -39,12 +47,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SwordEnchantments implements Listener {
 
@@ -62,6 +69,12 @@ public class SwordEnchantments implements Listener {
 
     @NotNull
     private final Methods methods = this.starter.getMethods();
+
+    private Enchant enchant;
+    private CEnchantments cEnchantments;
+
+    @NotNull
+    private final Map<UUID, Long> playerCooldowns = new HashMap<>();
 
     // Plugin Support.
     @NotNull
@@ -303,6 +316,117 @@ public class SwordEnchantments implements Listener {
         if (EnchantUtils.isEventActive(CEnchantments.FAMISHED, damager, item, enchantments)) {
             en.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 10 * 20, 1));
         }
+        //IMPERIUM
+        if (EnchantUtils.isEventActive(CEnchantments.ENDERSLAYER, damager, item, enchantments)) {
+            if (!(event.getEntity() instanceof EnderMan) || !(event.getEntity() instanceof EnderDragon)) return;
+            double damage = event.getDamage();
+            event.setDamage(damage * ((double) CEnchantments.ENDERSLAYER.getChance() / 20));
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.NETHERSLAYER, damager, item, enchantments)) {
+            if (!(event.getEntity() instanceof Blaze) || !(event.getEntity() instanceof ZombifiedPiglin)) return;
+            double damage = event.getDamage();
+            event.setDamage(damage * ((double) CEnchantments.NETHERSLAYER.getChance() / 20));
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.SHACKLE, damager, item, enchantments)) {
+            if (event.getEntity() instanceof Player) return;
+            Location playerPos = damager.getLocation();
+            Vector vector = damager.getLocation().toVector().subtract(en.getLocation().toVector());
+            vector.normalize().multiply(1);
+            en.setVelocity(vector);
+            
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.GREATSWORD, damager, item, enchantments)) {
+            if (!(event.getEntity() instanceof Player target)) return;
+            if (target.getActiveItem().getType().equals(Material.BOW)) {
+                event.setDamage(event.getDamage() * (damager.getVelocity().normalize().length() / 2));
+            }
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.DOMINATE, damager, item, enchantments)) {
+            if (!(event.getEntity() instanceof LivingEntity target)) return;
+            target.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 10, CEnchantments.DOMINATE.getChance() / 20));
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.BLOCK, damager, item, enchantments)) {
+            event.setCancelled(true);
+            if (!(event.getEntity() instanceof Player target)) return;
+            target.damage(4 + ((double) CEnchantments.BLOCK.getChance() / 11));
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.DEMONIC, damager, item, enchantments)) {
+            if (!(event.getEntity() instanceof LivingEntity target)) return;
+            if (target.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)) target.removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.DISTANCE, damager, item, enchantments)) {
+            damager.setVelocity(damager.getLocation().getDirection().multiply(-2).normalize());
+            damager.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, CEnchantments.DISTANCE.getChance() / 10, 1));
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.INVERSION, damager, item, enchantments)) {
+            event.setCancelled(true);
+            damager.setHealth(damager.getHealth() + ((double) CEnchantments.INVERSION.getChance() / 10));
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.SILENCE, damager, item, enchantments)) {
+            if (!(en instanceof Player target)) return;
+
+            int oldChance = (30 * (enchant.getLevel("Silence")));
+
+            ItemStack[] playerItems = target.getInventory().getContents();
+
+            for (ItemStack targetItem : playerItems) {
+                @NotNull Map<CEnchantment, Integer> enchantmentIntegerMap = this.enchantmentBookSettings.getEnchantments(targetItem);
+                @NotNull Set<CEnchantment> enchantmentSet = enchantmentIntegerMap.keySet();
+
+                for (CEnchantment enchantment : enchantmentSet) {
+                    @NotNull List<BukkitTask> silenceTask = new ArrayList<>();
+                    silenceTask.add(Bukkit.getScheduler().runTaskTimer(plugin, () -> enchantment.setChance(0), 20L, 20L));
+
+                    for (BukkitTask task : silenceTask) {
+                        Bukkit.getScheduler().runTaskLater(plugin, task::cancel, 60L);
+                        enchantment.setChance(oldChance);
+                    }
+                }
+            }
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.STUN, damager, item, enchantments)) {
+            if (!en.hasPotionEffect(PotionEffectType.SLOWNESS)) en.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, CEnchantments.STUN.getChance() / 7, enchant.getLevel("Stun")));
+            if (!en.hasPotionEffect(PotionEffectType.WEAKNESS)) en.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, CEnchantments.STUN.getChance() / 7, enchant.getLevel("Stun")));
+            if (damager.hasPotionEffect(PotionEffectType.SLOWNESS)) damager.removePotionEffect(PotionEffectType.SLOWNESS);
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.SWARM, damager, item, enchantments)) {
+            //The more entities there are in an area, the higher the buff to damage.
+            //Radius considered is raised by each level.
+            //Maximum level should be 5.
+            List<Entity> total = damager.getNearbyEntities(
+                    5 + enchantmentBookSettings.getLevel(item, CEnchantments.SWARM.getEnchantment()),
+                    5 + enchantmentBookSettings.getLevel(item, CEnchantments.SWARM.getEnchantment()),
+                    5 + enchantmentBookSettings.getLevel(item, CEnchantments.SWARM.getEnchantment())
+            );
+            event.setDamage(event.getDamage() * ((double) total.size() / 2));
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.INSOMNIA, damager, item, enchantments)) {
+            //get UUID
+            UUID playerUUID = damager.getUniqueId();
+
+
+            //get enchantment level
+            int level = enchantmentBookSettings.getLevel(item, CEnchantments.INSOMNIA.getEnchantment());
+            long cooldown = Math.max(10000L - (level * 300L), 3000L);
+            int duration = (level * 800);  //0 + 40 per level;
+
+            // Check if the player is on cooldown
+            if (System.currentTimeMillis() - playerCooldowns.getOrDefault(playerUUID, 0L) < cooldown) {
+                return; //skip if cooldown
+            }
+
+
+            //effects
+            if (event.getEntity() instanceof LivingEntity target) {
+                target.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, duration, enchantments.get(CEnchantments.INSOMNIA.getEnchantment()) - 1));
+                target.addPotionEffect(new PotionEffect(PotionEffectType.MINING_FATIGUE, duration, enchantments.get(CEnchantments.INSOMNIA.getEnchantment()) - 1));
+                target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, duration, enchantments.get(CEnchantments.INSOMNIA.getEnchantment()) - 1));
+            }
+
+            //start cooldown store time
+            playerCooldowns.put(playerUUID, System.currentTimeMillis());
+        }
+        //IMPERIUM
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -319,7 +443,7 @@ public class SwordEnchantments implements Listener {
             event.getDrops().add(head);
         }
 
-        if (EnchantUtils.isEventActive(CEnchantments.REVENGE, damager, item, enchantments)) {
+        if (EnchantUtils.isEventActive(CEnchantments.LIFEBLOOM, damager, item, enchantments)) {
             for (Entity entity : player.getNearbyEntities(10, 10, 10)) {
                 if (!pluginSupport.isFriendly(entity, player)) continue;
                 Player ally = (Player) entity;
@@ -360,6 +484,14 @@ public class SwordEnchantments implements Listener {
                         this.pluginSupport.isFriendly(entity, damager)).forEach(entity ->
                         ((Player) entity).addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10 * 20, 1)));
             }
+            if (EnchantUtils.isEventActive(CEnchantments.KILLAURA, damager, item, enchantments)) {
+                World world = event.getEntity().getWorld();
+                Collection<LivingEntity> entities = world.getNearbyLivingEntities(event.getEntity().getLocation(), 1);
+                for (LivingEntity entity : entities) {
+                    if (entity instanceof Player) return;
+                    entity.setHealth(0);
+                }
+            }
         }
     }
 
@@ -389,5 +521,17 @@ public class SwordEnchantments implements Listener {
         } else {
             player.sendMessage(message.getMessage());
         }
+    }
+
+    public void setEnchant(Enchant enchant) {
+        this.enchant = enchant;
+    }
+
+    public CEnchantments getcEnchantments() {
+        return cEnchantments;
+    }
+
+    public void setcEnchantments(CEnchantments cEnchantments) {
+        this.cEnchantments = cEnchantments;
     }
 }
