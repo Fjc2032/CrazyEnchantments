@@ -89,9 +89,6 @@ public class SwordEnchantments implements Listener {
     // Economy Management.
     @NotNull
     private final CurrencyAPI currencyAPI = this.starter.getCurrencyAPI();
-	
-    //cooldown used in Insomnia 
-    private final Map<UUID, Long> playerCooldowns = new HashMap<>();
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerDamage(EntityDamageByEntityEvent event) {
