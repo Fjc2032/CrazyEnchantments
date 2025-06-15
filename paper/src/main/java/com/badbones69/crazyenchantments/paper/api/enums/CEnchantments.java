@@ -32,7 +32,7 @@ public enum CEnchantments {
     SNIPER("Sniper", "Bow", 25, 5),
     //	----------------Helmets----------------  \\
     GLOWING("Glowing", "Helmet"),
-    MERMAID("Mermaid", "Helmet"),
+    AQUATIC("Aquatic", "Helmet"),
     IMPLANTS("Implants", "Helmet", 5, 5),
     COMMANDER("Commander", "Helmet"),
     //	----------------Swords----------------  \\
@@ -59,7 +59,7 @@ public enum CEnchantments {
     DOUBLEDAMAGE("DoubleDamage", "Sword", 5, 1),
     DISORDER("Disorder", "Sword", 1, 0),
     CHARGE("Charge", "Sword"),
-    REVENGE("Revenge", "Sword"),
+    LIFEBLOOM("Lifebloom", "Sword"),
     FAMISHED("Famished", "Sword", 10, 5),
     //	----------------Armor----------------  \\
     HULK("Hulk", "Armor"),
@@ -178,7 +178,15 @@ public enum CEnchantments {
     KILLAURA("Killaura", "Sword", 18, 5),
     STUN("Stun", "Sword", 10, 10),
     JUDGEMENT("Judgement", "Armor", 10, 10),
-    BLACKSMITH("Blacksmith", "Axe", 30, 10)
+    BLACKSMITH("Blacksmith", "Axe", 30, 10),
+    CURSE("Curse", "Armor", 40, 10),
+    RAGDOLL("Ragdoll", "Armor", 30, 5),
+    ARROWBREAK("Arrowbreak", "Axe", 10, 10),
+    ARROWDEFLECT("Arrowdeflect", "Armor", 10, 10),
+    ARROWLIFESTEAL("ArrowLifesteal", "Bow", 10, 10),
+
+    //SUGGESTED - Imperium
+    SWARM("Swarm", "Sword")
 
     ;
 
