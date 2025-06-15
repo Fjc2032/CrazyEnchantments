@@ -25,6 +25,7 @@ import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -272,6 +273,7 @@ public class ArmorEnchantments implements Listener {
 
             if (player.getHealth() <= 4 && EnchantUtils.isEventActive(CEnchantments.ADRENALINE, player, armor, enchants)) {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 3 + (enchants.get(CEnchantments.ADRENALINE.getEnchantment())) * 20, 10));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 3 + (enchants.get(CEnchantments.ADRENALINE.getEnchantment())) * 20, 3));
             }
 
             if (player.getHealth() <= 8 && EnchantUtils.isEventActive(CEnchantments.ROCKET, player, armor, enchants)) {
@@ -454,6 +456,21 @@ public class ArmorEnchantments implements Listener {
                 if (!damager.hasPotionEffect(PotionEffectType.POISON)) damager.addPotionEffect(new PotionEffect(PotionEffectType.POISON, CEnchantments.JUDGEMENT.getChance() / 5, enchant.getLevel("Judgement")));
                 if (!player.hasPotionEffect(PotionEffectType.REGENERATION)) player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, CEnchantments.JUDGEMENT.getChance() / 5, enchant.getLevel("Judgement")));
             }
+            if (EnchantUtils.isEventActive(CEnchantments.CURSE, player, armor, enchants)) {
+                while (player.getHealth() < 6) {
+                    if (!player.hasPotionEffect(PotionEffectType.STRENGTH)) player.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, CEnchantments.CURSE.getChance() / 2, enchantmentBookSettings.getLevel(armor, CEnchantments.CURSE.getEnchantment())));
+                    if (!player.hasPotionEffect(PotionEffectType.RESISTANCE)) player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, CEnchantments.CURSE.getChance() / 2, enchantmentBookSettings.getLevel(armor, CEnchantments.CURSE.getEnchantment())));
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 20, 1));
+                }
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.RAGDOLL, player, armor, enchants)) {
+                Vector direction = player.getLocation().getDirection();
+                direction.normalize().multiply(2 + enchantmentBookSettings.getLevel(armor, CEnchantments.RAGDOLL.getEnchantment()));
+                player.setVelocity(direction);
+            }
+            if (EnchantUtils.isEventActive(CEnchantments.ARROWDEFLECT, player, armor, enchants)) {
+                if (event.getDamager() instanceof Arrow) event.setCancelled(true);
+            }
             //Stuff for Imperium
         }
 
@@ -534,12 +551,16 @@ public class ArmorEnchantments implements Listener {
             Map<CEnchantment, Integer> enchantments = this.enchantmentBookSettings.getEnchantments(item);
 
             if (EnchantUtils.isEventActive(CEnchantments.SELFDESTRUCT, player, item, enchantments)) {
-                this.methods.explode(player);
-                List<ItemStack> items = event.getDrops().stream().filter(drop ->
-                        ProtectionCrystalSettings.isProtected(drop) && this.protectionCrystalSettings.isProtectionSuccessful(player)).toList();
+                if (player.getHealth() <= 2) {
+                    this.methods.explode(player);
+                    World world = player.getWorld();
+                    if (Boolean.TRUE.equals(world.getGameRuleValue(GameRule.KEEP_INVENTORY))) return;
+                    List<ItemStack> items = event.getDrops().stream().filter(drop ->
+                            ProtectionCrystalSettings.isProtected(drop) && this.protectionCrystalSettings.isProtectionSuccessful(player)).toList();
 
-                event.getDrops().clear();
-                event.getDrops().addAll(items);
+                    event.getDrops().clear();
+                    event.getDrops().addAll(items);
+                }
             }
 
             if (EnchantUtils.isEventActive(CEnchantments.RECOVER, player, item, enchantments)) {
