@@ -229,6 +229,16 @@ public class BowEnchantments implements Listener {
             direction.normalize().multiply(1 + (CEnchantments.FARCAST.getChance() / 20));
             target.setVelocity(direction);
         }
+        if (EnchantUtils.isEventActive(CEnchantments.ARROWLIFESTEAL, enchantedArrow.getShooter(), enchantedArrow.bow(), enchantedArrow.enchantments())) {
+            if (!(enchantedArrow.getShooter() instanceof Player shooter)) return;
+            double shooterHealth = shooter.getHealth();
+            double shooterMaxHealth = shooter.getAttribute(Attribute.MAX_HEALTH).getValue();
+            double modifier = event.getDamage();
+
+            if (shooterHealth + modifier > shooterMaxHealth) modifier = 0;
+
+            shooter.setHealth(shooterHealth + modifier);
+        }
     }
 
         //Imperium
