@@ -29,13 +29,10 @@ public enum CEnchantments {
     DOCTOR("Doctor", "Bow"),
     PIERCING("Piercing", "Bow", 5, 5),
     ICEFREEZE("IceFreeze", "Bow", 25, 10),
-    LIGHTNING("Lightning", "Bow", 25, 10),
     MULTIARROW("MultiArrow", "Bow", 25, 10),
     STICKY_SHOT("Sticky-Shot", "Bow", 10, 10),
     SNIPER("Sniper", "Bow", 25, 5),
     //	----------------Helmets----------------  \\
-    GLOWING("Glowing", "Helmet"),
-    AQUATIC("Aquatic", "Helmet"),
     IMPLANTS("Implants", "Helmet", 5, 5),
     COMMANDER("Commander", "Helmet"),
     //	----------------Swords----------------  \\
@@ -49,14 +46,11 @@ public enum CEnchantments {
     EXECUTE("Execute", "Sword"),
     FASTTURN("FastTurn", "Sword", 5, 5),
     DISARMER("Disarmer", "Sword", 5, 1),
-    HEADLESS("Headless", "Sword", 10, 10),
     PARALYZE("Paralyze", "Sword", 15, 5),
     BLINDNESS("Blindness", "Sword", 5, 1),
     LIFESTEAL("LifeSteal", "Sword", 15, 5),
-    CONFUSION("Confusion", "Sword", 15, 5),
     NUTRITION("Nutrition", "Sword", 15, 5),
     SKILLSWIPE("SkillSwipe", "Sword", 5, 5),
-    OBLITERATE("Obliterate", "Sword", 10, 5),
     INQUISITIVE("Inquisitive", "Sword", 50, 25),
     LIGHTWEIGHT("LightWeight", "Sword", 15, 5),
     DOUBLEDAMAGE("DoubleDamage", "Sword", 5, 1),
@@ -103,24 +97,17 @@ public enum CEnchantments {
     SYSTEMREBOOT("SystemReboot", "Armor", 10, 5),
     //	----------------Axes----------------  \\
     REKT("Rekt", "Axe", 5, 1),
-    DIZZY("Dizzy", "Axe", 10, 5),
     CURSED("Cursed", "Axe", 10, 5),
     FEEDME("FeedMe", "Axe", 10, 5),
     BERSERK("Berserk", "Axe", 10, 1),
     BLESSED("Blessed", "Axe", 10, 5),
-    DECAPITATION("Decapitation", "Axe", 10, 10),
     BATTLECRY("BattleCry", "Axe", 10, 5),
     DEMONFORGED("DemonForged", "Axe", 10, 5),
     //	----------------PickAxes----------------  \\
     VEINMINER("VeinMiner", "Pickaxe"),
     BLAST("Blast", "Pickaxe"),
-    AUTOSMELT("AutoSmelt", "Pickaxe", 30, 35),
-    EXPERIENCE("Experience", "Pickaxe", 15, 15),
-    FURNACE("Furnace", "Pickaxe"),
     //	----------------Tools----------------  \\
-    HASTE("Haste", "Tool"),
     TELEPATHY("Telepathy", "Tool"),
-    OXYGENATE("Oxygenate", "Tool"),
     //	----------------Hoes----------------  \\
     GREENTHUMB("GreenThumb", "Hoe", 10, 10),
     HARVESTER("Harvester", "Hoe"),
@@ -128,9 +115,32 @@ public enum CEnchantments {
     PLANTER("Planter", "Hoe"),
     //	----------------All----------------  \\
     HELLFORGED("HellForged", "Damaged-Items", 5, 5),
-
+    //Imperiem Simple Enchantments
+    //armour
+    AQUATIC("Aquatic", "Helmet"),
+    GLOWING("Glowing", "Helmet"),
+    SHUFFLE("Shuffle", "Armor", 5, 1),
+    //weapons
+    HEADLESS("Headless", "Sword", 20, 20),
+    OBLITERATE("Obliterate", "Sword", 10, 5),
+    CONFUSION("Confusion", "Sword", 15, 5),
+    INSOMNIA("Insomnia", "Swords", 10, 2),
+    DECAPITATION("Decapitation", "Axe", 20, 20),
+    DIZZY("Dizzy", "Axe", 15, 5),
+    LIGHTNING("Lightning", "Bow", 24, 8),
+    //tools
+    AUTOSMELT("AutoSmelt", "Pickaxe", 30, 35),
+    EXPERIENCE("Experience", "Pickaxe", 15, 15),
+    FURNACE("Furnace", "Pickaxe"),
+    OXYGENATE("Oxygenate", "Tool"),
+    HASTE("Haste", "Tool"),
+    //missing
+    //EPICNESS kinda poinless
+    //THUNDERINGBLOW thunder i think it was just strike lighting more as an effect enchant
+    //ETHERAL haste upon killing mobs kinda pointless
+    //Strike a Trident lighting enchant but tridents do not exist in this plugin yet 
+    
     //NEW - Imperium
-    SHUFFLE("Shuffle", "Armor", 7, 7),
     POISONED("Poisoned", "Armor", 10, 5),
     HARDENED("Hardened", "Armor", 30, 10),
     LONGBOW("Longbow", "Bow", 30, 10),
@@ -186,7 +196,6 @@ public enum CEnchantments {
     ARROWBREAK("Arrowbreak", "Axe", 10, 10),
     ARROWDEFLECT("Arrowdeflect", "Armor", 10, 10),
     ARROWLIFESTEAL("ArrowLifesteal", "Bow", 10, 10),
-    INSOMNIA("Insomnia", "Swords", 10, 2),
     //SUGGESTED - Imperium
     SWARM("Swarm", "Sword"),
 
