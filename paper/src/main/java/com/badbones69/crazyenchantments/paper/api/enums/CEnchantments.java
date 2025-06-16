@@ -200,7 +200,8 @@ public enum CEnchantments {
     SWARM("Swarm", "Sword"),
 
     //HEROIC
-    MIGHTYCACTUS("MightyCactus", "Armor", 10, 10, true, CEnchantments.CACTUS.getEnchantment())
+    MIGHTYCACTUS("MightyCactus", "Armor", 10, 10, true, CEnchantments.CACTUS.getEnchantment()),
+    DEEPBLEED("DeepBleed", "Axe", 10, 10, true, CEnchantments.BLEED.getEnchantment())
 
     ;
 

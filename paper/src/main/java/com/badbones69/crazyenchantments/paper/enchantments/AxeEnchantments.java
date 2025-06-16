@@ -192,7 +192,7 @@ public class AxeEnchantments implements Listener {
             List<BukkitTask> bleedTasks = new ArrayList<>();
 
             bleedTasks.add(Bukkit.getScheduler().runTaskTimer(plugin, () -> player.spawnParticle(Particle.DUST, player.getLocation(), 12, dustOptions), 40L, 20L));
-            bleedTasks.add(Bukkit.getScheduler().runTaskTimer(plugin, () -> player.damage(event.getDamage() / ((double) CEnchantments.BLEED.getChance() / 5)), 40L, 20L));
+            bleedTasks.add(Bukkit.getScheduler().runTaskTimer(plugin, () -> player.damage(event.getDamage() / (enchantmentBookSettings.getLevel(item, CEnchantments.BLEED.getEnchantment()) * 1.05)), 40L, 20L));
             bleedTasks.add(Bukkit.getScheduler().runTaskTimer(plugin, () -> player.sendMessage("You are bleeding!"), 40L, 20L));
             bleedTasks.add(Bukkit.getScheduler().runTaskTimer(plugin, () -> damager.sendMessage("** BLEED **"), 40L, 20L));
 
@@ -227,6 +227,26 @@ public class AxeEnchantments implements Listener {
                 event.setCancelled(true);
                 damager.playSound((net.kyori.adventure.sound.Sound) Sound.BLOCK_ANVIL_DESTROY);
             }
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.DEEPBLEED, damager, item, enchantments)) {
+            enchantmentBookSettings.createCooldown(CEnchantments.DEEPBLEED.getEnchantment(), item, damager.getUniqueId(), 500L, 1L);
+
+            if (!(event.getEntity() instanceof Player player)) return;
+
+            Particle.DustOptions dustOptions = new Particle.DustOptions(Color.RED, 5.0F);
+
+            List<BukkitTask> bleedTasks = new ArrayList<>();
+
+            bleedTasks.add(Bukkit.getScheduler().runTaskTimer(plugin, () -> player.spawnParticle(Particle.DUST, player.getLocation(), 12, dustOptions), 40L, 20L));
+            bleedTasks.add(Bukkit.getScheduler().runTaskTimer(plugin, () -> player.damage(event.getDamage() / (enchantmentBookSettings.getLevel(item, CEnchantments.DEEPBLEED.getEnchantment()) * 1.75)), 40L, 20L));
+            bleedTasks.add(Bukkit.getScheduler().runTaskTimer(plugin, () -> player.sendMessage("You are bleeding!"), 40L, 20L));
+            bleedTasks.add(Bukkit.getScheduler().runTaskTimer(plugin, () -> damager.sendMessage("** BLEED **"), 40L, 20L));
+
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                for (BukkitTask task : bleedTasks) {
+                    task.cancel();
+                }
+            }, 80L);
         }
         //Imperium
     }

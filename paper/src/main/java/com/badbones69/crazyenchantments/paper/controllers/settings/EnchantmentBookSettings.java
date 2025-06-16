@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class EnchantmentBookSettings {
 
@@ -37,7 +38,7 @@ public class EnchantmentBookSettings {
 
     private final Gson gson = new Gson();
 
-    private Long cooldown;
+    public final Map<UUID, Long> playerCooldowns = new ConcurrentHashMap<>();
 
     /**
      *
@@ -403,19 +404,14 @@ public class EnchantmentBookSettings {
     }
 
     @ApiStatus.Experimental
-    public void createCooldown(CEnchantment enchantment, ItemStack item, UUID uuid, long cooldownModifier) {
-        Map<UUID, Long> playerCooldowns = new HashMap<>();
+    public void createCooldown(CEnchantment enchantment, ItemStack item, UUID uuid, long cooldownModifier, long multi) {
         int level = getLevel(item, enchantment);
-        this.cooldown = Math.max(cooldownModifier - (level * 300L), 3000L);
+        long cooldown = Math.max(cooldownModifier - (level * multi), 3000L);
 
         if (System.currentTimeMillis() - playerCooldowns.getOrDefault(uuid, 0L) < cooldown) return;
 
         playerCooldowns.put(uuid, System.currentTimeMillis());
     }
 
-    @ApiStatus.Experimental
-    //Setter for cooldown
-    private void setCooldown(Long cooldown) {
-        this.cooldown = cooldown;
-    }
+
 }
