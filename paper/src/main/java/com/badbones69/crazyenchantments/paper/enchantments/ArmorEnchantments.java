@@ -72,7 +72,6 @@ public class ArmorEnchantments implements Listener {
     @NotNull
     private final CrazyManager crazyManager = this.starter.getCrazyManager();
 
-    private Enchant enchant;
     private CEnchantments cEnchantments;
 
     // Settings.
@@ -447,7 +446,7 @@ public class ArmorEnchantments implements Listener {
                     if (damager.getActiveItem() == sword) {
                         double modifier = (event.getDamage() * 0.02);
                         if (modifier < 0) return;
-                        event.setDamage(event.getDamage() - (modifier * enchant.getLevel("Armored")));
+                        event.setDamage(event.getDamage() - (modifier * enchantmentBookSettings.getLevel(armor, CEnchantments.ARMORED.getEnchantment())));
                     }
                 }
             }
@@ -455,8 +454,8 @@ public class ArmorEnchantments implements Listener {
                 if (player.hasPotionEffect(PotionEffectType.BLINDNESS)) player.removePotionEffect(PotionEffectType.BLINDNESS);
             }
             if (EnchantUtils.isEventActive(CEnchantments.JUDGEMENT, player, armor, enchants)) {
-                if (!damager.hasPotionEffect(PotionEffectType.POISON)) damager.addPotionEffect(new PotionEffect(PotionEffectType.POISON, CEnchantments.JUDGEMENT.getChance() / 5, enchant.getLevel("Judgement")));
-                if (!player.hasPotionEffect(PotionEffectType.REGENERATION)) player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, CEnchantments.JUDGEMENT.getChance() / 5, enchant.getLevel("Judgement")));
+                if (!damager.hasPotionEffect(PotionEffectType.POISON)) damager.addPotionEffect(new PotionEffect(PotionEffectType.POISON, CEnchantments.JUDGEMENT.getChance() / 5, enchantmentBookSettings.getLevel(armor, CEnchantments.JUDGEMENT.getEnchantment())));
+                if (!player.hasPotionEffect(PotionEffectType.REGENERATION)) player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, CEnchantments.JUDGEMENT.getChance() / 5, enchantmentBookSettings.getLevel(armor, CEnchantments.JUDGEMENT.getEnchantment())));
             }
             if (EnchantUtils.isEventActive(CEnchantments.CURSE, player, armor, enchants)) {
                 while (player.getHealth() < 6) {
@@ -595,5 +594,10 @@ public class ArmorEnchantments implements Listener {
         if (target.equals(CEnchantments.MIGHTYCACTUS.getEnchantment())) {
             cEnchantments.swapToHeroicEnchant(CEnchantments.MIGHTYCACTUS, target, event.getEnchantedItem());
         }
+    }
+
+
+    public void setcEnchantments(CEnchantments cEnchantments) {
+        this.cEnchantments = cEnchantments;
     }
 }

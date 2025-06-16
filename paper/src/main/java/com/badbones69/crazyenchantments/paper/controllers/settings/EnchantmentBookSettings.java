@@ -21,14 +21,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class EnchantmentBookSettings {
 
@@ -39,6 +36,8 @@ public class EnchantmentBookSettings {
     private final List<CEnchantment> registeredEnchantments = Lists.newArrayList();
 
     private final Gson gson = new Gson();
+
+    private Long cooldown;
 
     /**
      *
@@ -401,5 +400,22 @@ public class EnchantmentBookSettings {
         }
 
         return meta;
+    }
+
+    @ApiStatus.Experimental
+    public void createCooldown(CEnchantment enchantment, ItemStack item, UUID uuid, long cooldownModifier) {
+        Map<UUID, Long> playerCooldowns = new HashMap<>();
+        int level = getLevel(item, enchantment);
+        this.cooldown = Math.max(cooldownModifier - (level * 300L), 3000L);
+
+        if (System.currentTimeMillis() - playerCooldowns.getOrDefault(uuid, 0L) < cooldown) return;
+
+        playerCooldowns.put(uuid, System.currentTimeMillis());
+    }
+
+    @ApiStatus.Experimental
+    //Setter for cooldown
+    private void setCooldown(Long cooldown) {
+        this.cooldown = cooldown;
     }
 }
