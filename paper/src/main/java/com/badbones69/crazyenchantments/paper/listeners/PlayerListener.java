@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public class PlayerListener implements Listener {
 
-    private EnchantmentBookSettings enchantmentBookSettings;
+    private final EnchantmentBookSettings enchantmentBookSettings = new EnchantmentBookSettings();
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerLeave(PlayerQuitEvent event) {
@@ -18,11 +18,4 @@ public class PlayerListener implements Listener {
         if (enchantmentBookSettings.playerCooldowns.containsKey(playerId)) enchantmentBookSettings.playerCooldowns.remove(playerId);
     }
 
-    public EnchantmentBookSettings getEnchantmentBookSettings() {
-        return enchantmentBookSettings;
-    }
-
-    public void setEnchantmentBookSettings(EnchantmentBookSettings enchantmentBookSettings) {
-        this.enchantmentBookSettings = enchantmentBookSettings;
-    }
 }

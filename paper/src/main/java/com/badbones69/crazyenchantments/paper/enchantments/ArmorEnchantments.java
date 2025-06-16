@@ -72,8 +72,6 @@ public class ArmorEnchantments implements Listener {
     @NotNull
     private final CrazyManager crazyManager = this.starter.getCrazyManager();
 
-    private CEnchantments cEnchantments;
-
     // Settings.
     @NotNull
     private final ProtectionCrystalSettings protectionCrystalSettings = this.starter.getProtectionCrystalSettings();
@@ -592,12 +590,7 @@ public class ArmorEnchantments implements Listener {
         CEnchantment target = event.getEnchantment();
 
         if (target.equals(CEnchantments.MIGHTYCACTUS.getEnchantment())) {
-            cEnchantments.swapToHeroicEnchant(CEnchantments.MIGHTYCACTUS, target, event.getEnchantedItem());
+            enchantmentBookSettings.swapToHeroicEnchant(CEnchantments.MIGHTYCACTUS, target, event.getEnchantedItem());
         }
-    }
-
-
-    public void setcEnchantments(CEnchantments cEnchantments) {
-        this.cEnchantments = cEnchantments;
     }
 }

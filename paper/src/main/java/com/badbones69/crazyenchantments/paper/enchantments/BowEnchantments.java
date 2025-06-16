@@ -5,6 +5,7 @@ import com.badbones69.crazyenchantments.paper.Methods;
 import com.badbones69.crazyenchantments.paper.Starter;
 import com.badbones69.crazyenchantments.paper.api.FileManager.Files;
 import com.badbones69.crazyenchantments.paper.api.enums.CEnchantments;
+import com.badbones69.crazyenchantments.paper.api.events.BookApplyEvent;
 import com.badbones69.crazyenchantments.paper.api.managers.BowEnchantmentManager;
 import com.badbones69.crazyenchantments.paper.api.objects.BowEnchantment;
 import com.badbones69.crazyenchantments.paper.api.objects.CEnchantment;
@@ -19,6 +20,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.block.Block;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Arrow;
@@ -44,6 +46,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public class BowEnchantments implements Listener {
@@ -239,6 +242,13 @@ public class BowEnchantments implements Listener {
 
             shooter.setHealth(shooterHealth + modifier);
         }
+        if (EnchantUtils.isEventActive(CEnchantments.BIDIRECTIONAL, enchantedArrow.getShooter(), enchantedArrow.bow(), enchantedArrow.enchantments())) {
+            List<Block> arrowAttached = enchantedArrow.getArrow().getAttachedBlocks();
+            Block block = arrowAttached.getFirst();
+            Location arrowPos = block.getLocation();
+
+            entity.setVelocity(arrowPos.getDirection().normalize().multiply(1.05));
+        }
     }
 
         //Imperium
@@ -246,5 +256,9 @@ public class BowEnchantments implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onWebBreak(BlockBreakEvent event) {
         if (!EventUtils.isIgnoredEvent(event) && this.bowUtils.getWebBlocks().contains(event.getBlock())) event.setCancelled(true);
+    }
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onBookApply(BookApplyEvent event) {
+
     }
 }

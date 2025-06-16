@@ -2,6 +2,7 @@ package com.badbones69.crazyenchantments.paper.controllers.settings;
 
 import com.badbones69.crazyenchantments.paper.api.FileManager.Files;
 import com.badbones69.crazyenchantments.paper.api.economy.Currency;
+import com.badbones69.crazyenchantments.paper.api.enums.CEnchantments;
 import com.badbones69.crazyenchantments.paper.api.enums.pdc.DataKeys;
 import com.badbones69.crazyenchantments.paper.api.enums.pdc.Enchant;
 import com.badbones69.crazyenchantments.paper.api.enums.pdc.EnchantedBook;
@@ -403,14 +404,35 @@ public class EnchantmentBookSettings {
         return meta;
     }
 
+    /**
+     * {@code Creates a cooldown and applies it to the targeted enchantment.}
+     * @param enchantment The enchantment getting the cooldown.
+     * @param item The ItemStack the enchantment is on.
+     * @param uuid The UUID of the target.
+     * @param cooldownModifier The base cooldown, as a long (in server ticks).
+     * @param multi The multiplier. Formula is [base - (level*multi)]. Set to 0 for no multiplier. Must be a long.
+     */
     @ApiStatus.Experimental
-    public void createCooldown(CEnchantment enchantment, ItemStack item, UUID uuid, long cooldownModifier, long multi) {
+    public void createCooldown(CEnchantment enchantment, @NotNull ItemStack item, @NotNull UUID uuid, long cooldownModifier, long multi) {
         int level = getLevel(item, enchantment);
         long cooldown = Math.max(cooldownModifier - (level * multi), 3000L);
 
         if (System.currentTimeMillis() - playerCooldowns.getOrDefault(uuid, 0L) < cooldown) return;
 
         playerCooldowns.put(uuid, System.currentTimeMillis());
+    }
+
+    /**
+     * Swaps an enchant to a heroic variant.
+     * @param enchant The enchantment that will be the new enchant.
+     * @param oldEnchant The old enchantment being replaced. Accessible via the enum. Will exit if null.
+     * @param item The ItemStack this will happen on.
+     */
+    @ApiStatus.Experimental
+    public void swapToHeroicEnchant(@NotNull CEnchantments enchant, @Nullable CEnchantment oldEnchant, @NotNull ItemStack item) {
+        if (!enchant.isHeroic()) return;
+        if (oldEnchant == null) return;
+        if (getEnchantments(item).containsKey(oldEnchant)) removeEnchantment(item.getItemMeta(), oldEnchant);
     }
 
 

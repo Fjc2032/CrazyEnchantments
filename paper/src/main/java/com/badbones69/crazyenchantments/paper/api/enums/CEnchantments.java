@@ -11,6 +11,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 
 public enum CEnchantments {
@@ -201,7 +203,8 @@ public enum CEnchantments {
 
     //HEROIC
     MIGHTYCACTUS("MightyCactus", "Armor", 10, 10, true, CEnchantments.CACTUS.getEnchantment()),
-    DEEPBLEED("DeepBleed", "Axe", 10, 10, true, CEnchantments.BLEED.getEnchantment())
+    DEEPBLEED("DeepBleed", "Axe", 10, 10, true, CEnchantments.BLEED.getEnchantment()),
+    BIDIRECTIONAL("BidirectionalTeleportation", "Bow", 15, 10, true, null)
 
     ;
 
@@ -400,14 +403,11 @@ public enum CEnchantments {
     }
 
     @ApiStatus.Experimental
+    @Nullable
     public CEnchantment getOldEnchant(CEnchantments enchant) {
         if (!enchant.isHeroic()) return null; else {
             return this.oldEnchant;
         }
     }
-    @ApiStatus.Experimental
-    public void swapToHeroicEnchant(CEnchantments enchant, CEnchantment oldEnchant, ItemStack item) {
-        if (!enchant.isHeroic()) return;
-        if (enchantmentBookSettings.getEnchantments(item).containsKey(oldEnchant)) enchantmentBookSettings.removeEnchantment(item.getItemMeta(), oldEnchant);
-    }
+
 }
