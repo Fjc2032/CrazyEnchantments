@@ -7,6 +7,7 @@ import com.badbones69.crazyenchantments.paper.api.CrazyManager;
 import com.badbones69.crazyenchantments.paper.api.objects.CEnchantment;
 import com.badbones69.crazyenchantments.paper.api.objects.enchants.EnchantmentType;
 import com.badbones69.crazyenchantments.paper.controllers.settings.EnchantmentBookSettings;
+import io.netty.util.internal.UnstableApi;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.ApiStatus;
@@ -398,16 +399,22 @@ public enum CEnchantments {
         return this.hasChanceSystem;
     }
 
+    /**
+     * Checks if the enchantment is marked as heroic.
+     * @return True if the enchantment is heroic, false if not.
+     */
     public boolean isHeroic() {
         return this.isHeroic;
     }
 
+    /**
+     * Gets the enchantment this enchant will replace when it is upgraded to its heroic variant.
+     * @return The enchantment that matches the condition, if present. Otherwise, returns null.
+     */
     @ApiStatus.Experimental
     @Nullable
-    public CEnchantment getOldEnchant(CEnchantments enchant) {
-        if (!enchant.isHeroic()) return null; else {
-            return this.oldEnchant;
-        }
+    public CEnchantment getOldEnchant() {
+        return this.oldEnchant;
     }
 
 }

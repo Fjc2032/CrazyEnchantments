@@ -471,6 +471,8 @@ public class ArmorEnchantments implements Listener {
                 if (event.getDamager() instanceof Arrow) event.setCancelled(true);
             }
             if (EnchantUtils.isEventActive(CEnchantments.MIGHTYCACTUS, player, armor, enchants)) {
+                CEnchantments targetEnchant = CEnchantments.MIGHTYCACTUS;
+                boolean heroic = targetEnchant.isHeroic();
                 event.setCancelled(true);
                 damager.damage(1 + enchantmentBookSettings.getLevel(armor, CEnchantments.MIGHTYCACTUS.getEnchantment()));
             }
@@ -587,10 +589,6 @@ public class ArmorEnchantments implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onBookApply(BookApplyEvent event) {
-        CEnchantment target = event.getEnchantment();
-
-        if (target.equals(CEnchantments.MIGHTYCACTUS.getEnchantment())) {
-            enchantmentBookSettings.swapToHeroicEnchant(CEnchantments.MIGHTYCACTUS, target, event.getEnchantedItem());
-        }
+        enchantmentBookSettings.swapToHeroicEnchant(CEnchantments.MIGHTYCACTUS, CEnchantments.MIGHTYCACTUS.getOldEnchant(),event.getEnchantedItem());
     }
 }

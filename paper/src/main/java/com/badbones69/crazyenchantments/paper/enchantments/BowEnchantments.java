@@ -243,11 +243,14 @@ public class BowEnchantments implements Listener {
             shooter.setHealth(shooterHealth + modifier);
         }
         if (EnchantUtils.isEventActive(CEnchantments.BIDIRECTIONAL, enchantedArrow.getShooter(), enchantedArrow.bow(), enchantedArrow.enchantments())) {
+            CEnchantment targetEnchant = CEnchantments.BIDIRECTIONAL.getEnchantment();
+
             List<Block> arrowAttached = enchantedArrow.getArrow().getAttachedBlocks();
             Block block = arrowAttached.getFirst();
             Location arrowPos = block.getLocation();
 
-            entity.setVelocity(arrowPos.getDirection().normalize().multiply(1.05));
+            entity.setVelocity(arrowPos.getDirection().normalize().multiply(1.05 + enchantmentBookSettings.getLevel(enchantedArrow.bow(), targetEnchant)));
+            enchantmentBookSettings.createCooldown(targetEnchant, enchantedArrow.bow(), enchantedArrow.getShooter().getUniqueId(), 300L, 2L);
         }
     }
 
@@ -259,6 +262,6 @@ public class BowEnchantments implements Listener {
     }
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onBookApply(BookApplyEvent event) {
-
+        enchantmentBookSettings.swapToHeroicEnchant(CEnchantments.BIDIRECTIONAL, CEnchantments.BIDIRECTIONAL.getOldEnchant(), event.getEnchantedItem());
     }
 }

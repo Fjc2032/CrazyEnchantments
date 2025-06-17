@@ -6,6 +6,7 @@ import com.badbones69.crazyenchantments.paper.Starter;
 import com.badbones69.crazyenchantments.paper.api.CrazyManager;
 import com.badbones69.crazyenchantments.paper.api.enums.CEnchantments;
 import com.badbones69.crazyenchantments.paper.api.enums.pdc.Enchant;
+import com.badbones69.crazyenchantments.paper.api.events.BookApplyEvent;
 import com.badbones69.crazyenchantments.paper.api.objects.CEnchantment;
 import com.badbones69.crazyenchantments.paper.api.builders.ItemBuilder;
 import com.badbones69.crazyenchantments.paper.api.utils.EnchantUtils;
@@ -187,6 +188,8 @@ public class AxeEnchantments implements Listener {
         if (EnchantUtils.isEventActive(CEnchantments.BLEED, damager, item, enchantments)) {
             if (!(event.getEntity() instanceof Player player)) return;
 
+            enchantmentBookSettings.createCooldown(CEnchantments.BLEED.getEnchantment(), item, damager.getUniqueId(), 2000L, 2L);
+
             Particle.DustOptions dustOptions = new Particle.DustOptions(Color.RED, 5.0F);
 
             List<BukkitTask> bleedTasks = new ArrayList<>();
@@ -285,6 +288,11 @@ public class AxeEnchantments implements Listener {
                 event.getDrops().add(head);
             }
         }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onBookApply(BookApplyEvent event) {
+        enchantmentBookSettings.swapToHeroicEnchant(CEnchantments.DEEPBLEED, CEnchantments.DEEPBLEED.getOldEnchant(), event.getEnchantedItem());
     }
 
     private void removeBadPotions(Player player) {

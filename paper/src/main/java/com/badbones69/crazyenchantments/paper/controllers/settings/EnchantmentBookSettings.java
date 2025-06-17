@@ -39,6 +39,8 @@ public class EnchantmentBookSettings {
 
     private final Gson gson = new Gson();
 
+    private CEnchantments cEnchantments;
+
     public final Map<UUID, Long> playerCooldowns = new ConcurrentHashMap<>();
 
     /**
@@ -405,12 +407,12 @@ public class EnchantmentBookSettings {
     }
 
     /**
-     * {@code Creates a cooldown and applies it to the targeted enchantment.}
+     * Creates a cooldown and applies it to the targeted enchantment.
      * @param enchantment The enchantment getting the cooldown.
      * @param item The ItemStack the enchantment is on.
      * @param uuid The UUID of the target.
-     * @param cooldownModifier The base cooldown, as a long (in server ticks).
-     * @param multi The multiplier. Formula is [base - (level*multi)]. Set to 0 for no multiplier. Must be a long.
+     * @param cooldownModifier The base cooldown, in server ticks. Must be represented as a long.
+     * @param multi The multiplier. Formula is [base - (level*multi)]. Set to 0 for no multiplier. A bigger multi means the cooldown lowers more per level. Must be a long.
      */
     @ApiStatus.Experimental
     public void createCooldown(CEnchantment enchantment, @NotNull ItemStack item, @NotNull UUID uuid, long cooldownModifier, long multi) {
@@ -423,10 +425,10 @@ public class EnchantmentBookSettings {
     }
 
     /**
-     * Swaps an enchant to a heroic variant.
+     * Swaps an enchant to a heroic variant if requirements are met. A reminder that you do not need to check if the enchantment is heroic yourself; the function will do that for you.
      * @param enchant The enchantment that will be the new enchant.
      * @param oldEnchant The old enchantment being replaced. Accessible via the enum. Will exit if null.
-     * @param item The ItemStack this will happen on.
+     * @param item The ItemStack this will happen on. Can't be null.
      */
     @ApiStatus.Experimental
     public void swapToHeroicEnchant(@NotNull CEnchantments enchant, @Nullable CEnchantment oldEnchant, @NotNull ItemStack item) {
@@ -435,5 +437,16 @@ public class EnchantmentBookSettings {
         if (getEnchantments(item).containsKey(oldEnchant)) removeEnchantment(item.getItemMeta(), oldEnchant);
     }
 
+    public boolean isHeroic(CEnchantments enchantments) {
+        return enchantments.isHeroic();
+    }
 
+    public CEnchantment getOldEnchant() {
+        return cEnchantments.getOldEnchant();
+    }
+
+
+    private CEnchantments getcEnchantments() {
+        return cEnchantments;
+    }
 }
