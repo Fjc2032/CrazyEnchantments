@@ -407,7 +407,8 @@ public class EnchantmentBookSettings {
     }
 
     /**
-     * Creates a cooldown and applies it to the targeted enchantment.
+     * Creates a cooldown and applies it to the targeted enchantment. If the enchantment already has a cooldown,
+     * the function will terminate.
      * @param enchantment The enchantment getting the cooldown.
      * @param item The ItemStack the enchantment is on.
      * @param uuid The UUID of the target.
@@ -416,6 +417,7 @@ public class EnchantmentBookSettings {
      */
     @ApiStatus.Experimental
     public void createCooldown(CEnchantment enchantment, @NotNull ItemStack item, @NotNull UUID uuid, long cooldownModifier, long multi) {
+        if (!(enchantment.getCooldown() == 0)) return;
         int level = getLevel(item, enchantment);
         long cooldown = Math.max(cooldownModifier - (level * multi), 3000L);
 

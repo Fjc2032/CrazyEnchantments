@@ -4,6 +4,7 @@ import com.badbones69.crazyenchantments.paper.CrazyEnchantments;
 import com.badbones69.crazyenchantments.paper.Methods;
 import com.badbones69.crazyenchantments.paper.Starter;
 import com.badbones69.crazyenchantments.paper.api.CrazyManager;
+import com.badbones69.crazyenchantments.paper.api.enums.CEnchantments;
 import com.badbones69.crazyenchantments.paper.api.events.RegisteredCEnchantmentEvent;
 import com.badbones69.crazyenchantments.paper.api.events.UnregisterCEnchantmentEvent;
 import com.badbones69.crazyenchantments.paper.api.objects.enchants.EnchantmentType;
@@ -33,6 +34,8 @@ public class CEnchantment {
 
     @NotNull
     private final EnchantmentBookSettings enchantmentBookSettings = this.starter.getEnchantmentBookSettings();
+
+    private CEnchantments cEnchantments;
 
     private String name;
     private String customName;
@@ -236,5 +239,12 @@ public class CEnchantment {
         if (this.enchantmentType != null) this.enchantmentType.removeEnchantment(this.instance);
 
         this.categories.forEach(category -> category.addEnchantment(this.instance));
+    }
+    public long getCooldown() {
+        return cEnchantments.getCooldown();
+    }
+
+    public void setcEnchantments(CEnchantments cEnchantments) {
+        this.cEnchantments = cEnchantments;
     }
 }
