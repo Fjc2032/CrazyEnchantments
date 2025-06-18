@@ -32,6 +32,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Collections;
+import java.util.UUID;
 import java.util.Set;
 
 public class PickaxeEnchantments implements Listener {
@@ -53,6 +56,8 @@ public class PickaxeEnchantments implements Listener {
     private final EnchantmentBookSettings enchantmentBookSettings = this.starter.getEnchantmentBookSettings();
 
     private final Map<Player, Map<Block, BlockFace>> blocks = new HashMap<>();
+
+    private final Map<UUID, Long> playerCooldowns = new HashMap<>();
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockClick(PlayerInteractEvent event) {
@@ -143,9 +148,11 @@ public class PickaxeEnchantments implements Listener {
         return event.isCancelled();
     }
 
+    //Imperium Enchant AutoSmelt/Furnace vvv
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onDropAlter(BlockDropItemEvent event) {
-        if (!isOreBlock(event.getBlockState().getType())) return;
+        if (!isSmeltable(event.getBlockState().getType())) return;
+
 
         final Player player = event.getPlayer();
         final ItemStack item = this.methods.getItemInHand(player);
@@ -153,8 +160,9 @@ public class PickaxeEnchantments implements Listener {
 
         final List<Item> oldDrops = event.getItems();
 
-        if (EnchantUtils.isEventActive(CEnchantments.AUTOSMELT, player, item, enchants)) {
+        if (EnchantUtils.isEventActive(CEnchantments.AUTOSMELT, player, itemInHand, enchants)) {
             int level = enchants.get(CEnchantments.AUTOSMELT.getEnchantment());
+
 
             for (int j = 0; j < oldDrops.size(); j++) {
                 final Item entityItem  = oldDrops.get(j);
@@ -165,29 +173,19 @@ public class PickaxeEnchantments implements Listener {
 
                 if (!isOre(drop.getType())) continue;
 
-                for (int i = 0; i < level; i++) {
-                    if (CEnchantments.AUTOSMELT.chanceSuccessful(level)) ++amountToAdd;
+                if (CEnchantments.AUTOSMELT.chanceSuccessful(level)) {
+                    itemEntity.setItemStack(getSmeltedDrop(drop, drop.getAmount()));
                 }
-
-                drop = getOreDrop(drop, drop.getAmount() + amountToAdd);
-
-                entityItem.setItemStack(drop);
-
-                event.getItems().set(j, entityItem);
             }
-
             return;
         }
 
-        if (EnchantUtils.isEventActive(CEnchantments.FURNACE, player, item, enchants)) {
-            for (int j = 0; j < oldDrops.size(); j++) {
-                final Item entityItem  = oldDrops.get(j);
+        if (EnchantUtils.isEventActive(CEnchantments.FURNACE, player, itemInHand, enchants)) {
+            for (Item itemEntity : drops) {
+                ItemStack drop = itemEntity.getItemStack();
+                if (!isSmeltable(drop.getType())) continue;
 
-                ItemStack drop = entityItem.getItemStack();
 
-                if (!isOre(drop.getType())) continue;
-
-                drop = getOreDrop(drop, drop.getAmount());
 
                 entityItem.setItemStack(drop);
 
@@ -195,19 +193,54 @@ public class PickaxeEnchantments implements Listener {
             }
         }
     }
+    //AutoSmelt/furnace ^^^
+    //Imperium Enchant Experience vvv
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onExperience(BlockBreakEvent event) {
+        Player player = event.getPlayer();
+        UUID playerUUID = player.getUniqueId();
+        ItemStack item = player.getInventory().getItemInMainHand();
+        long cooldown = 1500L;
+
+
+        //check enchantments
+        Map<CEnchantment, Integer> enchants = Optional.of(this.enchantmentBookSettings.getEnchantments(item)).orElse(Collections.emptyMap());
+        if (EnchantUtils.isEventActive(CEnchantments.EXPERIENCE, player, item, enchants)){
+
+            //Check if the player is on cooldown
+            if (System.currentTimeMillis() - playerCooldowns.getOrDefault(playerUUID, 0L) < cooldown) {
+                return;//skip cooldown
+            }
+            //start cooldown store time
+            playerCooldowns.put(playerUUID, System.currentTimeMillis());
+
+
+            //xp chance plus random xp (1-5)
+            int level = enchants.getOrDefault(CEnchantments.EXPERIENCE.getEnchantment(), 0);
+            double chance = 0.15 + 0.15 * level;
+            if (Math.random() <= chance) {
+                event.setExpToDrop(event.getExpToDrop() + 2 + (int)(Math.random() * 4));
+
+            }
+        }
+    }
+    //Eperience ^^^
+
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onExperience(BlockBreakEvent event) {
         final Player player = event.getPlayer();
 
-        if (event.getExpToDrop() <= 0) return; // If block doesn't drop xp on break, return.
+        Block block = event.getClickedBlock();
+        if (block == null) return;
 
-        final ItemStack item = this.methods.getItemInHand(player);
-        final Map<CEnchantment, Integer> enchants = this.enchantmentBookSettings.getEnchantments(item);
 
-        if (!EnchantUtils.isEventActive(CEnchantments.EXPERIENCE, player, item, enchants)) return;
+        if (!block.getType().equals(Material.OBSIDIAN)) return;
+        player.playSound(player, Sound.BLOCK_CALCITE_BREAK, 10, 10);
+        block.setType(Material.AIR);
 
-        event.setExpToDrop(event.getExpToDrop() + (enchants.get(CEnchantments.EXPERIENCE.getEnchantment()) + 2));
+
+
     }
 
     private Set<Block> getOreBlocks(final Location loc, final int amount) {
@@ -320,29 +353,92 @@ public class PickaxeEnchantments implements Listener {
         };
     }
 
-    private ItemStack getOreDrop(final ItemStack item, final int amount) {
-        final Material material = item.getType();
+    
+    //check if the block is smeltable VVV
+    private boolean isSmeltable(Material material) {
+        //List of blocks/items that can be smelted
+        return switch (material) {
+            //ores,Stone and utility, Wood types on update add 1.21.5 all leave types ex: case OAK_LEAVES:
+            case IRON_ORE, DEEPSLATE_IRON_ORE, RAW_IRON, COPPER_ORE, DEEPSLATE_COPPER_ORE, RAW_COPPER, GOLD_ORE,
+                 DEEPSLATE_GOLD_ORE, RAW_GOLD, ANCIENT_DEBRIS, REDSTONE_ORE, DEEPSLATE_REDSTONE_ORE, EMERALD_ORE,
+                 DEEPSLATE_EMERALD_ORE, LAPIS_ORE, DEEPSLATE_LAPIS_ORE, COAL_ORE, DEEPSLATE_COAL_ORE, DIAMOND_ORE,
+                 DEEPSLATE_DIAMOND_ORE, NETHER_QUARTZ_ORE, NETHER_GOLD_ORE, KELP, COBBLESTONE, STONE, STONE_BRICKS,
+                 COBBLED_DEEPSLATE, DEEPSLATE_BRICKS, DEEPSLATE_TILES, SANDSTONE, RED_SANDSTONE, NETHER_BRICK, BASALT,
+                 POLISHED_BLACKSTONE_BRICKS, QUARTZ_BLOCK, CLAY, SAND, RED_SAND, WET_SPONGE, CHORUS_FRUIT, SEA_PICKLE,
+                 CACTUS, CLAY_BALL, NETHERRACK, RESIN_CLUMP, ACACIA_LOG, ACACIA_WOOD, STRIPPED_ACACIA_LOG,
+                 STRIPPED_ACACIA_WOOD, OAK_LOG, OAK_WOOD, STRIPPED_OAK_LOG, STRIPPED_OAK_WOOD, BIRCH_LOG, BIRCH_WOOD,
+                 STRIPPED_BIRCH_LOG, STRIPPED_BIRCH_WOOD, SPRUCE_LOG, SPRUCE_WOOD, STRIPPED_SPRUCE_LOG,
+                 STRIPPED_SPRUCE_WOOD, JUNGLE_LOG, JUNGLE_WOOD, STRIPPED_JUNGLE_LOG, STRIPPED_JUNGLE_WOOD, DARK_OAK_LOG,
+                 DARK_OAK_WOOD, STRIPPED_DARK_OAK_LOG, STRIPPED_DARK_OAK_WOOD, MANGROVE_LOG, MANGROVE_WOOD,
+                 STRIPPED_MANGROVE_LOG, STRIPPED_MANGROVE_WOOD, CHERRY_LOG, CHERRY_WOOD, STRIPPED_CHERRY_LOG,
+                 STRIPPED_CHERRY_WOOD, PALE_OAK_LOG, PALE_OAK_WOOD, STRIPPED_PALE_OAK_LOG, STRIPPED_PALE_OAK_WOOD ->
+                    false;
+            default -> true;
 
-        ItemStack returnItem;
-
-        final Material smeltedMaterial = switch (material) {
-            case COAL -> Material.COAL;
-            case RAW_COPPER -> Material.COPPER_INGOT;
-            case DIAMOND -> Material.DIAMOND;
-            case EMERALD -> Material.EMERALD;
-            case RAW_GOLD -> Material.GOLD_INGOT;
-            case RAW_IRON -> Material.IRON_INGOT;
-            case LAPIS_LAZULI -> Material.LAPIS_LAZULI;
-            case REDSTONE -> Material.REDSTONE;
-            case GOLD_NUGGET -> Material.GOLD_NUGGET;
-            case QUARTZ -> Material.QUARTZ;
-            default -> Material.AIR;
         };
+    }
 
-        returnItem = (material == smeltedMaterial) ? item : new ItemStack(smeltedMaterial);
 
-        returnItem.setAmount(amount);
-
-        return returnItem;
+    //switch drops of given item when mined
+    private ItemStack getSmeltedDrop(ItemStack drop, int amount) {
+        return switch (drop.getType()) {
+            //ores
+            case IRON_ORE, DEEPSLATE_IRON_ORE, RAW_IRON, NETHER_GOLD_ORE -> new ItemStack(Material.IRON_INGOT, amount);
+            case GOLD_ORE, DEEPSLATE_GOLD_ORE, RAW_GOLD -> new ItemStack(Material.GOLD_INGOT, amount);
+            case COAL_ORE, DEEPSLATE_COAL_ORE -> new ItemStack(Material.COAL, amount);
+            case LAPIS_ORE, DEEPSLATE_LAPIS_ORE -> new ItemStack(Material.LAPIS_LAZULI, amount);
+            case REDSTONE_ORE, DEEPSLATE_REDSTONE_ORE -> new ItemStack(Material.REDSTONE, amount);
+            case EMERALD_ORE, DEEPSLATE_EMERALD_ORE -> new ItemStack(Material.EMERALD, amount);
+            case DIAMOND_ORE, DEEPSLATE_DIAMOND_ORE -> new ItemStack(Material.DIAMOND, amount);
+            case COPPER_ORE, DEEPSLATE_COPPER_ORE, RAW_COPPER -> new ItemStack(Material.COPPER_INGOT, amount);
+            case NETHER_QUARTZ_ORE -> new ItemStack(Material.QUARTZ, amount);
+            //wood
+            case ACACIA_LOG, ACACIA_WOOD, STRIPPED_ACACIA_LOG, STRIPPED_ACACIA_WOOD, OAK_LOG, OAK_WOOD,
+                 STRIPPED_OAK_LOG, STRIPPED_OAK_WOOD, BIRCH_LOG, BIRCH_WOOD, STRIPPED_BIRCH_LOG, STRIPPED_BIRCH_WOOD,
+                 SPRUCE_LOG, SPRUCE_WOOD, STRIPPED_SPRUCE_LOG, STRIPPED_SPRUCE_WOOD, JUNGLE_LOG, JUNGLE_WOOD,
+                 STRIPPED_JUNGLE_LOG, STRIPPED_JUNGLE_WOOD, DARK_OAK_LOG, DARK_OAK_WOOD, STRIPPED_DARK_OAK_LOG,
+                 STRIPPED_DARK_OAK_WOOD, MANGROVE_LOG, MANGROVE_WOOD, STRIPPED_MANGROVE_LOG, STRIPPED_MANGROVE_WOOD,
+                 CHERRY_LOG, CHERRY_WOOD, STRIPPED_CHERRY_LOG, STRIPPED_CHERRY_WOOD, PALE_OAK_LOG, PALE_OAK_WOOD,
+                 STRIPPED_PALE_OAK_LOG, STRIPPED_PALE_OAK_WOOD -> new ItemStack(Material.CHARCOAL, amount);
+            //other
+            case COBBLESTONE -> new ItemStack(Material.STONE, amount);
+            case STONE -> new ItemStack(Material.SMOOTH_STONE, amount);
+            case COBBLED_DEEPSLATE -> new ItemStack(Material.DEEPSLATE, amount);
+            case DEEPSLATE_BRICKS -> new ItemStack(Material.CRACKED_DEEPSLATE_BRICKS, amount);
+            case DEEPSLATE_TILES -> new ItemStack(Material.CRACKED_DEEPSLATE_TILES, amount);
+            case SANDSTONE -> new ItemStack(Material.SMOOTH_SANDSTONE, amount);
+            case RED_SANDSTONE -> new ItemStack(Material.SMOOTH_RED_SANDSTONE, amount);
+            case NETHER_BRICK -> new ItemStack(Material.CRACKED_NETHER_BRICKS, amount);
+            case BASALT -> new ItemStack(Material.SMOOTH_BASALT, amount);
+            case POLISHED_BLACKSTONE_BRICKS -> new ItemStack(Material.CRACKED_POLISHED_BLACKSTONE_BRICKS, amount);
+            case QUARTZ_BLOCK -> new ItemStack(Material.SMOOTH_QUARTZ, amount);
+            case CLAY -> new ItemStack(Material.TERRACOTTA, amount);
+            case SAND, RED_SAND -> new ItemStack(Material.GLASS, amount);
+            case WET_SPONGE -> new ItemStack(Material.SPONGE, amount);
+            case CHORUS_FRUIT -> new ItemStack(Material.POPPED_CHORUS_FRUIT, amount);
+            case SEA_PICKLE -> new ItemStack(Material.LIME_DYE, amount);
+            case CLAY_BALL -> new ItemStack(Material.BRICK, amount);
+            case NETHERRACK -> new ItemStack(Material.NETHER_BRICK, amount);
+            case RESIN_CLUMP -> new ItemStack(Material.RESIN_BRICK, amount);
+            case KELP -> new ItemStack(Material.DRIED_KELP, amount);
+            //GLAZED TERRACOTTA
+            case RED_TERRACOTTA -> new ItemStack(Material.RED_GLAZED_TERRACOTTA, amount);
+            case ORANGE_TERRACOTTA -> new ItemStack(Material.ORANGE_GLAZED_TERRACOTTA, amount);
+            case YELLOW_TERRACOTTA -> new ItemStack(Material.YELLOW_GLAZED_TERRACOTTA, amount);
+            case LIME_TERRACOTTA -> new ItemStack(Material.LIME_GLAZED_TERRACOTTA, amount);
+            case GREEN_TERRACOTTA -> new ItemStack(Material.GREEN_GLAZED_TERRACOTTA, amount);
+            case CYAN_TERRACOTTA -> new ItemStack(Material.CYAN_GLAZED_TERRACOTTA, amount);
+            case LIGHT_BLUE_TERRACOTTA -> new ItemStack(Material.LIGHT_BLUE_GLAZED_TERRACOTTA, amount);
+            case BLUE_TERRACOTTA -> new ItemStack(Material.BLUE_GLAZED_TERRACOTTA, amount);
+            case PURPLE_TERRACOTTA -> new ItemStack(Material.PURPLE_GLAZED_TERRACOTTA, amount);
+            case MAGENTA_TERRACOTTA -> new ItemStack(Material.MAGENTA_GLAZED_TERRACOTTA, amount);
+            case PINK_TERRACOTTA -> new ItemStack(Material.PINK_GLAZED_TERRACOTTA, amount);
+            case BROWN_TERRACOTTA -> new ItemStack(Material.BROWN_GLAZED_TERRACOTTA, amount);
+            case BLACK_TERRACOTTA -> new ItemStack(Material.BLACK_GLAZED_TERRACOTTA, amount);
+            case GRAY_TERRACOTTA -> new ItemStack(Material.GRAY_GLAZED_TERRACOTTA, amount);
+            case LIGHT_GRAY_TERRACOTTA -> new ItemStack(Material.LIGHT_GRAY_GLAZED_TERRACOTTA, amount);
+            case WHITE_TERRACOTTA -> new ItemStack(Material.WHITE_GLAZED_TERRACOTTA, amount);
+            default -> drop; //if no swtich found give normal item
+        };
     }
 }

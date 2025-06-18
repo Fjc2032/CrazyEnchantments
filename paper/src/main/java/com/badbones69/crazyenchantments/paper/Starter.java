@@ -12,6 +12,7 @@ import com.badbones69.crazyenchantments.paper.api.managers.ArmorEnchantmentManag
 import com.badbones69.crazyenchantments.paper.api.managers.BowEnchantmentManager;
 import com.badbones69.crazyenchantments.paper.api.managers.ShopManager;
 import com.badbones69.crazyenchantments.paper.api.managers.WingsManager;
+import com.badbones69.crazyenchantments.paper.api.objects.CEnchantment;
 import com.badbones69.crazyenchantments.paper.api.utils.BowUtils;
 import com.badbones69.crazyenchantments.paper.controllers.EnchantmentControl;
 import com.badbones69.crazyenchantments.paper.controllers.settings.EnchantmentBookSettings;
@@ -19,9 +20,10 @@ import com.badbones69.crazyenchantments.paper.controllers.settings.ProtectionCry
 import com.badbones69.crazyenchantments.paper.support.PluginSupport;
 import com.badbones69.crazyenchantments.paper.support.PluginSupport.SupportedPlugins;
 import com.badbones69.crazyenchantments.paper.support.claims.SuperiorSkyBlockSupport;
-import com.ryderbelserion.crazyenchantments.enums.FileKeys;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.logging.Logger;
 
 public class Starter {
 
@@ -31,6 +33,8 @@ public class Starter {
     private FileManager fileManager;
     private CrazyManager crazyManager;
     private Methods methods;
+
+    private Logger logger = Bukkit.getLogger();
 
     // Settings.
     private ProtectionCrystalSettings protectionCrystalSettings;
@@ -43,6 +47,11 @@ public class Starter {
     private SuperiorSkyBlockSupport superiorSkyBlockSupport;
     private PluginSupport pluginSupport;
     private VaultSupport vaultSupport;
+
+    private EnchantPluginBuilder<CEnchantment> enchantPluginBuilder;
+    private EnchantPlugin enchantPlugin;
+    private CrazyEnchantStats crazyEnchantStats;
+    private MMOItemsSupport mmoItemsSupport;
 
     // Plugin Managers.
     private ArmorEnchantmentManager armorEnchantmentManager;
@@ -136,7 +145,6 @@ public class Starter {
 
         return this.superiorSkyBlockSupport;
     }
-
     // Economy Management.
     public CurrencyAPI getCurrencyAPI() {
         return this.currencyAPI;
@@ -166,5 +174,17 @@ public class Starter {
     // Plugin Utils.
     public BowUtils getBowUtils() {
         return this.bowUtils;
+    }
+
+
+
+
+    //
+    public Logger getLogger() {
+        return logger;
+    }
+
+    public void setLogger(Logger logger) {
+        this.logger = logger;
     }
 }

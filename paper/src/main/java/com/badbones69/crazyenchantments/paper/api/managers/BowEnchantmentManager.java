@@ -20,7 +20,9 @@ public class BowEnchantmentManager {
 
         if (CEnchantments.VENOM.isActivated()) this.bowEnchantments.add(new BowEnchantment(CEnchantments.VENOM, List.of(new PotionEffects(PotionEffectType.POISON, 2 * 20, -1)), true));
 
-        if (CEnchantments.SNIPER.isActivated()) this.bowEnchantments.add(new BowEnchantment(CEnchantments.SNIPER, List.of(new PotionEffects(PotionEffectType.POISON, 5 * 20, 1)), false));
+        if (CEnchantments.SNIPER.isActivated()) {
+            this.bowEnchantments.add(new BowEnchantment(CEnchantments.SNIPER, List.of(new PotionEffects(PotionEffectType.POISON, 5 * 20, 1)), false));
+        }
     }
     
     public List<BowEnchantment> getBowEnchantments() {

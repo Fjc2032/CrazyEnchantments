@@ -5,7 +5,6 @@ import com.badbones69.crazyenchantments.paper.Methods;
 import com.badbones69.crazyenchantments.paper.Starter;
 import com.badbones69.crazyenchantments.paper.api.CrazyManager;
 import com.badbones69.crazyenchantments.paper.api.enums.CEnchantments;
-import com.badbones69.crazyenchantments.paper.api.events.MassBlockBreakEvent;
 import com.badbones69.crazyenchantments.paper.api.objects.CEnchantment;
 import com.badbones69.crazyenchantments.paper.api.builders.ItemBuilder;
 import com.badbones69.crazyenchantments.paper.api.utils.EnchantUtils;
@@ -29,11 +28,17 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -190,6 +195,127 @@ public class AxeEnchantments implements Listener {
 
             this.methods.removeDurability(armorItem, player);
         }
+        //Imperium
+        if (EnchantUtils.isEventActive(CEnchantments.REAPER, damager, item, enchantments)) {
+            Collection<PotionEffect> effects = new ArrayList<>();
+            effects.add(new PotionEffect(PotionEffectType.WITHER, CEnchantments.REAPER.getChance() / 5, 1));
+            effects.add(new PotionEffect(PotionEffectType.BLINDNESS, CEnchantments.REAPER.getChance() / 5, 1));
+            entity.addPotionEffects(effects);
+
+            int damageAmount = damager.getExpToLevel();
+            event.setDamage(event.getDamage() * (1 + (double) damageAmount / 1000));
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.PUMMEL, damager, item, enchantments)) {
+            if (!(event.getDamager() instanceof LivingEntity target)) return;
+            target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 6, 1));
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.CLEAVE, damager, item, enchantments)) {
+            World world = event.getDamager().getWorld();
+            if (!(event.getEntity() instanceof LivingEntity victim)) return;
+            BoundingBox region = new BoundingBox(damager.getX(), damager.getY(), damager.getZ(), victim.getX() + 3, victim.getY(), victim.getZ() + 3);
+            Collection<Entity> targets = world.getNearbyEntities(region);
+
+            for (Entity target : targets) {
+                if (!(target instanceof LivingEntity)) return;
+                ((LivingEntity) target).damage(event.getDamage() * ((double) CEnchantments.CLEAVE.getChance() / 20));
+            }
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.CORRUPT, damager, item, enchantments)) {
+            damager.sendMessage("Corrupt activated");
+            if (!(event.getEntity() instanceof LivingEntity target)) return;
+            target.damage(event.getDamage());
+            Bukkit.getScheduler().runTaskLater(plugin, () -> target.damage(event.getDamage()), 40L);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> target.damage(event.getDamage()), 60L);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> target.damage(event.getDamage()), 80L);
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.INSANITY, damager, item, enchantments)) {
+            if (!(event.getEntity() instanceof Player target)) return;
+            ItemStack axe = target.getActiveItem();
+
+            Collection<ItemStack> axes = new ArrayList<>();
+            axes.add(ItemStack.of(Material.WOODEN_AXE));
+            axes.add(ItemStack.of(Material.STONE_AXE));
+            axes.add(ItemStack.of(Material.GOLDEN_AXE));
+            axes.add(ItemStack.of(Material.IRON_AXE));
+            axes.add(ItemStack.of(Material.DIAMOND_AXE));
+            axes.add(ItemStack.of(Material.NETHERITE_AXE));
+
+            for (ItemStack selectedItem : axes) {
+                if (selectedItem.equals(axe)) {
+                    event.setDamage(event.getDamage() + (1 + (double) CEnchantments.INSANITY.getChance() / 100));
+                }
+            }
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.BARBARIAN, damager, item, enchantments)) {
+            event.setDamage(event.getDamage() * (1 + ((double) CEnchantments.BARBARIAN.getChance() / 100)));
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.BLEED, damager, item, enchantments)) {
+            if (!(event.getEntity() instanceof Player player)) return;
+
+            enchantmentBookSettings.createCooldown(CEnchantments.BLEED.getEnchantment(), item, damager.getUniqueId(), 2000L, 2L);
+
+            Particle.DustOptions dustOptions = new Particle.DustOptions(Color.RED, 5.0F);
+
+            List<BukkitTask> bleedTasks = new ArrayList<>();
+
+            bleedTasks.add(Bukkit.getScheduler().runTaskTimer(plugin, () -> player.spawnParticle(Particle.DUST, player.getLocation(), 12, dustOptions), 40L, 20L));
+            bleedTasks.add(Bukkit.getScheduler().runTaskTimer(plugin, () -> player.damage(event.getDamage() / (enchantmentBookSettings.getLevel(item, CEnchantments.BLEED.getEnchantment()) * 1.05)), 40L, 20L));
+            bleedTasks.add(Bukkit.getScheduler().runTaskTimer(plugin, () -> player.sendMessage("You are bleeding!"), 40L, 20L));
+            bleedTasks.add(Bukkit.getScheduler().runTaskTimer(plugin, () -> damager.sendMessage("** BLEED **"), 40L, 20L));
+
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                for (BukkitTask task : bleedTasks) {
+                    task.cancel();
+                }
+            }, 80L);
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.DEVOUR, damager, item, enchantments)) {
+            while (EnchantUtils.isEventActive(CEnchantments.BLEED, damager, item, enchantments)) {
+                if (!(event.getEntity() instanceof Player player)) return;
+                player.damage(event.getDamage() * (1 + ((double) CEnchantments.DEVOUR.getChance() / 10)));
+                damager.sendMessage("** Devour - BLEED STACK **");
+            }
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.BLACKSMITH, damager, item, enchantments)) {
+            ItemStack[] equipment = damager.getEquipment().getArmorContents();
+            for (ItemStack armor : equipment) {
+                if (armor == null) return;
+                ItemMeta meta = armor.getItemMeta();
+                Damageable damageable = (Damageable) meta;
+                int modifier = damageable.getDamage() - (2 + enchant.getLevel("Blacksmith"));
+                if (modifier < 0) return;
+                damageable.setDamage(modifier);
+                armor.setItemMeta(meta);
+                damager.playSound((net.kyori.adventure.sound.Sound) Sound.BLOCK_CALCITE_BREAK);
+            }
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.ARROWBREAK, damager, item, enchantments)) {
+            if (event.getDamageSource().getDamageType().equals(DamageType.ARROW)) {
+                event.setCancelled(true);
+                damager.playSound((net.kyori.adventure.sound.Sound) Sound.BLOCK_ANVIL_DESTROY);
+            }
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.DEEPBLEED, damager, item, enchantments)) {
+            enchantmentBookSettings.createCooldown(CEnchantments.DEEPBLEED.getEnchantment(), item, damager.getUniqueId(), 500L, 1L);
+
+            if (!(event.getEntity() instanceof Player player)) return;
+
+            Particle.DustOptions dustOptions = new Particle.DustOptions(Color.RED, 5.0F);
+
+            List<BukkitTask> bleedTasks = new ArrayList<>();
+
+            bleedTasks.add(Bukkit.getScheduler().runTaskTimer(plugin, () -> player.spawnParticle(Particle.DUST, player.getLocation(), 12, dustOptions), 40L, 20L));
+            bleedTasks.add(Bukkit.getScheduler().runTaskTimer(plugin, () -> player.damage(event.getDamage() / (enchantmentBookSettings.getLevel(item, CEnchantments.DEEPBLEED.getEnchantment()) * 1.75)), 40L, 20L));
+            bleedTasks.add(Bukkit.getScheduler().runTaskTimer(plugin, () -> player.sendMessage("You are bleeding!"), 40L, 20L));
+            bleedTasks.add(Bukkit.getScheduler().runTaskTimer(plugin, () -> damager.sendMessage("** BLEED **"), 40L, 20L));
+
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                for (BukkitTask task : bleedTasks) {
+                    task.cancel();
+                }
+            }, 80L);
+        }
+        //Imperium
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
@@ -229,6 +355,7 @@ public class AxeEnchantments implements Listener {
         }
     }
 
+
     private void removeBadPotions(final Player player) {
         List<PotionEffectType> bad = new ArrayList<>() {{
             add(PotionEffectType.BLINDNESS);
@@ -242,5 +369,13 @@ public class AxeEnchantments implements Listener {
         }};
 
         bad.forEach(player::removePotionEffect);
+    }
+
+    public Enchant getEnchant() {
+        return enchant;
+    }
+
+    public void setEnchant(Enchant enchant) {
+        this.enchant = enchant;
     }
 }

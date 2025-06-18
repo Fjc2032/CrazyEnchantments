@@ -3,6 +3,7 @@ package com.badbones69.crazyenchantments.paper.controllers.settings;
 import com.badbones69.crazyenchantments.paper.CrazyEnchantments;
 import com.badbones69.crazyenchantments.paper.Methods;
 import com.badbones69.crazyenchantments.paper.api.economy.Currency;
+import com.badbones69.crazyenchantments.paper.api.enums.CEnchantments;
 import com.badbones69.crazyenchantments.paper.api.enums.pdc.DataKeys;
 import com.badbones69.crazyenchantments.paper.api.enums.pdc.Enchant;
 import com.badbones69.crazyenchantments.paper.api.enums.pdc.EnchantedBook;
@@ -24,15 +25,6 @@ import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Color;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.spongepowered.configurate.CommentedConfigurationNode;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class EnchantmentBookSettings {
     
@@ -45,8 +37,13 @@ public class EnchantmentBookSettings {
     private final List<Category> categories = Lists.newArrayList();
 
     private final List<CEnchantment> registeredEnchantments = Lists.newArrayList();
-
+  
+    private final Gson gson = new Gson();
+    private CEnchantments cEnchantments;
+    public final Map<UUID, Long> playerCooldowns = new HashMap<>();
+  
     private ItemBuilder enchantmentBook;
+
 
     /**
      * This method converts an ItemStack into a CEBook.
@@ -386,5 +383,51 @@ public class EnchantmentBookSettings {
                 container.set(DataKeys.enchantments.getNamespacedKey(), PersistentDataType.STRING, Methods.getGson().toJson(data));
             });
         }
+    }
+
+    /**
+     * Creates a cooldown and applies it to the targeted enchantment. If the enchantment already has a cooldown,
+     * the function will terminate.
+     * @param enchantment The enchantment getting the cooldown.
+     * @param item The ItemStack the enchantment is on.
+     * @param uuid The UUID of the target.
+     * @param cooldownModifier The base cooldown, in server ticks. Must be represented as a long.
+     * @param multi The multiplier. Formula is [base - (level*multi)]. Set to 0 for no multiplier. A bigger multi means the cooldown lowers more per level. Must be a long.
+     */
+    @ApiStatus.Experimental
+    public void createCooldown(CEnchantment enchantment, @NotNull ItemStack item, @NotNull UUID uuid, long cooldownModifier, long multi) {
+        if (!(enchantment.getCooldown() == 0)) return;
+        int level = getLevel(item, enchantment);
+        long cooldown = Math.max(cooldownModifier - (level * multi), 3000L);
+
+        if (System.currentTimeMillis() - playerCooldowns.getOrDefault(uuid, 0L) < cooldown) return;
+
+        playerCooldowns.put(uuid, System.currentTimeMillis());
+    }
+
+    /**
+     * Swaps an enchant to a heroic variant if requirements are met. A reminder that you do not need to check if the enchantment is heroic yourself; the function will do that for you.
+     * @param enchant The enchantment that will be the new enchant.
+     * @param oldEnchant The old enchantment being replaced. Accessible via the enum. Will exit if null.
+     * @param item The ItemStack this will happen on. Can't be null.
+     */
+    @ApiStatus.Experimental
+    public void swapToHeroicEnchant(@NotNull CEnchantments enchant, @Nullable CEnchantment oldEnchant, @NotNull ItemStack item) {
+        if (!enchant.isHeroic()) return;
+        if (oldEnchant == null) return;
+        if (getEnchantments(item).containsKey(oldEnchant)) removeEnchantment(item.getItemMeta(), oldEnchant);
+    }
+
+    public boolean isHeroic(CEnchantments enchantments) {
+        return enchantments.isHeroic();
+    }
+
+    public CEnchantment getOldEnchant() {
+        return cEnchantments.getOldEnchant();
+    }
+
+
+    private CEnchantments getcEnchantments() {
+        return cEnchantments;
     }
 }

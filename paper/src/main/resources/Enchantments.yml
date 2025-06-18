@@ -31,24 +31,268 @@ Enchantments:
     #Info for the enchantment
     Info:
       #Name of the item in the info GUI.
-      Name: '&e&lGlowing &7(&bI&7)'
+      Name: '&f&lGlowing &r&7(I)'
       #The description of what it does.
       Description:
-        - '&7Give you night vision'
-        - '&7when you put it on you.'
-        - ''
-        - '&6Found in:'
-        - '&7 - &a&l&nCommon'
-        - '&7 - &9&l&nRare'
-        - '&7 - &4&l&nLegendary'
-        - '&6Enchantable Items: &aHelmets'
+        - '&eGives permenent night vision.'
+        - '&7Helmets Enchantment'
+        - 'Simple'
     #All the categories the Enchantment can be found in
     Categories:
-      - 'Common'
-      - 'Rare'
-      - 'Legendary'
-    # List of cEnchants that can't be added to the item if this one is on it.
-    Conflicts: []
+
+      - 'Simple'
+  #Imperium Enchants Do not change this line.
+  Shuffle:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&8Shuffle'
+    MaxPower: 3
+    Enchantment-Type: 'Armor'
+    Chance-System:
+      Base: 7
+      Increase: 7
+    Info:
+      Name: '&f&lShuffle &r&7(I-III)'
+      Description:
+        - "&eShuffles your opponent's hotbar."
+        - "&7Armours Enchantment"
+        - "&Simple"
+    Categories:
+      - 'Simple'
+  #Do not change this line.
+  Aquatic:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&7Aquatic'
+    MaxPower: 1
+    Enchantment-Type: 'Helmet'
+    Info:
+      Name: '&f&lAquatic &r&7(I)'
+      Description:
+        - '&eGives permenent water breathing.'
+        - '&7Helmets Enchantment'
+        - 'Simple'
+    Categories:
+      - 'Simple'
+  #Do not change this line.
+  Insomnia:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&7Insomnia'
+    MaxPower: 7
+    Enchantment-Type: 'Sword'
+    Chance-System:
+      Base: 10
+      Increase: 2
+    Info:
+      Name: '&f&lInsomnia &r&7(I)'
+      Description:
+        - '&eGives Slowness, mining fatigue'
+        - '&eand confusion'
+        - '&7Swords Echantment'
+        - 'Simple'
+    Categories:
+      - 'Simple'
+  #Do not change this line.
+  AutoSmelt:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&7AutoSmelt'
+    MaxPower: 3
+    Enchantment-Type: 'PickAxe'
+    Chance-System:
+      Base: 30
+      Increase: 35
+    Info:
+      Name: '&f&lAuto Smelt &r&7(I-III)'
+      Description:
+        - '&eOres are automatically'
+        - '&7smelted when mined.'
+        - '&7Pickaxes Enchantment'
+        - 'Simple'
+    Categories:
+      - 'Simple'
+  #Do not change this line.
+  Experience:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&7Experience'
+    MaxPower: 5
+    Enchantment-Type: 'PickAxe'
+    Chance-System:
+      Base: 25
+      Increase: 25
+    Info:
+      Name: '&f&lExperience &r&7(I-V)'
+      Description:
+        - '&eChance to get Experience'
+        - '&efrom mining.'
+        - '&7Pickaxes Enchantment'
+        - 'Simple'
+    Categories:
+      - 'Simple'
+  #Do not change this line.
+  Furnace:
+    Enabled: false
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&7Furnace'
+    MaxPower: 1
+    Enchantment-Type: 'PickAxe'
+    Info:
+      Name: '&f&lFurnace &r&7(I)'
+      Description:
+        - '&7Always smelts ores into'
+        - '&7items instead of blocks.'
+        - '&7Pickaxe Enchantment'
+        - 'simple'
+    Categories:
+      - 'Simple'
+  #Do not change this line.
+  Haste:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&7Haste'
+    MaxPower: 3
+    Enchantment-Type: 'Tool'
+    Info:
+      Name: '&f&lHaste &r&7(I-III)'
+      Description:
+        - '&7Gives you haste when'
+        - '&7holding the item in your hand.'
+        - '&7Tools Enchantment'
+        - 'Simple'
+    Categories:
+      - 'Simple'
+  #Do not change this line.
+  Oxygenate:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&7Oxygenate'
+    MaxPower: 1
+    Enchantment-Type: 'Tool'
+    Info:
+      Name: '&f&lOxygenate &r&7(I)'
+      Description:
+        - '&eRefills oxygen levels when'
+        - '&ebreaking blocks under water.'
+        - '&7Tools Enchantment'
+        - 'Simple'
+    Categories:
+      - 'Simple'
+  #Do not change this line.
+  Lightning:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&7Lightning'
+    MaxPower: 3
+    Enchantment-Type: 'Bow'
+    Chance-System:
+      Base: 20
+      Increase: 8
+    Info:
+      Name: '&f&lLightning &r&7(I-III)'
+      Description:
+        - '&eHas a chance to strike'
+        - '&elightning where the arrow lands.'
+        - '&7Bows Enchantment'
+        - 'Simple'
+    Categories:
+      - 'Simple'
+  #Do not change this line.
+  Obliterate:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&7Obliterate'
+    MaxPower: 5
+    Enchantment-Type: 'Sword'
+    Chance-System:
+      Base: 15
+      Increase: 5
+    Info:
+      Name: '&f&lObliterate &r&7(I-V)'
+      Description:
+        - '&eExtreme knockback.'
+        - 'Swords Enchantment'
+        - 'Simple'
+    Categories:
+      - 'Simple'
+  #Do not change this line.
+  Decapitation:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&7Decapitation'
+    MaxPower: 3
+    Enchantment-Type: 'Axe'
+    Chance-System:
+      Base: 20
+      Increase: 20
+    Info:
+      Name: '&f&lDecapitation &r&7(I-III)'
+      Description:
+        - '&eVictims have a chance of dropping'
+        - '&etheir head on death.'
+        - '&7Axes Enchantment'
+        - 'Simple'
+    Categories:
+      - 'Simple'
+  #Do not change this line.
+  Confusion:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&7Confusion'
+    MaxPower: 4
+    Enchantment-Type: 'Sword'
+    Chance-System:
+      Base: 15
+      Increase: 5
+    Info:
+      Name: '&f&lConfusion &r&7(I-III)'
+      Description:
+        - '&eHas a chance to give'
+        - '&eyour enemy confusion.'
+        - '&7Swords Enchantment'
+        - 'Simple'
+    Categories:
+      - 'Simple'
+  #Do not change this line.
+  Dizzy:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&7Dizzy'
+    MaxPower: 3
+    Enchantment-Type: 'Axe'
+    Chance-System:
+      Base: 10
+      Increase: 5
+    Info:
+      Name: '&f&lDizzy &r&7(I-III)'
+      Description:
+        - '&eHas a chance to give'
+        - '&eyour enemy confusion.'
+        - '&7Axes Enchantment'
+        - 'Simple'
+    Categories:
+      - 'Simple'
+  #Do not change this line.
+  Headless:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&7Headless'
+    MaxPower: 5
+    Enchantment-Type: 'Sword'
+    Chance-System:
+      Base: 20
+      Increase: 20
+    Info:
+      Name: '&f&lHeadless &r&7(I-III)'
+      Description:
+        - '&eVictims have a chance of dropping'
+        - '&etheir head on death.'
+        - '&7Axes Enchantment'
+        - 'Simple'
+    Categories:
+      - 'Simple'
+
   #Do not change this line.
   BurnShield:
     Enabled: true
@@ -115,8 +359,6 @@ Enchantments:
         - '&7 - &4&l&nLegendary'
         - '&6Enchantable Items: &aArmor'
     Categories:
-      - 'Common'
-      - 'Rare'
       - 'Legendary'
   #Do not change this line.
   SelfDestruct:
@@ -202,28 +444,6 @@ Enchantments:
         - '&7 - &9&l&nRare'
         - '&7 - &4&l&nLegendary'
         - '&6Enchantable Items: &aArmor'
-    Categories:
-      - 'Common'
-      - 'Rare'
-      - 'Legendary'
-  #Do not change this line.
-  Mermaid:
-    Enabled: true
-    Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&7Mermaid'
-    MaxPower: 3
-    Enchantment-Type: 'Helmet'
-    Info:
-      Name: '&e&lMermaid &7(&bI-&bIII&7)'
-      Description:
-        - '&7Gives you water breathing'
-        - '&7when you put it on.'
-        - ''
-        - '&6Found in:'
-        - '&7 - &a&l&nCommon'
-        - '&7 - &9&l&nRare'
-        - '&7 - &4&l&nLegendary'
-        - '&6Enchantable Items: &aHelmets'
     Categories:
       - 'Common'
       - 'Rare'
@@ -596,31 +816,6 @@ Enchantments:
       - 'Rare'
       - 'Legendary'
   #Do not change this line.
-  Dizzy:
-    Enabled: true
-    Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&7Dizzy'
-    MaxPower: 3
-    Enchantment-Type: 'Axe'
-    Chance-System:
-      Base: 10
-      Increase: 5
-    Info:
-      Name: '&e&lDizzy &7(&bI-&bIII&7)'
-      Description:
-        - '&7Has a chance to give'
-        - '&7your enemy confusion.'
-        - ''
-        - '&6Found in:'
-        - '&7 - &a&l&nCommon'
-        - '&7 - &9&l&nRare'
-        - '&7 - &4&l&nLegendary'
-        - '&6Enchantable Items: &aAxes'
-    Categories:
-      - 'Common'
-      - 'Rare'
-      - 'Legendary'
-  #Do not change this line.
   Berserk:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
@@ -895,56 +1090,6 @@ Enchantments:
       - 'Rare'
       - 'Legendary'
   #Do not change this line.
-  AutoSmelt:
-    Enabled: true
-    Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&7AutoSmelt'
-    MaxPower: 5
-    Enchantment-Type: 'PickAxe'
-    Chance-System:
-      Base: 25
-      Increase: 25
-    Info:
-      Name: '&e&lAuto Smelt &7(&bI-&bV&7)'
-      Description:
-        - '&7Has a chance to auto smelt'
-        - '&7ores and give more ingots.'
-        - ''
-        - '&6Found in:'
-        - '&7 - &a&l&nCommon'
-        - '&7 - &9&l&nRare'
-        - '&7 - &4&l&nLegendary'
-        - '&6Enchantable Items: &aPickaxes'
-    Categories:
-      - 'Common'
-      - 'Rare'
-      - 'Legendary'
-  #Do not change this line.
-  Experience:
-    Enabled: true
-    Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&7Experience'
-    MaxPower: 3
-    Enchantment-Type: 'PickAxe'
-    Chance-System:
-      Base: 25
-      Increase: 25
-    Info:
-      Name: '&e&lExperience &7(&bI-&bIII&7)'
-      Description:
-        - '&7Has a chance to give'
-        - '&72x or more xp from ores.'
-        - ''
-        - '&6Found in:'
-        - '&7 - &a&l&nCommon'
-        - '&7 - &9&l&nRare'
-        - '&7 - &4&l&nLegendary'
-        - '&6Enchantable Items: &aPickaxes'
-    Categories:
-      - 'Common'
-      - 'Rare'
-      - 'Legendary'
-  #Do not change this line.
   Telepathy:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
@@ -956,50 +1101,6 @@ Enchantments:
       Description:
         - '&7Will automatically send'
         - '&7mined blocks to your inventory.'
-        - ''
-        - '&6Found in:'
-        - '&7 - &a&l&nCommon'
-        - '&7 - &9&l&nRare'
-        - '&7 - &4&l&nLegendary'
-        - '&6Enchantable Items: &aTools'
-    Categories:
-      - 'Common'
-      - 'Rare'
-      - 'Legendary'
-  #Do not change this line.
-  Haste:
-    Enabled: true
-    Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&7Haste'
-    MaxPower: 3
-    Enchantment-Type: 'Tool'
-    Info:
-      Name: '&e&lHaste &7(&bI-&bIII&7)'
-      Description:
-        - '&7Gives you haste when'
-        - '&7holding the item in your hand.'
-        - ''
-        - '&6Found in:'
-        - '&7 - &a&l&nCommon'
-        - '&7 - &9&l&nRare'
-        - '&7 - &4&l&nLegendary'
-        - '&6Enchantable Items: &aTools'
-    Categories:
-      - 'Common'
-      - 'Rare'
-      - 'Legendary'
-  #Do not change this line.
-  Oxygenate:
-    Enabled: true
-    Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&7Oxygenate'
-    MaxPower: 1
-    Enchantment-Type: 'Tool'
-    Info:
-      Name: '&e&lOxygenate &7(&bI&7)'
-      Description:
-        - '&7Gives you water breathing'
-        - '&7when holding item in your hand.'
         - ''
         - '&6Found in:'
         - '&7 - &a&l&nCommon'
@@ -1031,81 +1132,6 @@ Enchantments:
         - '&7 - &9&l&nRare'
         - '&7 - &4&l&nLegendary'
         - '&6Enchantable Items: &aBows'
-    Categories:
-      - 'Common'
-      - 'Rare'
-      - 'Legendary'
-  #Do not change this line.
-  Lightning:
-    Enabled: true
-    Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&7Lightning'
-    MaxPower: 1
-    Enchantment-Type: 'Bow'
-    Chance-System:
-      Base: 25
-      Increase: 10
-    Info:
-      Name: '&e&lLightning &7(&bI&7)'
-      Description:
-        - '&7Has a chance to strike'
-        - '&7lightning where the arrow lands.'
-        - ''
-        - '&6Found in:'
-        - '&7 - &a&l&nCommon'
-        - '&7 - &9&l&nRare'
-        - '&7 - &4&l&nLegendary'
-        - '&6Enchantable Items: &aBows'
-    Categories:
-      - 'Common'
-      - 'Rare'
-      - 'Legendary'
-  #Do not change this line.
-  Decapitation:
-    Enabled: true
-    Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&7Decapitation'
-    MaxPower: 5
-    Enchantment-Type: 'Axe'
-    Chance-System:
-      Base: 10
-      Increase: 10
-    Info:
-      Name: '&e&lDecapitation &7(&bI-&bV&7)'
-      Description:
-        - '&7Has a chance to drop'
-        - '&7the player''s head on death.'
-        - ''
-        - '&6Found in:'
-        - '&7 - &a&l&nCommon'
-        - '&7 - &9&l&nRare'
-        - '&7 - &4&l&nLegendary'
-        - '&6Enchantable Items: &aAxes'
-    Categories:
-      - 'Common'
-      - 'Rare'
-      - 'Legendary'
-  #Do not change this line.
-  Confusion:
-    Enabled: true
-    Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&7Confusion'
-    MaxPower: 4
-    Enchantment-Type: 'Sword'
-    Chance-System:
-      Base: 15
-      Increase: 5
-    Info:
-      Name: '&e&lConfusion &7(&bI-&bIV&7)'
-      Description:
-        - '&7Has a chance to give'
-        - '&7your enemy confusion.'
-        - ''
-        - '&6Found in:'
-        - '&7 - &a&l&nCommon'
-        - '&7 - &9&l&nRare'
-        - '&7 - &4&l&nLegendary'
-        - '&6Enchantable Items: &aSwords'
     Categories:
       - 'Common'
       - 'Rare'
@@ -1158,31 +1184,6 @@ Enchantments:
       - 'Rare'
       - 'Legendary'
   #Do not change this line.
-  Headless:
-    Enabled: true
-    Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&7Headless'
-    MaxPower: 5
-    Enchantment-Type: 'Sword'
-    Chance-System:
-      Base: 10
-      Increase: 10
-    Info:
-      Name: '&e&lHeadless &7(&bI-&bV&7)'
-      Description:
-        - '&7Has a chance to drop'
-        - '&7your enemy''s head on death.'
-        - ''
-        - '&6Found in:'
-        - '&7 - &a&l&nCommon'
-        - '&7 - &9&l&nRare'
-        - '&7 - &4&l&nLegendary'
-        - '&6Enchantable Items: &aSwords'
-    Categories:
-      - 'Common'
-      - 'Rare'
-      - 'Legendary'
-  #Do not change this line.
   Inquisitive:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
@@ -1208,31 +1209,6 @@ Enchantments:
       - 'Rare'
       - 'Legendary'
   #Do not change this line.
-  Insomnia:
-    Enabled: true
-    Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&7Insomnia'
-    MaxPower: 1
-    Enchantment-Type: 'Armor'
-    Chance-System:
-      Base: 10
-      Increase: 5
-    Info:
-      Name: '&e&lInsomnia &7(&bI&7)'
-      Description:
-        - '&7Gives confusion, mining fatigue, and slowness'
-        - '&7but has a high chance of doing double the damage.'
-        - ''
-        - '&6Found in:'
-        - '&7 - &a&l&nCommon'
-        - '&7 - &9&l&nRare'
-        - '&7 - &4&l&nLegendary'
-        - '&6Enchantable Items: &aArmor'
-    Categories:
-      - 'Common'
-      - 'Rare'
-      - 'Legendary'
-  #Do not change this line.
   Nutrition:
     Enabled: true
     Sound: "ENTITY_PLAYER_LEVELUP"
@@ -1247,31 +1223,6 @@ Enchantments:
       Description:
         - '&7Has a chance to'
         - '&7feed you while fighting.'
-        - ''
-        - '&6Found in:'
-        - '&7 - &a&l&nCommon'
-        - '&7 - &9&l&nRare'
-        - '&7 - &4&l&nLegendary'
-        - '&6Enchantable Items: &aSwords'
-    Categories:
-      - 'Common'
-      - 'Rare'
-      - 'Legendary'
-  #Do not change this line.
-  Obliterate:
-    Enabled: true
-    Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&7Obliterate'
-    MaxPower: 3
-    Enchantment-Type: 'Sword'
-    Chance-System:
-      Base: 15
-      Increase: 5
-    Info:
-      Name: '&e&lObliterate &7(&bI-&bIII&7)'
-      Description:
-        - '&7Has a chance to send'
-        - '&7your enemy flying backwards.'
         - ''
         - '&6Found in:'
         - '&7 - &a&l&nCommon'
@@ -1849,28 +1800,6 @@ Enchantments:
       - 'Legendary'
     Conflicts:
       - "VeinMiner"
-  #Do not change this line.
-  Furnace:
-    Enabled: true
-    Sound: "ENTITY_PLAYER_LEVELUP"
-    Name: '&7Furnace'
-    MaxPower: 1
-    Enchantment-Type: 'PickAxe'
-    Info:
-      Name: '&e&lFurnace &7(&bI&7)'
-      Description:
-        - '&7Always smelts ores into'
-        - '&7items instead of blocks.'
-        - ''
-        - '&6Found in:'
-        - '&7 - &a&l&nCommon'
-        - '&7 - &9&l&nRare'
-        - '&7 - &4&l&nLegendary'
-        - '&6Enchantable Items: &aPickaxes'
-    Categories:
-      - 'Common'
-      - 'Rare'
-      - 'Legendary'
   #Do not change this line.
   Blizzard:
     Enabled: true
@@ -2467,3 +2396,530 @@ Enchantments:
         - '&6Enchantable Items: &aBow'
     Categories:
       - 'Legendary'
+  #Imperium Enchants Do not change this line.
+  Poisoned:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&9Poisoned'
+    MaxPower: 4
+    Enchantment-Type: 'Armor'
+    Chance-System:
+      Base: 10
+      Increase: 5
+    Info:
+      Name: '&9§lPoisoned &7(&bI-II&7)'
+      Description:
+        - "&7Poisons your opponent"
+        - "&7Found in: "
+        - "&7 - &9&lRare"
+    Categories:
+      - 'Rare'
+      - 'Legendary'
+  #Imperium Enchants Do not change this line.
+  Longbow:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&eLongbow'
+    MaxPower: 4
+    Enchantment-Type: 'Bow'
+    Chance-System:
+      Base: 30
+      Increase: 10
+    Info:
+      Name: '&e§lLongbow &r&7(I-IV)'
+      Description:
+        - '&eIncreased damage to players'
+        - '&ewith a bow in hand.'
+        - '&7Bow Enchantment'
+        - 'Ultimate'
+    Categories:
+      - 'Ultimate'
+  #Imperium Enchants Do not change this line.
+  Unfocus:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&9Unfocus'
+    MaxPower: 4
+    Enchantment-Type: 'Bow'
+    Chance-System:
+      Base: 10
+      Increase: 5
+    Info:
+      Name: '&9&lUnfocus &7(&bI-II&7)'
+      Description:
+        - "&7Inflicts nausea to the target."
+        - "&7Also multiplies bow damage by &b1.5X."
+        - "&7Found in: "
+        - "&7 - &9&lRare"
+        - "&7 - &6&lLegendary"
+    Categories:
+      - 'Rare'
+      - 'Legendary'
+  #Imperium Enchants Do not change this line.
+  Ward:
+      Enabled: true
+      Sound: "ENTITY_PLAYER_LEVELUP"
+      Name: '&aWard'
+      MaxPower: 4
+      Enchantment-Type: 'Armour'
+      Chance-System:
+        Base: 10
+        Increase: 5
+      Info:
+        Name: '&a§lWard &r&7(I-IV)'
+        Description:
+          - "&eA chance to absorb enemy"
+          - "&edamage and heal you."
+          - '&7Armour Enchantment'
+          - 'Unique'
+      Categories:
+        - 'Unique'
+  #Imperium Enchants Do not change this line.
+  Virus:
+      Enabled: true
+      Sound: "ENTITY_PLAYER_LEVELUP"
+      Name: '&aVirus'
+      MaxPower: 4
+      Enchantment-Type: 'Bow'
+      Chance-System:
+        Base: 16
+        Increase: 4
+      Info:
+        Name: '&a&lVirus &r&7(I-IV)'
+        Description:
+          - "&eMultiplies all Wither and Posion effects"
+          - "&eon the affected target."
+          - '&7Bow Enchantment'
+          - 'Unique'
+      Categories:
+        - 'Unique'
+  #Imperium Enchants Do not change this line.
+  ObbyDestroyer:
+      Enabled: true
+      Sound: "ENTITY_PLAYER_LEVELUP"
+      Name: '&aObsidian Destroyer'
+      MaxPower: 5
+      Enchantment-Type: 'Pickaxe'
+      Chance-System:
+        Base: 20
+        Increase: 15
+      Info:
+        Name: '&a&lObsidian Destroyer &r&7(I-V)'
+        Description:
+          - "&eA Chance to instantly break obsidian blocks."
+          - '&7Pickaxe Enchantment'
+          - 'Unique'
+      Categories:
+        - 'Unique'
+  #Imperium Enchants Do not change this line.
+  Enderslayer:
+      Enabled: true
+      Sound: "ENTITY_PLAYER_LEVELUP"
+      Name: '&bEnder slayer'
+      MaxPower: 5
+      Enchantment-Type: 'Sword'
+      Chance-System:
+        Base: 50
+        Increase: 10
+      Info:
+        Name: '&b&lEnder slayer &r&7(I-V)'
+        Description:
+          - "&eIncreased damage to the endermen and the ender dragon."
+          - '&7Sword Enchantment'
+          - 'Elite'
+      Categories:
+        - 'Elite'
+  #Imperium Enchants Do not change this line.
+  Reaper:
+      Enabled: true
+      Sound: "ENTITY_PLAYER_LEVELUP"
+      Name: '&bReaper'
+      MaxPower: 4
+      Enchantment-Type: 'Axe'
+      Chance-System:
+        Base: 10
+        Increase: 3
+      Info:
+        Name: '&bReaper &r&7(I-IV)'
+        Description:
+          - "&ea chance to give your opponent"
+          - "&ewither and blindness effects"
+          - "&eWhile dealing damage."
+          - '&7Sword Enchantment'
+          - 'Elite'
+      Categories:
+        - 'Elite'
+  #Imperium Enchants Do not change this line.
+  Netherslayer:
+      Enabled: true
+      Sound: "ENTITY_PLAYER_LEVELUP"
+      Name: '&bNether slayer'
+      MaxPower: 5
+      Enchantment-Type: 'Sword'
+      Chance-System:
+        Base: 50
+        Increase: 10
+      Info:
+        Name: '&b&lNether slayer &r&7(I-V)'
+        Description:
+          - "&eIncreased damage to the Blazes and Pigmen."
+          - '&7Sword Enchantment'
+          - 'Elite'
+      Categories:
+        - 'Elite'
+  #Imperium Enchants Do not change this line.
+  Shackle:
+      Enabled: true
+      Sound: "ENTITY_PLAYER_LEVELUP"
+      Name: '&bShackle'
+      MaxPower: 3
+      Enchantment-Type: 'Sword'
+      Chance-System:
+        Base: 70
+        Increase: 10
+      Info:
+        Name: '&b&lShackle &r&7(I-III)'
+        Description:
+          - "&eYour attacks pull mobs toward you."
+          - '&7Sword Enchantment'
+          - 'Elite'
+      Categories:
+        - 'Elite'
+  #Imperium Enchants Do not change this line.
+  Reforged:
+      Enabled: true
+      Sound: "ENTITY_PLAYER_LEVELUP"
+      Name: '&bReforged'
+      MaxPower: 9
+      Enchantment-Type: 'Tool'
+      Chance-System:
+        Base: 10
+        Increase: 10
+      Info:
+        Name: '&b&lReforged &r&7(I-IX)'
+        Description:
+          - "&eProtects weapons and tool durability,"
+          - "&eitems will take longer to break."
+          - "&eWhile dealing damage."
+          - '&7Tool Enchantment'
+          - 'Elite'
+      Categories:
+        - 'Elite'
+  #Imperium Enchants Do not change this line.
+  Greatsword:
+      Enabled: true
+      Sound: "ENTITY_PLAYER_LEVELUP"
+      Name: '&bGreatsword'
+      MaxPower: 5
+      Enchantment-Type: 'Sword'
+      Chance-System:
+        Base: 40
+        Increase: 10
+      Info:
+        Name: '&b&lGreatsword &r&7(I-V)'
+        Description:
+          - "&eMutliplies damage Against players"
+          - "&ewho are wielding a BOW."
+          - '&7Sword Enchantment'
+          - 'Elite'
+      Categories:
+        - 'Elite'
+  #Imperium Enchants Do not change this line.
+  Trickster:
+      Enabled: true
+      Sound: "ENTITY_PLAYER_LEVELUP"
+      Name: '&bTrickster'
+      MaxPower: 8
+      Enchantment-Type: 'Armor'
+      Chance-System:
+        Base: 25
+        Increase: 6
+      Info:
+        Name: '&b&lTrickster &r&7(I-VIII)'
+        Description:
+          - "&eWhen attacked you have a chance to teleport"
+          - "&edirectly behind your opponent."
+          - '&7Armour Enchantment'
+          - 'Elite'
+      Categories:
+        - 'Elite'
+  #Imperium Enchants Do not change this line.
+  Pummel:
+      Enabled: true
+      Sound: "ENTITY_PLAYER_LEVELUP"
+      Name: '&bPummel'
+      MaxPower: 3
+      Enchantment-Type: 'Axe'
+      Chance-System:
+        Base: 30
+        Increase: 5
+      Info:
+        Name: '&b&lPummel &r&7(I-III)'
+        Description:
+          - "&echance to slow nearby enemies"
+          - "&efor a short period."
+          - '&7Axe Enchantment'
+          - 'Elite'
+      Categories:
+        - 'Elite'
+  #Imperium Enchants Do not change this line.
+  Farcast:
+      Enabled: true
+      Sound: "ENTITY_PLAYER_LEVELUP"
+      Name: '&bFarcast'
+      MaxPower: 5
+      Enchantment-Type: 'Bow'
+      Chance-System:
+        Base: 10
+        Increase: 5
+      Info:
+        Name: '&b&lFarcast &r&7(I-V)'
+        Description:
+          - "&eA chance to knockback melee attackers"
+          - "&eby a few blocks when they hit you"
+          - "&eincreased chance when on low health."
+          - '&7Bow Enchantment'
+          - 'Elite'
+      Categories:
+        - 'Elite'
+  #Imperium Enchants Do not change this line.
+  Marksman:
+      Enabled: true
+      Sound: "ENTITY_PLAYER_LEVELUP"
+      Name: '&eMarksman'
+      MaxPower: 4
+      Enchantment-Type: 'Armor'
+      Chance-System:
+        Base: 60
+        Increase: 10
+      Info:
+        Name: '&e&lMarksman &r&7(I-IV)'
+        Description:
+          - "&eIncreases damage dealt with bows"
+          - '&7Armour Enchantment'
+          - 'Ultimate'
+      Categories:
+        - 'Ultimate'
+  #Imperium Enchants Do not change this line.
+  Angelic:
+      Enabled: true
+      Sound: "ENTITY_PLAYER_LEVELUP"
+      Name: '&eAngelic'
+      MaxPower: 5
+      Enchantment-Type: 'Armor'
+      Chance-System:
+        Base: 20
+        Increase: 5
+      Info:
+        Name: '&e&lAngelic &r&7(I-V)'
+        Description:
+          - "&eheals health when damaged"
+          - '&7Armour Enchantment'
+          - 'Ultimate'
+      Categories:
+        - 'Ultimate'
+  #Imperium Enchants Do not change this line.
+  Jellylegs:
+      Enabled: true
+      Sound: "ENTITY_PLAYER_LEVELUP"
+      Name: '&eJelly legs'
+      MaxPower: 3
+      Enchantment-Type: 'Boots'
+      Chance-System:
+        Base: 10
+        Increase: 3
+      Info:
+        Name: '&e&lJelly legs &r&7(I-III)'
+        Description:
+          - "&eChance to negate fall damage."
+          - '&7boots Enchantment'
+          - 'Ultimate'
+      Categories:
+        - 'Ultimate'
+  #Imperium Enchants Do not change this line.
+  Cleave:
+      Enabled: true
+      Sound: "ENTITY_PLAYER_LEVELUP"
+      Name: '&eCleave'
+      MaxPower: 7
+      Enchantment-Type: 'Axe'
+      Chance-System:
+        Base: 15
+        Increase: 5
+      Info:
+        Name: '&e&lCleave &r&7(I-VII)'
+        Description:
+          - "&eDamages players within a radius"
+          - "&ethat increases with level of enchant."
+          - '&7Axe Enchantment'
+          - 'Ultimate'
+      Categories:
+        - 'Ultimate'
+  #Imperium Enchants Do not change this line.
+  Dominate:
+      Enabled: true
+      Sound: "ENTITY_PLAYER_LEVELUP"
+      Name: '&eDominate'
+      MaxPower: 4
+      Enchantment-Type: 'Swords'
+      Chance-System:
+        Base: 10
+        Increase: 3
+      Info:
+        Name: '&e&lDominate &r&7(I-IV)'
+        Description:
+          - "&eChance to weaken players when attacked."
+          - "&eCausing them to deal less damage."
+          - '&7Swords Enchantment'
+          - 'Ultimate'
+      Categories:
+        - 'Ultimate'
+  #Imperium Enchants Do not change this line.
+  Enderwalker:
+      Enabled: true
+      Sound: "ENTITY_PLAYER_LEVELUP"
+      Name: '&eEnder walker'
+      MaxPower: 5
+      Enchantment-Type: 'Boots'
+      Chance-System:
+        Base: 8
+        Increase: 3
+      Info:
+        Name: '&e&lEnder walker &r&7(I-V)'
+        Description:
+          - "&eheals health when damaged"
+          - '&7Armour Enchantment'
+          - 'Ultimate'
+      Categories:
+        - 'Ultimate'
+  #Imperium Enchants Do not change this line.
+  Tank:
+      Enabled: true
+      Sound: "ENTITY_PLAYER_LEVELUP"
+      Name: '&eTank'
+      MaxPower: 4
+      Enchantment-Type: 'Armor'
+      Chance-System:
+        Base: 20
+        Increase: 5
+      Info:
+        Name: '&e&lTank &r&7(I-IV)'
+        Description:
+          - "&eChance to decrase damage from enemy"
+          - "&eAxes by 2% per level."
+          - '&7Armour Enchantment'
+          - 'Ultimate'
+      Categories:
+        - 'Ultimate'
+  #Imperium Enchants Do not change this line.
+  Block:
+      Enabled: true
+      Sound: "ENTITY_PLAYER_LEVELUP"
+      Name: '&eBlock'
+      MaxPower: 3
+      Enchantment-Type: 'Sword'
+      Chance-System:
+        Base: 11
+        Increase: 11
+      Info:
+        Name: '&e&lBlock &r&7(I-III)'
+        Description:
+          - "&echance to negate and attack and"
+          - "&edeal up to 4 damage back."
+          - '&7Sword Enchantment'
+          - 'Ultimate'
+      Categories:
+        - 'Ultimate'
+  #Imperium Enchants Do not change this line.
+  Corrupt:
+      Enabled: true
+      Sound: "ENTITY_PLAYER_LEVELUP"
+      Name: '&eCorrupt'
+      MaxPower: 4
+      Enchantment-Type: 'Axe'
+      Chance-System:
+        Base: 20
+        Increase: 7
+      Info:
+        Name: '&e&lCorrupt &r&7(I-IV)'
+        Description:
+          - "&eDeals damage over time."
+          - '&7Axe Enchantment'
+          - 'Ultimate'
+      Categories:
+        - 'Ultimate'
+  #Imperium Enchants Do not change this line.
+  CreeperArmor:
+      Enabled: true
+      Sound: "ENTITY_PLAYER_LEVELUP"
+      Name: '&eCreeper Armor'
+      MaxPower: 3
+      Enchantment-Type: 'Armor'
+      Chance-System:
+        Base: 10
+        Increase: 3
+      Info:
+        Name: '&e&lCreeper Armor &r&7(I-III)'
+        Description:
+          - "&eChance to fullt negate explosive damage."
+          - "&eAt higher levels a chance to heal."
+          - '&7Armour Enchantment'
+          - 'Ultimate'
+      Categories:
+        - 'Ultimate'
+  #Imperium Enchants Do not change this line.
+  Demonic:
+      Enabled: true
+      Sound: "ENTITY_PLAYER_LEVELUP"
+      Name: '&eDemonic'
+      MaxPower: 3
+      Enchantment-Type: 'Sword'
+      Chance-System:
+        Base: 10
+        Increase: 3
+      Info:
+        Name: '&e&lDemonic &r&7(I-III)'
+        Description:
+          - "&eA chance to remove fire resistance from your enemy."
+          - '&7Sword Enchantment'
+          - 'Ultimate'
+      Categories:
+        - 'Ultimate'
+  #Imperium Enchants Do not change this line.
+  Metaphysical:
+      Enabled: true
+      Sound: "ENTITY_PLAYER_LEVELUP"
+      Name: '&eMetaphysical'
+      MaxPower: 4
+      Enchantment-Type: 'Boots'
+      Chance-System:
+        Base: 50
+        Increase: 10
+      Info:
+        Name: '&e&lMetaphysical &r&7(I-IV)'
+        Description:
+          - "&eA chance to be cured of"
+          - "&eslowness when attacked"
+          - '&7Boots Enchantment'
+          - 'Ultimate'
+      Categories:
+        - 'Ultimate'
+  #Imperium Enchants Do not change this line.
+  Distance:
+      Enabled: true
+      Sound: "ENTITY_PLAYER_LEVELUP"
+      Name: '&eDistance'
+      MaxPower: 4
+      Enchantment-Type: 'Sword'
+      Chance-System:
+        Base: 14
+        Increase: 3
+      Info:
+        Name: '&e&lDistance &r&7(I-IV)'
+        Description:
+          - "&ea chance to distance yourself from"
+          - "&eyour enemies and gain regenerations"
+          - '&7swords Enchantment'
+          - 'Ultimate'
+      Categories:
+        - 'Ultimate'

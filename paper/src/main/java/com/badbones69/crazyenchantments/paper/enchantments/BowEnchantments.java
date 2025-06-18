@@ -4,6 +4,7 @@ import com.badbones69.crazyenchantments.paper.CrazyEnchantments;
 import com.badbones69.crazyenchantments.paper.Methods;
 import com.badbones69.crazyenchantments.paper.Starter;
 import com.badbones69.crazyenchantments.paper.api.enums.CEnchantments;
+import com.badbones69.crazyenchantments.paper.api.events.BookApplyEvent;
 import com.badbones69.crazyenchantments.paper.api.managers.BowEnchantmentManager;
 import com.badbones69.crazyenchantments.paper.api.objects.BowEnchantment;
 import com.badbones69.crazyenchantments.paper.api.objects.CEnchantment;
@@ -18,7 +19,9 @@ import com.ryderbelserion.fusion.paper.api.scheduler.FoliaScheduler;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.block.Block;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Arrow;
@@ -38,6 +41,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 import java.util.Map;
 
@@ -180,7 +185,8 @@ public class BowEnchantments implements Listener {
         for (final BowEnchantment bowEnchantment : this.bowEnchantmentManager.getBowEnchantments()) {
             final CEnchantments enchantment = bowEnchantment.getEnchantment();
 
-            if (!EnchantUtils.isEventActive(enchantment, enchantedArrow.getShooter(), enchantedArrow.bow(), enchantedArrow.enchantments())) continue;
+            if (!EnchantUtils.isEventActive(enchantment, enchantedArrow.getShooter(), enchantedArrow.bow(), enchantedArrow.enchantments()))
+                continue;
 
             if (bowEnchantment.isPotionEnchantment()) {
                 bowEnchantment.getPotionEffects().forEach(effect -> entity.addPotionEffect(new PotionEffect(effect.potionEffect(), effect.duration(),
@@ -189,10 +195,73 @@ public class BowEnchantments implements Listener {
                 event.setDamage(event.getDamage() * ((bowEnchantment.isLevelAddedToAmplifier() ? enchantedArrow.getLevel(enchantment) : 0) + bowEnchantment.getDamageAmplifier()));
             }
         }
+        //Imperium
+        if (EnchantUtils.isEventActive(CEnchantments.LONGBOW, enchantedArrow.getShooter(), enchantedArrow.bow(), enchantedArrow.enchantments())) {
+            if (entity.getActiveItem().equals(ItemStack.of(Material.BOW))) {
+                event.setDamage(event.getDamage() * ((double) CEnchantments.LONGBOW.getChance() / 10));
+            }
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.UNFOCUS, enchantedArrow.getShooter(), enchantedArrow.bow(), enchantedArrow.enchantments())) {
+            entity.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, CEnchantments.UNFOCUS.getChance() / 10, 1, true, true, true));
+            event.setDamage(event.getDamage() * 1.5);
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.VIRUS, enchantedArrow.getShooter(), enchantedArrow.bow(), enchantedArrow.enchantments())) {
+            if (entity.hasPotionEffect(PotionEffectType.POISON) || entity.hasPotionEffect(PotionEffectType.WITHER)) {
+                Collection<PotionEffect> effects = new ArrayList<>();
+                effects.add(new PotionEffect(PotionEffectType.POISON, CEnchantments.VIRUS.getChance(), 1));
+                effects.add(new PotionEffect(PotionEffectType.WITHER, CEnchantments.VIRUS.getChance(), 2));
+                entity.addPotionEffects(effects);
+            }
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.INFERNAL, enchantedArrow.getShooter(), enchantedArrow.bow(), enchantedArrow.enchantments())) {
+            event.getEntity().setFireTicks(CEnchantments.INFERNAL.getChance());
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.SNIPER, enchantedArrow.getShooter(), enchantedArrow.bow(), enchantedArrow.enchantments())) {
+            BoundingBox headshotZone = entity.getBoundingBox();
+            World world = event.getEntity().getWorld();
+            for (Entity target : world.getNearbyEntities(headshotZone)) {
+                if ((target instanceof Arrow)) continue;
+                if (target.getLocation().getBlockY() <= headshotZone.getMaxY() && target.getLocation().getBlockY() > headshotZone.getCenterY()) continue;
+                event.setDamage(event.getDamage() * (2.5 + ((double) CEnchantments.SNIPER.getChance() / 20)));
+            }
+
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.FARCAST, enchantedArrow.getShooter(), enchantedArrow.bow(), enchantedArrow.enchantments())) {
+            if (!(event.getEntity() instanceof Player target)) return;
+            Vector direction = (enchantedArrow.getShooter().getLocation().toVector().subtract(target.getLocation().toVector().subtract(new Vector(10, 1, 10))));
+            direction.normalize().multiply(1 + (CEnchantments.FARCAST.getChance() / 20));
+            target.setVelocity(direction);
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.ARROWLIFESTEAL, enchantedArrow.getShooter(), enchantedArrow.bow(), enchantedArrow.enchantments())) {
+            if (!(enchantedArrow.getShooter() instanceof Player shooter)) return;
+            double shooterHealth = shooter.getHealth();
+            double shooterMaxHealth = shooter.getAttribute(Attribute.MAX_HEALTH).getValue();
+            double modifier = event.getDamage();
+
+            if (shooterHealth + modifier > shooterMaxHealth) modifier = 0;
+
+            shooter.setHealth(shooterHealth + modifier);
+        }
+        if (EnchantUtils.isEventActive(CEnchantments.BIDIRECTIONAL, enchantedArrow.getShooter(), enchantedArrow.bow(), enchantedArrow.enchantments())) {
+            CEnchantment targetEnchant = CEnchantments.BIDIRECTIONAL.getEnchantment();
+
+            List<Block> arrowAttached = enchantedArrow.getArrow().getAttachedBlocks();
+            Block block = arrowAttached.getFirst();
+            Location arrowPos = block.getLocation();
+
+            entity.setVelocity(arrowPos.getDirection().normalize().multiply(1.05 + enchantmentBookSettings.getLevel(enchantedArrow.bow(), targetEnchant)));
+            enchantmentBookSettings.createCooldown(targetEnchant, enchantedArrow.bow(), enchantedArrow.getShooter().getUniqueId(), 300L, 2L);
+        }
     }
+
+        //Imperium
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onWebBreak(BlockBreakEvent event) {
         if (!EventUtils.isIgnoredEvent(event) && this.bowUtils.getWebBlocks().contains(event.getBlock())) event.setCancelled(true);
+    }
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onBookApply(BookApplyEvent event) {
+        enchantmentBookSettings.swapToHeroicEnchant(CEnchantments.BIDIRECTIONAL, CEnchantments.BIDIRECTIONAL.getOldEnchant(), event.getEnchantedItem());
     }
 }

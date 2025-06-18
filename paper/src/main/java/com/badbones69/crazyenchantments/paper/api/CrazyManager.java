@@ -769,8 +769,8 @@ public class CrazyManager {
         enchants.put(CEnchantments.GLOWING, new HashMap<>());
         enchants.get(CEnchantments.GLOWING).put(PotionEffectType.NIGHT_VISION, -1);
 
-        enchants.put(CEnchantments.MERMAID, new HashMap<>());
-        enchants.get(CEnchantments.MERMAID).put(PotionEffectType.WATER_BREATHING, -1);
+        enchants.put(CEnchantments.AQUATIC, new HashMap<>());
+        enchants.get(CEnchantments.AQUATIC).put(PotionEffectType.WATER_BREATHING, -1);
 
         enchants.put(CEnchantments.BURNSHIELD, new HashMap<>());
         enchants.get(CEnchantments.BURNSHIELD).put(PotionEffectType.FIRE_RESISTANCE, -1);
@@ -795,10 +795,11 @@ public class CrazyManager {
         enchants.get(CEnchantments.NINJA).put(PotionEffectType.HEALTH_BOOST, -1);
         enchants.get(CEnchantments.NINJA).put(PotionEffectType.SPEED, -1);
 
-        enchants.put(CEnchantments.INSOMNIA, new HashMap<>());
-        enchants.get(CEnchantments.INSOMNIA).put(PotionEffectType.NAUSEA, -1);
-        enchants.get(CEnchantments.INSOMNIA).put(PotionEffectType.MINING_FATIGUE, -1);
-        enchants.get(CEnchantments.INSOMNIA).put(PotionEffectType.SLOWNESS, -1);
+        //depricated Insomnia 
+        //enchants.put(CEnchantments.INSOMNIA, new HashMap<>());
+        //enchants.get(CEnchantments.INSOMNIA).put(PotionEffectType.NAUSEA, -1);
+        //enchants.get(CEnchantments.INSOMNIA).put(PotionEffectType.MINING_FATIGUE, -1);
+        //enchants.get(CEnchantments.INSOMNIA).put(PotionEffectType.SLOWNESS, -1);
 
         enchants.put(CEnchantments.ANTIGRAVITY, new HashMap<>());
         enchants.get(CEnchantments.ANTIGRAVITY).put(PotionEffectType.JUMP_BOOST, 1);

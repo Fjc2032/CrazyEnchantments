@@ -53,6 +53,10 @@ dependencies {
     compileOnly(libs.plotsquared)
 
     compileOnly(libs.mcmmo)
+
+    compileOnly ("io.lumine:MythicLib-dist:1.6.2-SNAPSHOT")
+
+    compileOnly("net.Indyuce:MMOItems-API:6.9.5-SNAPSHOT")
 }
 
 tasks {

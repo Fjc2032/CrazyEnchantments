@@ -6,9 +6,17 @@ import com.badbones69.crazyenchantments.paper.Starter;
 import com.badbones69.crazyenchantments.paper.api.CrazyManager;
 import com.badbones69.crazyenchantments.paper.api.objects.CEnchantment;
 import com.badbones69.crazyenchantments.paper.api.objects.enchants.EnchantmentType;
+import com.badbones69.crazyenchantments.paper.controllers.settings.EnchantmentBookSettings;
+import com.gmail.nossr50.mcmmo.acf.UnstableAPI;
+import io.netty.util.internal.UnstableApi;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
+import java.util.UUID;
 
 public enum CEnchantments {
 
@@ -26,13 +34,10 @@ public enum CEnchantments {
     DOCTOR("Doctor", "Bow"),
     PIERCING("Piercing", "Bow", 5, 5),
     ICEFREEZE("IceFreeze", "Bow", 25, 10),
-    LIGHTNING("Lightning", "Bow", 25, 10),
     MULTIARROW("MultiArrow", "Bow", 25, 10),
     STICKY_SHOT("Sticky-Shot", "Bow", 10, 10),
     SNIPER("Sniper", "Bow", 25, 5),
     //	----------------Helmets----------------  \\
-    GLOWING("Glowing", "Helmet"),
-    MERMAID("Mermaid", "Helmet"),
     IMPLANTS("Implants", "Helmet", 5, 5),
     COMMANDER("Commander", "Helmet"),
     //	----------------Swords----------------  \\
@@ -46,20 +51,17 @@ public enum CEnchantments {
     EXECUTE("Execute", "Sword"),
     FASTTURN("FastTurn", "Sword", 5, 5),
     DISARMER("Disarmer", "Sword", 5, 1),
-    HEADLESS("Headless", "Sword", 10, 10),
     PARALYZE("Paralyze", "Sword", 15, 5),
     BLINDNESS("Blindness", "Sword", 5, 1),
     LIFESTEAL("LifeSteal", "Sword", 15, 5),
-    CONFUSION("Confusion", "Sword", 15, 5),
     NUTRITION("Nutrition", "Sword", 15, 5),
     SKILLSWIPE("SkillSwipe", "Sword", 5, 5),
-    OBLITERATE("Obliterate", "Sword", 10, 5),
     INQUISITIVE("Inquisitive", "Sword", 50, 25),
     LIGHTWEIGHT("LightWeight", "Sword", 15, 5),
     DOUBLEDAMAGE("DoubleDamage", "Sword", 5, 1),
     DISORDER("Disorder", "Sword", 1, 0),
     CHARGE("Charge", "Sword"),
-    REVENGE("Revenge", "Sword"),
+    LIFEBLOOM("Lifebloom", "Sword"),
     FAMISHED("Famished", "Sword", 10, 5),
     //	----------------Armor----------------  \\
     HULK("Hulk", "Armor"),
@@ -80,7 +82,6 @@ public enum CEnchantments {
     FORTIFY("Fortify", "Armor", 10, 5),
     OVERLOAD("OverLoad", "Armor"),
     BLIZZARD("Blizzard", "Armor"),
-    INSOMNIA("Insomnia", "Armor", 10, 5),
     ACIDRAIN("AcidRain", "Armor", 5, 5),
     SANDSTORM("SandStorm", "Armor", 5, 5),
     SMOKEBOMB("SmokeBomb", "Armor", 5, 5),
@@ -101,32 +102,116 @@ public enum CEnchantments {
     SYSTEMREBOOT("SystemReboot", "Armor", 10, 5),
     //	----------------Axes----------------  \\
     REKT("Rekt", "Axe", 5, 1),
-    DIZZY("Dizzy", "Axe", 10, 5),
     CURSED("Cursed", "Axe", 10, 5),
     FEEDME("FeedMe", "Axe", 10, 5),
     BERSERK("Berserk", "Axe", 10, 1),
     BLESSED("Blessed", "Axe", 10, 5),
-    DECAPITATION("Decapitation", "Axe", 10, 10),
     BATTLECRY("BattleCry", "Axe", 10, 5),
     DEMONFORGED("DemonForged", "Axe", 10, 5),
     TREEFELLER("TreeFeller", "Axe"),
     //	----------------PickAxes----------------  \\
     VEINMINER("VeinMiner", "Pickaxe"),
     BLAST("Blast", "Pickaxe"),
-    AUTOSMELT("AutoSmelt", "Pickaxe", 25, 25),
-    EXPERIENCE("Experience", "Pickaxe", 25, 25),
-    FURNACE("Furnace", "Pickaxe"),
     //	----------------Tools----------------  \\
-    HASTE("Haste", "Tool"),
     TELEPATHY("Telepathy", "Tool"),
-    OXYGENATE("Oxygenate", "Tool"),
     //	----------------Hoes----------------  \\
     GREENTHUMB("GreenThumb", "Hoe", 10, 10),
     HARVESTER("Harvester", "Hoe"),
     TILLER("Tiller", "Hoe"),
     PLANTER("Planter", "Hoe"),
     //	----------------All----------------  \\
-    HELLFORGED("HellForged", "Damaged-Items", 5, 5);
+    HELLFORGED("HellForged", "Damaged-Items", 5, 5),
+    //Imperiem Simple Enchantments
+    //armour
+    AQUATIC("Aquatic", "Helmet"),
+    GLOWING("Glowing", "Helmet"),
+    SHUFFLE("Shuffle", "Armor", 5, 1),
+    //weapons
+    HEADLESS("Headless", "Sword", 20, 20),
+    OBLITERATE("Obliterate", "Sword", 10, 5),
+    CONFUSION("Confusion", "Sword", 15, 5),
+    INSOMNIA("Insomnia", "Swords", 10, 2),
+    DECAPITATION("Decapitation", "Axe", 20, 20),
+    DIZZY("Dizzy", "Axe", 15, 5),
+    LIGHTNING("Lightning", "Bow", 24, 8),
+    //tools
+    AUTOSMELT("AutoSmelt", "Pickaxe", 30, 35),
+    EXPERIENCE("Experience", "Pickaxe", 15, 15),
+    FURNACE("Furnace", "Pickaxe"),
+    OXYGENATE("Oxygenate", "Tool"),
+    HASTE("Haste", "Tool"),
+    //missing
+    //EPICNESS kinda poinless
+    //THUNDERINGBLOW thunder i think it was just strike lighting more as an effect enchant
+    //ETHERAL haste upon killing mobs kinda pointless
+    //Strike a Trident lighting enchant but tridents do not exist in this plugin yet 
+    
+    //NEW - Imperium
+    POISONED("Poisoned", "Armor", 10, 5),
+    HARDENED("Hardened", "Armor", 30, 10),
+    LONGBOW("Longbow", "Bow", 30, 10),
+    UNFOCUS("Unfocus", "Bow", 10, 5),
+    WARD("Ward", "Armor", 10, 5),
+    VIRUS("Virus", "Bow", 16, 4),
+    OBBYDESTROYER("ObbyDestroyer", "Pickaxe", 20, 15),
+    ENDERSLAYER("Enderslayer", "Sword", 50, 10),
+    REAPER("Reaper", "Axe", 10, 3),
+    NETHERSLAYER("Netherslayer", "Sword", 50, 10),
+    SHACKLE("Shackle", "Sword", 70, 10),
+    REFORGED("Reforged", "Tool", 10, 10),
+    GREATSWORD("Greatsword", "Sword", 40, 10),
+    TRICKSTER("Trickster", "Armor", 25, 6),
+    PUMMEL("Pummel", "Axe", 30, 5),
+    FARCAST("Farcast", "Bow", 10, 5),
+    MARKSMAN("Marksman", "Armor", 60, 10),
+    ANGELIC("Angelic", "Armor", 20, 5),
+    JELLYLEGS("Jellylegs", "Boots", 10, 3),
+    CLEAVE("Cleave", "Axe", 15, 5),
+    DOMINATE("Dominate", "Swords", 10, 3),
+    ENDERWALKER("Enderwalker", "Boots", 8, 3),
+    INFERNAL("Infernal", "Bow", 7, 4),
+    TANK("Tank", "Armor", 16, 4),
+    BLOCK("Block", "Sword", 11, 11),
+    CORRUPT("Corrupt", "Axe", 20, 7),
+    CREEPERARMOR("CreeperArmor", "Armor", 10, 3),
+    DEMONIC("Demonic", "Sword", 10, 3),
+    METAPHYSICAL("Metaphysical", "Boots", 50, 10),
+    DISTANCE("Distance", "Sword", 14, 3),
+    //SNIPER(Exists, but was redone. Putting comment here for tracking purposes.)
+    FAT("Fat", "Armor", 12, 2),
+    DEATHBRINGER("Deathbringer", "Armor", 14, 7),
+    DESTRUCTION("Destruction", "Armor", 10, 5),
+    DEATHGOD("DeathGod", "Armor", 8, 3),
+    INSANITY("Insanity", "Axe", 50, 8),
+    DIMINISH("Diminish", "Armor", 20, 6),
+    BARBARIAN("Barbarian", "Axe", 20, 4),
+    ABIDING("Abiding", "Tool"),
+    QUIVER("Quiver", "Boots", 10, 7),
+    INVERSION("Inversion", "Sword", 20, 4),
+    BLEED("Bleed", "Axe", 28, 4),
+    DEVOUR("Devour", "Axe", 10, 5),
+    ARMORED("Armored", "Armor", 60, 10),
+    CLARITY("Clarity", "Armor"),
+    SILENCE("Silence", "Sword", 30, 10),
+    KILLAURA("Killaura", "Sword", 18, 5),
+    STUN("Stun", "Sword", 10, 10),
+    JUDGEMENT("Judgement", "Armor", 10, 10),
+    BLACKSMITH("Blacksmith", "Axe", 30, 10),
+    CURSE("Curse", "Armor", 40, 10),
+    RAGDOLL("Ragdoll", "Armor", 30, 5),
+    ARROWBREAK("Arrowbreak", "Axe", 10, 10),
+    ARROWDEFLECT("Arrowdeflect", "Armor", 10, 10),
+    ARROWLIFESTEAL("ArrowLifesteal", "Bow", 10, 10),
+    //SUGGESTED - Imperium
+    SWARM("Swarm", "Sword"),
+
+    //HEROIC
+    MIGHTYCACTUS("MightyCactus", "Armor", 10, 10, true, CEnchantments.CACTUS.getEnchantment()),
+    DEEPBLEED("DeepBleed", "Axe", 10, 10, true, CEnchantments.BLEED.getEnchantment()),
+    BIDIRECTIONAL("BidirectionalTeleportation", "Bow", 15, 10, true, null)
+
+    ;
+
 
     @NotNull
     private final CrazyEnchantments plugin = JavaPlugin.getPlugin(CrazyEnchantments.class);
@@ -140,11 +225,17 @@ public enum CEnchantments {
     @NotNull
     private final Methods methods = this.starter.getMethods();
 
+    @NotNull
+    private final EnchantmentBookSettings enchantmentBookSettings = this.starter.getEnchantmentBookSettings();
+
     private final String name;
     private final String typeName;
     private final boolean hasChanceSystem;
     private final int chance;
     private final int chanceIncrease;
+    private final CEnchantment oldEnchant;
+    private final boolean isHeroic;
+    private final long cooldown;
 
     private CEnchantment cachedEnchantment = null;
 
@@ -164,13 +255,16 @@ public enum CEnchantments {
         this.chance = 0;
         this.chanceIncrease = 0;
         this.hasChanceSystem = false;
+        this.isHeroic = false;
+        this.oldEnchant = null;
+        this.cooldown = 0;
     }
 
     /**
      * @param name Name of the enchantment.
      * @param typeName Type of items it goes on.
-     * @param chance The chance the enchantment has to active.
-     * @param chanceIncrease The amount the chance increases by every level.
+     * @param chance The chance the enchantment has to activate.
+     * @param chanceIncrease The amount the chance increases per level.
      */
     CEnchantments(final String name, final String typeName, final int chance, final int chanceIncrease) {
         this.name = name;
@@ -178,6 +272,68 @@ public enum CEnchantments {
         this.chance = chance;
         this.chanceIncrease = chanceIncrease;
         this.hasChanceSystem = true;
+        this.isHeroic = false;
+        this.oldEnchant = null;
+        this.cooldown = 0;
+    }
+
+    CEnchantments(String name, String typeName, int chance, int chanceIncrease, long cooldown) {
+        this.name = name;
+        this.typeName = typeName;
+        this.chance = chance;
+        this.chanceIncrease = chanceIncrease;
+        this.hasChanceSystem = true;
+        this.isHeroic = false;
+        this.oldEnchant = null;
+        this.cooldown = cooldown;
+    }
+
+    CEnchantments(String name, String typeName, int chance, int chanceIncrease, long cooldown, boolean isHeroic, CEnchantment oldEnchant) {
+        this.name = name;
+        this.typeName = typeName;
+        this.chance = chance;
+        this.chanceIncrease = chanceIncrease;
+        this.hasChanceSystem = true;
+        this.cooldown = cooldown;
+        this.isHeroic = isHeroic;
+        this.oldEnchant = oldEnchant;
+    }
+
+    /**
+     *
+     * @param name Name of the enchantment.
+     * @param typeName Type of items it goes on.
+     * @param isHeroic Whether the enchantment is heroic. False by default.
+     */
+    CEnchantments(String name, String typeName, boolean isHeroic) {
+        this.name = name;
+        this.typeName = typeName;
+        this.chance = 0;
+        this.chanceIncrease = 0;
+        this.hasChanceSystem = false;
+        this.isHeroic = isHeroic;
+        this.oldEnchant = null;
+        cooldown = 0;
+    }
+
+    /**
+     *
+     * @param name Name of the enchantment.
+     * @param typeName Type of items it goes on.
+     * @param chance The chance the enchantment has to activate.
+     * @param chanceIncrease The amount the chance increases per level.
+     * @param isHeroic Whether the enchantment is heroic. False by default.
+     * @param oldEnchant The enchantment being replaced, if the enchantment is heroic.
+     */
+    CEnchantments(String name, String typeName, int chance, int chanceIncrease, boolean isHeroic, CEnchantment oldEnchant) {
+        this.name = name;
+        this.typeName = typeName;
+        this.chance = chance;
+        this.chanceIncrease = chanceIncrease;
+        this.hasChanceSystem = true;
+        this.isHeroic = isHeroic;
+        this.oldEnchant = oldEnchant;
+        cooldown = 0;
     }
 
     
@@ -271,5 +427,33 @@ public enum CEnchantments {
      */
     public boolean hasChanceSystem() {
         return this.hasChanceSystem;
+    }
+
+    /**
+     * Checks if the enchantment is marked as heroic.
+     * @return True if the enchantment is heroic, false if not.
+     */
+    public boolean isHeroic() {
+        return this.isHeroic;
+    }
+
+    /**
+     * Gets the enchantment this enchant will replace when it is upgraded to its heroic variant.
+     * @return The enchantment that matches the condition, if present. Otherwise, returns null.
+     */
+    @ApiStatus.Experimental
+    @Nullable
+    public CEnchantment getOldEnchant() {
+        return this.oldEnchant;
+    }
+
+    public long getCooldown() {
+        return this.cooldown;
+    }
+
+    //A function that references another function. Func-ception!
+    @ApiStatus.Experimental
+    public void setCooldown(CEnchantment enchantment, ItemStack item, UUID uuid, long cooldown, long multi) {
+        enchantmentBookSettings.createCooldown(enchantment, item , uuid, cooldown, multi);
     }
 }

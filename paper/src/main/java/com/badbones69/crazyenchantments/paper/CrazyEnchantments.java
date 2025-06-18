@@ -33,12 +33,6 @@ import com.badbones69.crazyenchantments.paper.listeners.ScrollListener;
 import com.badbones69.crazyenchantments.paper.listeners.ShopListener;
 import com.badbones69.crazyenchantments.paper.listeners.SlotCrystalListener;
 import com.badbones69.crazyenchantments.paper.listeners.server.WorldSwitchListener;
-import com.ryderbelserion.crazyenchantments.CrazyInstance;
-import com.ryderbelserion.crazyenchantments.objects.ConfigOptions;
-import com.ryderbelserion.fusion.core.files.FileManager;
-import com.ryderbelserion.fusion.paper.FusionPaper;
-import org.bstats.bukkit.Metrics;
-import org.bukkit.Server;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
@@ -64,6 +58,7 @@ public class CrazyEnchantments extends JavaPlugin {
     private ConfigOptions options;
 
     private CrazyInstance instance;
+
 
     @Override
     public void onEnable() {
@@ -129,12 +124,6 @@ public class CrazyEnchantments extends JavaPlugin {
         this.pluginManager.registerEvents(new LostBookController(), this);
 
         this.pluginManager.registerEvents(new WorldSwitchListener(), this);
-
-        if (this.crazyManager.isGkitzEnabled()) {
-            getLogger().info("G-Kitz support is now enabled.");
-
-            this.pluginManager.registerEvents(new KitsMenu.KitsListener(), this);
-        }
 
         registerCommand(getCommand("crazyenchantments"), new CETab(), new CECommand());
 
@@ -203,4 +192,7 @@ public class CrazyEnchantments extends JavaPlugin {
     public boolean isLogging() {
         return this.fusion.isVerbose();
     }
+
+
+
 }

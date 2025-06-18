@@ -76,6 +76,10 @@ public class PluginSupport {
         return !SupportedPlugins.WORLDEDIT.isPluginLoaded() || !SupportedPlugins.WORLDGUARD.isPluginLoaded() || this.worldGuardUtils.getWorldGuardSupport().allowsExplosions(location);
     }
 
+    public boolean invokeMMOItemsSupport() {
+        return false;
+    }
+
     public void updateHooks() {
         this.cachedPlugins.clear();
 
@@ -142,6 +146,7 @@ public class PluginSupport {
 
         // Random Plugins
         MCMMO("McMMO"),
+        MMOITEMS("MMOItems"),
 
         // Faction Plugins
         FACTIONS_UUID("Factions"),
