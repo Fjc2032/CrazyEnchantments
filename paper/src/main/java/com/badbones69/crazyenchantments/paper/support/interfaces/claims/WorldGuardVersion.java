@@ -5,16 +5,16 @@ import org.bukkit.entity.Player;
 
 public interface WorldGuardVersion {
     
-    boolean allowsPVP(Location loc);
+    boolean allowsPVP(final Location loc);
     
-    boolean allowsBreak(Location loc);
+    boolean allowsBreak(final Location loc);
     
-    boolean allowsExplosions(Location loc);
+    boolean allowsExplosions(final Location loc);
     
-    boolean inRegion(String regionName, Location loc);
+    boolean inRegion(final String regionName, final Location loc);
     
-    boolean isMember(Player player);
+    boolean isMember(final Player player);
     
-    boolean isOwner(Player player);
+    boolean isOwner(final Player player);
     
 }

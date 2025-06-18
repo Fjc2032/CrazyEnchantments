@@ -5,7 +5,11 @@ import com.badbones69.crazyenchantments.paper.Methods;
 import com.badbones69.crazyenchantments.paper.api.enums.CEnchantments;
 import com.badbones69.crazyenchantments.paper.api.objects.gkitz.GKitz;
 import com.badbones69.crazyenchantments.paper.api.objects.gkitz.GkitCoolDown;
+import com.ryderbelserion.fusion.paper.api.enums.Scheduler;
+import com.ryderbelserion.fusion.paper.api.scheduler.FoliaScheduler;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
+import org.bukkit.Server;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -23,6 +27,8 @@ public class CEPlayer {
     @NotNull
     private final CrazyEnchantments plugin = JavaPlugin.getPlugin(CrazyEnchantments.class);
 
+    private final Server server = this.plugin.getServer();
+
     @NotNull
     private final Methods methods = this.plugin.getStarter().getMethods();
 
@@ -39,7 +45,7 @@ public class CEPlayer {
      * @param player The player.
      * @param gkitCoolDowns The cool-downs the player has.
      */
-    public CEPlayer(Player player, List<GkitCoolDown> gkitCoolDowns) {
+    public CEPlayer(final Player player, final List<GkitCoolDown> gkitCoolDowns) {
         this.player = player;
         this.gkitCoolDowns = gkitCoolDowns;
         this.hasRage = false;
@@ -60,8 +66,8 @@ public class CEPlayer {
      * Give a player a gkit.
      * @param kit The gkit you wish to give them.
      */
-    public void giveGKit(GKitz kit) {
-        for (ItemStack item : kit.getKitItems()) {
+    public void giveGKit(final GKitz kit) {
+        for (final ItemStack item : kit.getKitItems()) {
             if (kit.canAutoEquip()) {
                 switch (item.getType().toString().contains("_") ? item.getType().toString().toLowerCase().split("_")[1] : "No") {
                     case "helmet" -> {
@@ -91,10 +97,17 @@ public class CEPlayer {
             this.methods.addItemToInventory(this.player, item);
         }
 
-        for (String cmd : kit.getCommands()) {
-            this.plugin.getServer().dispatchCommand(this.plugin.getServer().getConsoleSender(), cmd
-            .replace("%Player%", this.player.getName()).replace("%player%", this.player.getName()));
-        }
+        new FoliaScheduler(this.plugin, Scheduler.global_scheduler) {
+            @Override
+            public void run() {
+                final String name = player.getName();
+                final ConsoleCommandSender sender = server.getConsoleSender();
+
+                for (final String cmd : kit.getCommands()) {
+                    server.dispatchCommand(sender, cmd.replace("%Player%", name).replace("%player%", name));
+                }
+            }
+        }.runNow();
     }
     
     /**
@@ -102,7 +115,7 @@ public class CEPlayer {
      * @param kit The gkit you are checking.
      * @return True if they can use it and false if they can't.
      */
-    public boolean hasGkitPermission(GKitz kit) {
+    public boolean hasGkitPermission(final GKitz kit) {
         return this.player.hasPermission("crazyenchantments.bypass.gkitz") || this.player.hasPermission("crazyenchantments.gkitz." + kit.getName().toLowerCase());
     }
     
@@ -111,12 +124,12 @@ public class CEPlayer {
      * @param kit The gkit you want to check.
      * @return True if they don't have a cool-down, and they have permission.
      */
-    public boolean canUseGKit(GKitz kit) {
+    public boolean canUseGKit(final GKitz kit) {
         if (this.player.hasPermission("crazyenchantments.bypass.gkitz")) {
             return true;
         } else {
             if (this.player.hasPermission("crazyenchantments.gkitz." + kit.getName().toLowerCase())) {
-                for (GkitCoolDown gkitCooldown : getCoolDowns()) {
+                for (final GkitCoolDown gkitCooldown : getCoolDowns()) {
                     if (gkitCooldown.getGKitz() == kit) return gkitCooldown.isCoolDownOver();
                 }
             } else {
@@ -140,8 +153,8 @@ public class CEPlayer {
      * @param kit The gkit you are checking.
      * @return The cool-down object the player has.
      */
-    public GkitCoolDown getCoolDown(GKitz kit) {
-        for (GkitCoolDown gkitCoolDown : this.gkitCoolDowns) {
+    public GkitCoolDown getCoolDown(final GKitz kit) {
+        for (final GkitCoolDown gkitCoolDown : this.gkitCoolDowns) {
             if (gkitCoolDown.getGKitz() == kit) return gkitCoolDown;
         }
 
@@ -152,10 +165,10 @@ public class CEPlayer {
      * Add a cool-down to a player.
      * @param gkitCoolDown The cool-down you are adding.
      */
-    public void addCoolDown(GkitCoolDown gkitCoolDown) {
-        List<GkitCoolDown> playerGkitCoolDowns = new ArrayList<>();
+    public void addCoolDown(final GkitCoolDown gkitCoolDown) {
+        final List<GkitCoolDown> playerGkitCoolDowns = new ArrayList<>();
 
-        for (GkitCoolDown c : getCoolDowns()) {
+        for (final GkitCoolDown c : getCoolDowns()) {
             if (c.getGKitz().getName().equalsIgnoreCase(gkitCoolDown.getGKitz().getName())) playerGkitCoolDowns.add(c);
         }
 
@@ -167,10 +180,10 @@ public class CEPlayer {
      * Add a cool-down of a gkit to a player.
      * @param kit The gkit you want to get the cool-down for.
      */
-    public void addCoolDown(GKitz kit) {
-        Calendar coolDown = Calendar.getInstance();
+    public void addCoolDown(final GKitz kit) {
+        final Calendar coolDown = Calendar.getInstance();
 
-        for (String i : kit.getCooldown().toLowerCase().split(" ")) {
+        for (final String i : kit.getCooldown().toLowerCase().split(" ")) {
             if (i.contains("d")) coolDown.add(Calendar.DATE, Integer.parseInt(i.replace("d", "")));
 
             if (i.contains("h")) coolDown.add(Calendar.HOUR, Integer.parseInt(i.replace("h", "")));
@@ -187,7 +200,7 @@ public class CEPlayer {
      * Remove a cool-down from a player.
      * @param gkitCoolDown The cool-down you want to remove.
      */
-    public void removeCoolDown(GkitCoolDown gkitCoolDown) {
+    public void removeCoolDown(final GkitCoolDown gkitCoolDown) {
         this.gkitCoolDowns.remove(gkitCoolDown);
     }
     
@@ -195,10 +208,10 @@ public class CEPlayer {
      * Remove a cool-down from a player.
      * @param kit The gkit cool-down you want to remove.
      */
-    public void removeCoolDown(GKitz kit) {
-        List<GkitCoolDown> playerGkitCoolDowns = new ArrayList<>();
+    public void removeCoolDown(final GKitz kit) {
+        final List<GkitCoolDown> playerGkitCoolDowns = new ArrayList<>();
 
-        for (GkitCoolDown gkitCoolDown : getCoolDowns()) {
+        for (final GkitCoolDown gkitCoolDown : getCoolDowns()) {
             if (gkitCoolDown.getGKitz().getName().equalsIgnoreCase(kit.getName())) playerGkitCoolDowns.add(gkitCoolDown);
         }
 
@@ -216,7 +229,7 @@ public class CEPlayer {
      * Set the player's rage damage multiplier.
      * @param rageMultiplier The player's new rage damage multiplier.
      */
-    public void setRageMultiplier(Double rageMultiplier) {
+    public void setRageMultiplier(final double rageMultiplier) {
         this.rageMultiplier = rageMultiplier;
     }
     
@@ -231,7 +244,7 @@ public class CEPlayer {
      * Toggle on/off the player's rage.
      * @param hasRage If the player has rage.
      */
-    public void setRage(boolean hasRage) {
+    public void setRage(final boolean hasRage) {
         this.hasRage = hasRage;
     }
     
@@ -246,7 +259,7 @@ public class CEPlayer {
      * Set the level of rage the player is in.
      * @param rageLevel The player's new rage level.
      */
-    public void setRageLevel(int rageLevel) {
+    public void setRageLevel(final int rageLevel) {
         this.rageLevel = rageLevel;
     }
     
@@ -261,7 +274,7 @@ public class CEPlayer {
      * Set the new cooldown task for the player's rage.
      * @param rageTask The new cooldown task for the player.
      */
-    public void setRageTask(ScheduledTask rageTask) {
+    public void setRageTask(final ScheduledTask rageTask) {
         this.rageTask = rageTask;
     }
 
@@ -272,12 +285,18 @@ public class CEPlayer {
      * @param delay Delay in ticks to add a cooldown for.
      * @return True if they already had a cooldown.
      */
-    public boolean onEnchantCooldown(CEnchantments enchant, int delay) {
+    public boolean onEnchantCooldown(final CEnchantments enchant, final int delay) {
         if (this.onCooldown.contains(enchant)) return true;
 
         this.onCooldown.add(enchant);
+
         // Limit players to using each enchant only once per second.
-        this.plugin.getServer().getAsyncScheduler().runDelayed(this.plugin, (task) -> this.onCooldown.remove(enchant), delay * 50L, TimeUnit.MILLISECONDS);
+        new FoliaScheduler(this.plugin, Scheduler.async_scheduler, TimeUnit.MILLISECONDS) {
+            @Override
+            public void run() {
+                onCooldown.remove(enchant);
+            }
+        }.runDelayed(delay * 50L);
 
         return false;
     }

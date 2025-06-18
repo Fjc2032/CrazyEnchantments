@@ -1,45 +1,53 @@
 package com.badbones69.crazyenchantments.paper.api.managers;
 
-import com.badbones69.crazyenchantments.paper.api.FileManager.Files;
+import com.badbones69.crazyenchantments.paper.Methods;
 import com.badbones69.crazyenchantments.paper.api.enums.CEnchantments;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.spongepowered.configurate.CommentedConfigurationNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class WingsManager {
 
-    private boolean isWingsEnabled;
-    private boolean isCloudsEnabled;
-    private boolean isEnemyCheckEnabled;
-    private int enemyRadius;
-    private final List<UUID> flyingPlayers = new ArrayList<>();
+    private final List<String> limitlessFlightWorlds = new ArrayList<>();
     private final List<String> whitelistWorlds = new ArrayList<>();
     private final List<String> blacklistWorlds = new ArrayList<>();
-    private List<String> regions;
-    private final List<String> limitlessFlightWorlds = new ArrayList<>();
-    private boolean ownersCanFly;
-    private boolean membersCanFly;
+    private final List<UUID> flyingPlayers = new ArrayList<>();
+
+    private boolean isEnemyCheckEnabled;
+    private boolean isCloudsEnabled;
     private ScheduledTask wingsTask;
+    private boolean isWingsEnabled;
+    private boolean membersCanFly;
+    private boolean ownersCanFly;
+    private List<String> regions;
+    private int enemyRadius;
     
-    public void load() {
+    public void load(final CommentedConfigurationNode config) {
         this.isWingsEnabled = CEnchantments.WINGS.isActivated();
-        FileConfiguration config = Files.CONFIG.getFile();
-        String path = "Settings.EnchantmentOptions.Wings.";
-        this.isCloudsEnabled = config.getBoolean(path + "Clouds");
-        this.isEnemyCheckEnabled = config.getBoolean(path + "Enemy-Toggle");
-        this.enemyRadius = config.getInt(path + "Distance", 10);
+
+        this.isCloudsEnabled = config.node("Settings", "EnchantmentOptions", "Wings", "Clouds").getBoolean(true);
+        this.isEnemyCheckEnabled = config.node("Settings", "EnchantmentOptions", "Wings", "Enemy-Toggle").getBoolean(true);
+        this.enemyRadius = config.node("Settings", "EnchantmentOptions", "Wings", "Distance").getInt(10);
+
         this.whitelistWorlds.clear();
-        config.getStringList(path + "Worlds.Whitelisted").forEach(world -> this.whitelistWorlds.add(world.toLowerCase()));
+
+        Methods.getStringList(config, "Settings", "EnchantmentOptions", "Wings", "Worlds", "Whitelist").forEach(world -> this.whitelistWorlds.add(world.toLowerCase()));
+
         this.blacklistWorlds.clear();
-        config.getStringList(path + "Worlds.Blacklisted").forEach(world -> this.blacklistWorlds.add(world.toLowerCase()));
+
+        Methods.getStringList(config, "Settings", "EnchantmentOptions", "Wings", "Worlds", "Blacklisted").forEach(world -> this.blacklistWorlds.add(world.toLowerCase()));
+
         this.limitlessFlightWorlds.clear();
-        config.getStringList(path + "Worlds.Limitless-Flight-Worlds").forEach(world -> this.limitlessFlightWorlds.add(world.toLowerCase()));
-        this.regions = config.getStringList(path + "Regions");
-        this.ownersCanFly = config.getBoolean(path + "Owners-Can-Fly", true);
-        this.membersCanFly = config.getBoolean(path + "Members-Can-Fly", true);
+
+        Methods.getStringList(config, "Settings", "EnchantmentOptions", "Wings", "Worlds", "Limitless-Flight-Worlds").forEach(world -> this.limitlessFlightWorlds.add(world.toLowerCase()));
+
+        this.regions = Methods.getStringList(config, "Settings", "EnchantmentOptions", "Wings", "Regions");
+
+        this.ownersCanFly = config.node("Settings", "EnchantmentOptions", "Wings", "Owners-Can-Fly").getBoolean(true);
+        this.membersCanFly = config.node("Settings", "EnchantmentOptions", "Wings", "Members-Can-Fly").getBoolean(true);
     }
     
     public boolean isWingsEnabled() {
@@ -62,15 +70,15 @@ public class WingsManager {
         return this.flyingPlayers;
     }
     
-    public boolean isFlyingPlayer(Player player) {
+    public boolean isFlyingPlayer(final Player player) {
         return this.flyingPlayers.contains(player.getUniqueId());
     }
     
-    public void addFlyingPlayer(Player player) {
+    public void addFlyingPlayer(final Player player) {
         if (!this.flyingPlayers.contains(player.getUniqueId())) this.flyingPlayers.add(player.getUniqueId());
     }
     
-    public void removeFlyingPlayer(Player player) {
+    public void removeFlyingPlayer(final Player player) {
         this.flyingPlayers.remove(player.getUniqueId());
     }
     
@@ -85,7 +93,7 @@ public class WingsManager {
      * Check to see if a player is in a world with limitless flight.
      * @param player The player you wish to check.
      */
-    public boolean inLimitlessFlightWorld(Player player) {
+    public boolean inLimitlessFlightWorld(final Player player) {
         return player != null && this.limitlessFlightWorlds.contains(player.getWorld().getName().toLowerCase());
     }
     
@@ -100,7 +108,7 @@ public class WingsManager {
      * Check to see if a player is in a whitelisted world for the wings enchantment.
      * @param player The player you wish to check.
      */
-    public boolean inWhitelistedWorld(Player player) {
+    public boolean inWhitelistedWorld(final Player player) {
         return player != null && this.whitelistWorlds.contains(player.getWorld().getName().toLowerCase());
     }
     
@@ -115,7 +123,7 @@ public class WingsManager {
      * Check to see if a player is in a blacklisted world for the wings enchantment.
      * @param player The player you wish to check.
      */
-    public boolean inBlacklistedWorld(Player player) {
+    public boolean inBlacklistedWorld(final Player player) {
         return player != null && this.blacklistWorlds.contains(player.getWorld().getName().toLowerCase());
     }
     
@@ -131,8 +139,9 @@ public class WingsManager {
         return this.membersCanFly;
     }
     
-    public void setWingsTask(ScheduledTask task) {
+    public void setWingsTask(final ScheduledTask task) {
         endWingsTask();
+
         this.wingsTask = task;
     }
     

@@ -25,7 +25,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.Map;
 import java.util.Objects;
 
@@ -63,8 +62,8 @@ public class ToolEnchantments implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onTelepathy(BlockDropItemEvent event) {
-        Player player = event.getPlayer();
-        ItemStack tool = this.methods.getItemInHand(player);
+        final Player player = event.getPlayer();
+        final ItemStack tool = this.methods.getItemInHand(player);
 
         if (!EnchantUtils.isEventActive(CEnchantments.TELEPATHY, player, tool, this.enchantmentBookSettings.getEnchantments(tool))) return;
 
@@ -87,14 +86,15 @@ public class ToolEnchantments implements Listener {
 
     }
 
-    private void updateEffects(Player player) {
-        ItemStack item = this.methods.getItemInHand(player);
-        Map<CEnchantment, Integer> enchantments = this.enchantmentBookSettings.getEnchantments(item);
+    private void updateEffects(final Player player) {
+        final ItemStack item = this.methods.getItemInHand(player);
+        final Map<CEnchantment, Integer> enchantments = this.enchantmentBookSettings.getEnchantments(item);
 
-        int potionTime = 5 * 20;
+        final int potionTime = 5 * 20;
 
         if (EnchantUtils.isEventActive(CEnchantments.HASTE, player, item, enchantments)) {
-            int power = enchantments.get(CEnchantments.HASTE.getEnchantment());
+            final int power = enchantments.get(CEnchantments.HASTE.getEnchantment());
+
             player.removePotionEffect(PotionEffectType.HASTE);
             player.addPotionEffect(new PotionEffect(PotionEffectType.HASTE, potionTime, power - 1));
         }

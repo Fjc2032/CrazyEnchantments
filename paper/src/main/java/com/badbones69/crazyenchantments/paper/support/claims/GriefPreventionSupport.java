@@ -10,21 +10,21 @@ import org.bukkit.entity.Player;
 public class GriefPreventionSupport implements ClaimSupport {
 
     @Override
-    public boolean isFriendly(Player player, Player other) {
+    public boolean isFriendly(final Player player, final Player other) {
         Claim claim = GriefPrevention.instance.dataStore.getClaimAt(player.getLocation(), true, null);
 
         return claim != null && claim.hasExplicitPermission(player.getUniqueId(), ClaimPermission.Access);
     }
 
     @Override
-    public boolean inTerritory(Player player) {
+    public boolean inTerritory(final Player player) {
         Claim claim = GriefPrevention.instance.dataStore.getClaimAt(player.getLocation(), true, null);
 
         return claim != null && (claim.getOwnerID().equals(player.getUniqueId()) || claim.hasExplicitPermission(player.getUniqueId(), ClaimPermission.Access));
     }
 
     @Override
-    public boolean canBreakBlock(Player player, Block block) {
+    public boolean canBreakBlock(final Player player, final Block block) {
         Claim claim = GriefPrevention.instance.dataStore.getClaimAt(block.getLocation(), true, null);
 
         return claim == null || claim.hasExplicitPermission(player.getUniqueId(), ClaimPermission.Build) || claim.hasExplicitPermission(player.getUniqueId(), ClaimPermission.Edit);

@@ -38,8 +38,7 @@ public class GKitz {
      * @param itemStrings The items as a string.
      * @param autoEquip This is if the armor equips when given.
      */
-    public GKitz(String name, int slot, String cooldown, ItemStack displayItem, List<ItemStack> preview,
-    List<String> commands, List<String> itemStrings, boolean autoEquip) {
+    public GKitz(final String name, final int slot, final String cooldown, final ItemStack displayItem, final List<ItemStack> preview, final List<String> commands, final List<String> itemStrings, final boolean autoEquip) {
         this.name = name;
         this.slot = slot;
         this.preview = preview;
@@ -87,22 +86,19 @@ public class GKitz {
      * @return A list of all the ItemStacks.
      */
     public List<ItemStack> getKitItems() {
-        List<ItemStack> items = new ArrayList<>();
+        final List<ItemStack> items = new ArrayList<>();
 
-        for (String itemString : this.itemStrings) {
-            //This is used to convert old v1.7- gkit files to use newer way.
-            itemString = this.crazyManager.getNewItemString(itemString);
+        for (final String itemString : this.itemStrings) {
+            final GKitzItem item = new GKitzItem(ItemBuilder.convertString(itemString));
 
-            GKitzItem item = new GKitzItem(ItemBuilder.convertString(itemString));
-
-            for (String option : itemString.split(", ")) {
+            for (final String option : itemString.split(", ")) {
                 try {
-                    CEnchantment enchantment = this.crazyManager.getEnchantmentFromName(option.split(":")[0]);
-                    String level = option.split(":")[1];
+                    final CEnchantment enchantment = this.crazyManager.getEnchantmentFromName(option.split(":")[0]);
+                    final String level = option.split(":")[1];
 
                     if (enchantment != null) {
                         if (level.contains("-")) {
-                            int randomLevel = this.crazyManager.pickLevel(Integer.parseInt(level.split("-")[0]), Integer.parseInt(level.split("-")[1]));
+                            final int randomLevel = this.crazyManager.pickLevel(Integer.parseInt(level.split("-")[0]), Integer.parseInt(level.split("-")[1]));
 
                             if (randomLevel > 0) item.addCEEnchantment(enchantment, randomLevel);
                         } else {

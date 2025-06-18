@@ -30,7 +30,7 @@ public class CETab implements TabCompleter {
 
     private final Methods methods = this.starter.getMethods();
 
-    private final CrazyManager crazyManager = this.starter.getCrazyManager();
+    private final CrazyManager crazyManager = this.plugin.getCrazyManager();
 
     private final EnchantmentBookSettings enchantmentBookSettings = this.starter.getEnchantmentBookSettings();
     
@@ -70,20 +70,20 @@ public class CETab implements TabCompleter {
                         } catch (NullPointerException ignore) {}
                     }
 
-                    Arrays.asList(Enchantment.values()).forEach(enchantment -> completions.add(enchantment.getKey().getKey()));
+                    Arrays.asList(Enchantment.values()).forEach(enchantment -> completions.add(enchantment.getKey().getKey())); //todo() deprecated
                 }
+
                 case "remove" ->
                         this.enchantmentBookSettings.getEnchantments(((Player) sender).getInventory().getItemInMainHand())
                             .forEach((a,b) -> completions.add(ColorUtils.stripStringColour(a.getCustomName())));
-
                 case "spawn" -> {
-                    for (CEnchantment enchantment : this.crazyManager.getRegisteredEnchantments()) {
+                    for (final CEnchantment enchantment : this.crazyManager.getRegisteredEnchantments()) {
                         try {
                             completions.add(ColorUtils.stripStringColour(enchantment.getCustomName()));
                         } catch (NullPointerException ignore) {}
                     }
 
-                    for (Category category : this.enchantmentBookSettings.getCategories()) {
+                    for (final Category category : this.enchantmentBookSettings.getCategories()) {
                         try {
                             completions.add(category.getName());
                         } catch (NullPointerException ignore) {}
@@ -103,13 +103,13 @@ public class CETab implements TabCompleter {
                 }
 
                 case "dust" -> {
-                    for (Dust dust : Dust.values()) {
+                    for (final Dust dust : Dust.values()) {
                         completions.addAll(dust.getKnownNames());
                     }
                 }
 
                 case "lostbook" -> {
-                    for (Category category : this.enchantmentBookSettings.getCategories()) {
+                    for (final Category category : this.enchantmentBookSettings.getCategories()) {
                         try {
                             completions.add(category.getName());
                         } catch (NullPointerException ignore) {}
@@ -121,6 +121,7 @@ public class CETab implements TabCompleter {
             return StringUtil.copyPartialMatches(args[1], completions, new ArrayList<>());
         } else if (args.length == 3) {// /ce arg0 arg1
             CEnchantment ceEnchantment;
+
             switch (args[0].toLowerCase()) {
                 case "book" -> {
                     ceEnchantment = this.crazyManager.getEnchantmentFromName(args[1]);
@@ -209,7 +210,7 @@ public class CETab implements TabCompleter {
         return completions;
     }
     
-    private boolean hasPermission(CommandSender sender, String node) {
+    private boolean hasPermission(final CommandSender sender, final String node) {
         return sender.hasPermission("crazyenchantments." + node) || sender.hasPermission("crazyenchantments.admin");
     }
 }

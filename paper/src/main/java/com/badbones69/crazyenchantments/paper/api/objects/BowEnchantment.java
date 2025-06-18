@@ -17,7 +17,7 @@ public class BowEnchantment {
      * @param damageAmplifier The damage amplifier that is added to the damage.
      * @param isLevelAddedToAmplifier If the level of the enchantment on the item is added to the damage amplifier.
      */
-    public BowEnchantment(CEnchantments enchantment, double damageAmplifier, boolean isLevelAddedToAmplifier) {
+    public BowEnchantment(final CEnchantments enchantment, final double damageAmplifier, final boolean isLevelAddedToAmplifier) {
         this.enchantment = enchantment;
         this.damageAmplifier = damageAmplifier;
         this.isLevelAddedToAmplifier = isLevelAddedToAmplifier;
@@ -30,7 +30,7 @@ public class BowEnchantment {
      * @param potionEffects The effects that are added to the entity that is hit.
      * @param isLevelAddedToAmplifier If the level of the enchantment on the item is added to the potion amplifier.
      */
-    public BowEnchantment(CEnchantments enchantment, List<PotionEffects> potionEffects, boolean isLevelAddedToAmplifier) {
+    public BowEnchantment(CEnchantments enchantment, final List<PotionEffects> potionEffects, final boolean isLevelAddedToAmplifier) {
         this.enchantment = enchantment;
         this.potionEffects = potionEffects;
         this.isLevelAddedToAmplifier = isLevelAddedToAmplifier;

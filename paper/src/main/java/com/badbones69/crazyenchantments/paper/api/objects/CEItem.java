@@ -23,7 +23,7 @@ public class CEItem {
     private final Starter starter = this.plugin.getStarter();
 
     @NotNull
-    private final CrazyManager crazyManager = this.starter.getCrazyManager();
+    private final CrazyManager crazyManager = this.plugin.getCrazyManager();
 
     @NotNull
     private final EnchantmentBookSettings enchantmentBookSettings = this.starter.getEnchantmentBookSettings();
@@ -34,11 +34,14 @@ public class CEItem {
     private final Map<Enchantment, Integer> vanillaEnchantments;
     private final Map<CEnchantment, Integer> cEnchantments;
     
-    public CEItem(ItemStack item) {
+    public CEItem(final ItemStack item) {
         this.item = item;
+
         // Has to make a new map as .getEnchantments is a ImmutableMap.
         this.vanillaEnchantments = new HashMap<>(item.getEnchantments());
-        EnchantmentBookSettings enchantmentBookSettings = this.starter.getEnchantmentBookSettings();
+
+        final EnchantmentBookSettings enchantmentBookSettings = this.starter.getEnchantmentBookSettings();
+
         this.cEnchantments = enchantmentBookSettings.getEnchantments(item);
         this.vanillaEnchantmentRemove = new ArrayList<>();
         this.cEnchantmentRemove = new ArrayList<>();
@@ -48,11 +51,11 @@ public class CEItem {
         return this.item;
     }
     
-    public boolean hasVanillaEnchantment(Enchantment enchantment) {
+    public boolean hasVanillaEnchantment(final Enchantment enchantment) {
         return this.vanillaEnchantments.containsKey(enchantment);
     }
     
-    public int getVanillaEnchantmentLevel(Enchantment enchantment) {
+    public int getVanillaEnchantmentLevel(final Enchantment enchantment) {
         return this.vanillaEnchantments.getOrDefault(enchantment, 0);
     }
     
@@ -60,19 +63,19 @@ public class CEItem {
         return this.vanillaEnchantments;
     }
     
-    public void addVanillaEnchantment(Enchantment enchantment, int level) {
+    public void addVanillaEnchantment(final Enchantment enchantment, final int level) {
         this.vanillaEnchantments.put(enchantment, level);
     }
     
-    public void removeVanillaEnchantment(Enchantment enchantment) {
+    public void removeVanillaEnchantment(final Enchantment enchantment) {
         this.vanillaEnchantmentRemove.add(enchantment);
     }
     
-    public boolean hasCEnchantment(CEnchantment enchantment) {
+    public boolean hasCEnchantment(final CEnchantment enchantment) {
         return this.cEnchantments.containsKey(enchantment);
     }
     
-    public int getCEnchantmentLevel(CEnchantment enchantment) {
+    public int getCEnchantmentLevel(final CEnchantment enchantment) {
         return this.cEnchantments.getOrDefault(enchantment, 0);
     }
     
@@ -80,15 +83,15 @@ public class CEItem {
         return this.cEnchantments;
     }
     
-    public void addCEnchantment(CEnchantment enchantment, int level) {
+    public void addCEnchantment(final CEnchantment enchantment, final int level) {
         this.cEnchantments.put(enchantment, level);
     }
     
-    public void removeCEnchantment(CEnchantment enchantment) {
+    public void removeCEnchantment(final CEnchantment enchantment) {
         this.cEnchantmentRemove.add(enchantment);
     }
 
-    public boolean canAddEnchantment(Player player) {
+    public boolean canAddEnchantment(final Player player) {
         return crazyManager.canAddEnchantment(player, this.cEnchantments.size(), this.vanillaEnchantments.size());
     }
 

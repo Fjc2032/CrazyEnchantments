@@ -8,7 +8,7 @@ import org.bukkit.block.data.type.Farmland;
 public class CropManager implements CropManagerVersion {
     
     @Override
-    public void fullyGrowPlant(Block block) {
+    public void fullyGrowPlant(final Block block) {
         if (block.getBlockData() instanceof Ageable age) {
             if (age.getAge() < age.getMaximumAge()) {
                 age.setAge(age.getMaximumAge());
@@ -18,15 +18,15 @@ public class CropManager implements CropManagerVersion {
     }
     
     @Override
-    public boolean isFullyGrown(Block block) {
+    public boolean isFullyGrown(final Block block) {
         if (block.getBlockData() instanceof Ageable age) return age.getAge() == age.getMaximumAge();
 
         return false;
     }
     
     @Override
-    public void hydrateSoil(Block soil) {
-        Farmland farmland = (Farmland) soil.getBlockData();
+    public void hydrateSoil(final Block soil) {
+        final Farmland farmland = (Farmland) soil.getBlockData();
 
         farmland.setMoisture(farmland.getMaximumMoisture());
         soil.setBlockData(farmland);

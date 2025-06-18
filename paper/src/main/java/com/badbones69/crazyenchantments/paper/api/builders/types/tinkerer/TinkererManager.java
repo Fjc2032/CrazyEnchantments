@@ -16,7 +16,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -39,18 +38,16 @@ public class TinkererManager {
     @NotNull
     private static final CurrencyAPI currencyAPI = starter.getCurrencyAPI();
 
-    public static boolean useExperience(Player player, PlayerInteractEvent event, boolean mainHand, FileConfiguration configuration) {
-        PlayerInventory inventory = player.getInventory();
+    public static boolean useExperience(final Player player, final PlayerInteractEvent event, final boolean mainHand, final FileConfiguration configuration) {
+        final PlayerInventory inventory = player.getInventory();
 
-        ItemStack item = mainHand ? inventory.getItemInMainHand() : inventory.getItemInOffHand();
+        final ItemStack item = mainHand ? inventory.getItemInMainHand() : inventory.getItemInOffHand();
 
-        if (item.isEmpty() || !item.hasItemMeta()) return false;
+        if (item.isEmpty()) return false;
 
-        ItemMeta itemMeta = item.getItemMeta();
+        if (!item.getPersistentDataContainer().has(DataKeys.experience.getNamespacedKey())) return false;
 
-        if (!itemMeta.getPersistentDataContainer().has(DataKeys.experience.getNamespacedKey())) return false;
-
-        int amount = Integer.parseInt(item.getItemMeta().getPersistentDataContainer().getOrDefault(DataKeys.experience.getNamespacedKey(), PersistentDataType.STRING, "0"));
+        int amount = Integer.parseInt(item.getPersistentDataContainer().getOrDefault(DataKeys.experience.getNamespacedKey(), PersistentDataType.STRING, "0"));
 
         event.setCancelled(true);
 
@@ -60,8 +57,8 @@ public class TinkererManager {
             inventory.setItemInOffHand(methods.removeItem(item));
         }
 
-        if (Currency.isCurrency(configuration.getString("Settings.Currency"))) {
-            currencyAPI.giveCurrency(player, Currency.getCurrency(configuration.getString("Settings.Currency")), amount);
+        if (Currency.isCurrency(configuration.getString("Settings.Currency", "Vault"))) {
+            currencyAPI.giveCurrency(player, Currency.getCurrency(configuration.getString("Settings.Currency", "Vault")), amount);
         }
 
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
@@ -73,42 +70,40 @@ public class TinkererManager {
      * @param amount Amount of XP to store.
      * @return XP Bottle with custom amount of xp stored in it.
      */
-    public static ItemStack getXPBottle(String amount, FileConfiguration config) {
-        String id = config.getString("Settings.BottleOptions.Item");
-        String name = config.getString("Settings.BottleOptions.Name");
+    public static ItemStack getXPBottle(final String amount, final FileConfiguration config) {
+        String id = config.getString("Settings.BottleOptions.Item", "EXPERIENCE_BOTTLE");
+        String name = config.getString("Settings.BottleOptions.Name", "&aRecycled XP");
         List<String> lore = new ArrayList<>();
 
         for (String l : config.getStringList("Settings.BottleOptions.Lore")) {
             lore.add(l.replace("%Total%", amount).replace("%total%", amount));
         }
 
-        assert id != null;
-
-        return new ItemBuilder().setMaterial(id).setName(name).setLore(lore).addStringPDC(DataKeys.experience.getNamespacedKey(), amount).build();
+        return new ItemBuilder().setMaterial(id).setName(name).setLore(lore).addKey(DataKeys.experience.getNamespacedKey(), amount).build();
     }
 
-    public static int getTotalXP(ItemStack item, FileConfiguration config) {
+    public static int getTotalXP(final ItemStack item, final FileConfiguration config) {
         int total = 0;
 
-        Map<CEnchantment, Integer> ceEnchants = starter.getEnchantmentBookSettings().getEnchantments(item);
+        final Map<CEnchantment, Integer> ceEnchants = starter.getEnchantmentBookSettings().getEnchantments(item);
 
         if (!ceEnchants.isEmpty()) { // CrazyEnchantments
-            for (Map.Entry<CEnchantment, Integer> enchantment : ceEnchants.entrySet()) {
-                String[] values = config.getString("Tinker.Crazy-Enchantments." + enchantment.getKey().getName() + ".Items", "0").replaceAll(" ", "").split(",");
-                int baseAmount = Integer.parseInt(values[0]);
-                int multiplier = values.length < 2 ? 0 : Integer.parseInt(values[1]);
-                int enchantmentLevel = enchantment.getValue();
+            for (final Map.Entry<CEnchantment, Integer> enchantment : ceEnchants.entrySet()) {
+                final String[] values = config.getString("Tinker.Crazy-Enchantments." + enchantment.getKey().getName() + ".Items", "0").replaceAll(" ", "").split(",");
+                final int baseAmount = Integer.parseInt(values[0]);
+                final int multiplier = values.length < 2 ? 0 : Integer.parseInt(values[1]);
+                final int enchantmentLevel = enchantment.getValue();
 
                 total += baseAmount + enchantmentLevel * multiplier;
             }
         }
 
         if (item.hasItemMeta() && item.getItemMeta().hasEnchants()) { // Vanilla Enchantments
-            for (Map.Entry<Enchantment, Integer> enchantment : item.getEnchantments().entrySet()) {
-                String[] values = config.getString("Tinker.Vanilla-Enchantments." + convertToLegacy(enchantment.getKey().getKey().value()).toUpperCase(), "0").replaceAll(" ", "").split(",");
-                int baseAmount = Integer.parseInt(values[0]); // TODO add converter to convert legacy to new enchant names.
-                int multiplier = values.length < 2 ? 0 : Integer.parseInt(values[1]);
-                int enchantmentLevel = enchantment.getValue();
+            for (final Map.Entry<Enchantment, Integer> enchantment : item.getEnchantments().entrySet()) {
+                final String[] values = config.getString("Tinker.Vanilla-Enchantments." + convertToLegacy(enchantment.getKey().getKey().value()).toUpperCase(), "0").replaceAll(" ", "").split(",");
+                final int baseAmount = Integer.parseInt(values[0]); // TODO add converter to convert legacy to new enchant names.
+                final int multiplier = values.length < 2 ? 0 : Integer.parseInt(values[1]);
+                final int enchantmentLevel = enchantment.getValue();
                 total += baseAmount + enchantmentLevel * multiplier;
             }
         }
@@ -116,7 +111,7 @@ public class TinkererManager {
         return total;
     }
 
-    private static String convertLegacy(String from) { // Stolen from Enchantment class -TDL
+    private static String convertLegacy(final String from) { // Stolen from Enchantment class -TDL
         if (from == null) {
             return null;
         }
@@ -147,7 +142,7 @@ public class TinkererManager {
 
     }
 
-    private static String convertToLegacy(String from) { // Stolen inverse of the above method. -TDL
+    private static String convertToLegacy(final String from) { // Stolen inverse of the above method. -TDL
         if (from == null) {
             return null;
         }
@@ -178,13 +173,13 @@ public class TinkererManager {
 
     }
 
-    public static int getMaxDustLevelFromBook(CEBook book, FileConfiguration config) {
-        String path = "Tinker.Crazy-Enchantments." + book.getEnchantment().getName() + ".Book";
+    public static int getMaxDustLevelFromBook(final CEBook book, final FileConfiguration config) {
+        final String path = "Tinker.Crazy-Enchantments." + book.getEnchantment().getName() + ".Book";
         if (!config.contains(path)) return 1;
 
-        String[] values = config.getString(path, "0").replaceAll(" ", "").split(",");
-        int baseAmount = Integer.parseInt(values[0]);
-        int multiplier = values.length < 2 ? 0 : Integer.parseInt(values[1]);
+        final String[] values = config.getString(path, "0").replaceAll(" ", "").split(",");
+        final int baseAmount = Integer.parseInt(values[0]);
+        final int multiplier = values.length < 2 ? 0 : Integer.parseInt(values[1]);
 
         return baseAmount + book.getLevel() * multiplier;
     }

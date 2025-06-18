@@ -17,20 +17,9 @@ import com.badbones69.crazyenchantments.paper.api.utils.BowUtils;
 import com.badbones69.crazyenchantments.paper.controllers.EnchantmentControl;
 import com.badbones69.crazyenchantments.paper.controllers.settings.EnchantmentBookSettings;
 import com.badbones69.crazyenchantments.paper.controllers.settings.ProtectionCrystalSettings;
-import com.badbones69.crazyenchantments.paper.listeners.ScramblerListener;
-import com.badbones69.crazyenchantments.paper.listeners.ScrollListener;
-import com.badbones69.crazyenchantments.paper.listeners.SlotCrystalListener;
 import com.badbones69.crazyenchantments.paper.support.PluginSupport;
 import com.badbones69.crazyenchantments.paper.support.PluginSupport.SupportedPlugins;
-import com.badbones69.crazyenchantments.paper.support.SkullCreator;
 import com.badbones69.crazyenchantments.paper.support.claims.SuperiorSkyBlockSupport;
-import com.badbones69.crazyenchantments.paper.support.interfaces.mmoitems.CrazyEnchantStats;
-import com.badbones69.crazyenchantments.paper.support.interfaces.mmoitems.MMOItemsSupport;
-import com.badbones69.crazyenchantments.paper.support.interfaces.mmoitems.data.EnchantPluginBuilder;
-import com.badbones69.crazyenchantments.paper.support.misc.OraxenSupport;
-import net.Indyuce.mmoitems.MMOItems;
-import net.Indyuce.mmoitems.comp.enchants.EnchantPlugin;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,7 +33,6 @@ public class Starter {
     private FileManager fileManager;
     private CrazyManager crazyManager;
     private Methods methods;
-    private SkullCreator skullCreator;
 
     private Logger logger = Bukkit.getLogger();
 
@@ -59,7 +47,6 @@ public class Starter {
     private SuperiorSkyBlockSupport superiorSkyBlockSupport;
     private PluginSupport pluginSupport;
     private VaultSupport vaultSupport;
-    private OraxenSupport oraxenSupport;
 
     private EnchantPluginBuilder<CEnchantment> enchantPluginBuilder;
     private EnchantPlugin enchantPlugin;
@@ -76,12 +63,6 @@ public class Starter {
     // Economy Management.
     private CurrencyAPI currencyAPI;
 
-    // Listeners.
-    private ScramblerListener scramblerListener;
-    private ScrollListener scrollListener;
-    private SlotCrystalListener slotCrystalListener;
-
-
     public void run() {
         this.fileManager = new FileManager();
         this.fileManager.setup();
@@ -92,8 +73,6 @@ public class Starter {
 
         if (SupportedPlugins.SUPERIORSKYBLOCK.isPluginLoaded()) this.superiorSkyBlockSupport = new SuperiorSkyBlockSupport();
 
-        if (SupportedPlugins.ORAXEN.isPluginLoaded()) this.oraxenSupport = new OraxenSupport();
-
         // Methods
         this.methods = new Methods();
 
@@ -101,7 +80,7 @@ public class Starter {
         this.protectionCrystalSettings = new ProtectionCrystalSettings();
         this.enchantmentBookSettings = new EnchantmentBookSettings();
 
-        BlackSmithManager.load();
+        BlackSmithManager.load(FileKeys.config.getConfig());
         KitsManager.load();
 
         MenuManager.load();
@@ -116,13 +95,6 @@ public class Starter {
         this.bowEnchantmentManager = new BowEnchantmentManager();
         this.wingsManager = new WingsManager();
         this.allyManager = new AllyManager();
-
-        // Listeners.
-        this.plugin.pluginManager.registerEvents(this.scramblerListener = new ScramblerListener(), this.plugin);
-        this.plugin.pluginManager.registerEvents(this.scrollListener = new ScrollListener(), this.plugin);
-        this.plugin.pluginManager.registerEvents(this.slotCrystalListener = new SlotCrystalListener(), this.plugin);
-
-        this.skullCreator = new SkullCreator();
 
         this.crazyManager = new CrazyManager();
 
@@ -142,10 +114,6 @@ public class Starter {
 
     public CrazyManager getCrazyManager() {
         return this.crazyManager;
-    }
-
-    public SkullCreator getSkullCreator() {
-        return this.skullCreator;
     }
 
     // Settings.
@@ -177,26 +145,6 @@ public class Starter {
 
         return this.superiorSkyBlockSupport;
     }
-
-    public OraxenSupport getOraxenSupport() {
-        return this.oraxenSupport;
-    }
-
-    private void registerMMOItemStats() {
-        try {
-            if (!MMOItems.plugin.isEnabled()) getLogger().info("MMOItems is not loaded yet! Continuing anyway...");
-            MMOItems.plugin.registerEnchantPlugin(enchantPlugin);
-            MMOItems.plugin.getStats().register(crazyEnchantStats);
-            Bukkit.getLogger().info("MMOItems hook registration successful.");
-        } catch (Exception exception) {
-            Bukkit.getLogger().severe("Something went wrong while attempting to register the MMOItems registry!");
-            Bukkit.getLogger().severe(exception.toString());
-        }
-    }
-
-    public EnchantPlugin getEnchantPlugin() { return this.enchantPlugin; }
-    public CrazyEnchantStats getCrazyEnchantStats() { return this.crazyEnchantStats; }
-
     // Economy Management.
     public CurrencyAPI getCurrencyAPI() {
         return this.currencyAPI;
@@ -221,19 +169,6 @@ public class Starter {
 
     public ShopManager getShopManager() {
         return this.shopManager;
-    }
-
-    // Listeners.
-    public ScramblerListener getScramblerListener() {
-        return this.scramblerListener;
-    }
-
-    public ScrollListener getScrollListener() {
-        return this.scrollListener;
-    }
-
-    public SlotCrystalListener getSlotCrystalListener() {
-        return this.slotCrystalListener;
     }
 
     // Plugin Utils.

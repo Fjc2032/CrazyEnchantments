@@ -4,6 +4,6 @@ import org.bukkit.entity.Player;
 
 public interface PlotSquaredVersion {
     
-    boolean inTerritory(Player player);
+    boolean inTerritory(final Player player);
     
 }

@@ -3,16 +3,17 @@ package com.badbones69.crazyenchantments.paper.api.builders.types;
 import com.badbones69.crazyenchantments.paper.Starter;
 import com.badbones69.crazyenchantments.paper.api.builders.InventoryBuilder;
 import com.badbones69.crazyenchantments.paper.api.builders.types.gkitz.KitsManager;
+import com.badbones69.crazyenchantments.paper.api.enums.pdc.DataKeys;
 import com.badbones69.crazyenchantments.paper.api.objects.CEnchantment;
 import com.badbones69.crazyenchantments.paper.api.objects.enchants.EnchantmentType;
 import com.badbones69.crazyenchantments.paper.api.builders.ItemBuilder;
 import com.badbones69.crazyenchantments.paper.controllers.settings.EnchantmentBookSettings;
+import io.papermc.paper.persistence.PersistentDataContainerView;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
@@ -24,18 +25,18 @@ public class BaseMenu extends InventoryBuilder {
     @NotNull
     private final EnchantmentBookSettings bookSettings = this.starter.getEnchantmentBookSettings();
 
-    public BaseMenu(Player player, int size, String title) {
+    public BaseMenu(final Player player, final int size, final String title) {
         super(player, size, title);
     }
 
     @Override
     public InventoryBuilder build() {
         if (getEnchantmentType() != null) {
-            List<CEnchantment> enchantments = getEnchantmentType().getEnchantments();
+            final List<CEnchantment> enchantments = getEnchantmentType().getEnchantments();
 
-            ItemBuilder book = this.bookSettings.getNormalBook().setGlow(true);
+            final ItemBuilder book = this.bookSettings.getNormalBook().setGlow(true);
 
-            for (CEnchantment enchantment : enchantments) {
+            for (final CEnchantment enchantment : enchantments) {
                 if (enchantment.isActivated()) {
                     getInventory().addItem(book.setName(enchantment.getInfoName()).setLore(enchantment.getInfoDescription()).build());
                 }
@@ -57,21 +58,15 @@ public class BaseMenu extends InventoryBuilder {
 
             event.setCancelled(true);
 
-            Player player = holder.getPlayer();
+            final Player player = holder.getPlayer();
 
-            ItemStack itemStack = event.getCurrentItem();
+            final ItemStack itemStack = event.getCurrentItem();
 
             if (itemStack == null) return;
 
-            if (!itemStack.hasItemMeta()) return;
+            final PersistentDataContainerView view = itemStack.getPersistentDataContainer();
 
-            ItemMeta itemMeta = itemStack.getItemMeta();
-
-            if (itemMeta == null) return;
-
-            if (!itemMeta.hasDisplayName()) return;
-
-            if (itemStack.isSimilar(KitsManager.getBackLeft()) || itemStack.isSimilar(KitsManager.getBackRight())) {
+            if (view.has(DataKeys.back_left.getNamespacedKey()) || view.has(DataKeys.back_right.getNamespacedKey())) {
                 MenuManager.openInfoMenu(player);
 
                 return;

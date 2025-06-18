@@ -13,7 +13,7 @@ public class VaultSupport {
 
     private Economy vault = null;
 
-    public Economy getVault() {
+    public final Economy getVault() {
         return vault;
     }
 

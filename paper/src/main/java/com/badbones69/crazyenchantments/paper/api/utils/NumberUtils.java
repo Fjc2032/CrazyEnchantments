@@ -2,12 +2,13 @@ package com.badbones69.crazyenchantments.paper.api.utils;
 
 public class NumberUtils {
 
-    public static boolean isInt(String s) {
+    public static boolean isInt(final String s) {
         if (s.isEmpty()) return false;
 
         for (int i = 0; i < s.length(); i++) {
             if (i == 0 && s.charAt(i) == '-') {
                 if (s.length() == 1) return false;
+
                 continue;
             }
 
@@ -18,7 +19,6 @@ public class NumberUtils {
     }
 
     public static String toRoman(int number) {
-
         if (number > 3999 || number < 1) return String.valueOf(number);
 
         int[] values = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
@@ -41,7 +41,7 @@ public class NumberUtils {
      * @param i The string you want to convert.
      * @return The roman numeral as a number.
      */
-    public static int convertLevelInteger(String i) {
+    public static int convertLevelInteger(final String i) {
         return switch (i) {
             case "I" -> 1;
             case "II" -> 2;
@@ -62,7 +62,7 @@ public class NumberUtils {
      * @param number The integer you want to convert.
      * @return The integer as a roman numeral if between 1-3999 otherwise the number as a string.
      */
-    public static String convertLevelString(int number) {
+    public static String convertLevelString(final int number) {
         return toRoman(number);
     }
 }

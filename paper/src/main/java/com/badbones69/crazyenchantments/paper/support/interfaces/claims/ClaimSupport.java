@@ -7,10 +7,10 @@ public interface ClaimSupport {
 
     String wilderness = "Wilderness";
 
-    boolean isFriendly(Player player, Player other);
+    boolean isFriendly(final Player player, final Player other);
 
-    boolean inTerritory(Player player);
+    boolean inTerritory(final Player player);
 
-    boolean canBreakBlock(Player player, Block block);
+    boolean canBreakBlock(final Player player, final Block block);
 
 }

@@ -1,15 +1,19 @@
 package com.badbones69.crazyenchantments.paper;
 
-import com.badbones69.crazyenchantments.paper.api.FileManager.Files;
 import com.badbones69.crazyenchantments.paper.api.builders.types.MenuManager;
 import com.badbones69.crazyenchantments.paper.api.economy.Currency;
 import com.badbones69.crazyenchantments.paper.api.enums.Messages;
+import com.badbones69.crazyenchantments.paper.api.enums.pdc.DataKeys;
 import com.badbones69.crazyenchantments.paper.api.objects.enchants.EnchantmentType;
 import com.badbones69.crazyenchantments.paper.api.utils.ColorUtils;
 import com.badbones69.crazyenchantments.paper.api.utils.EventUtils;
 import com.badbones69.crazyenchantments.paper.api.utils.NumberUtils;
 import com.badbones69.crazyenchantments.paper.support.PluginSupport;
-import com.badbones69.crazyenchantments.paper.support.misc.OraxenSupport;
+import com.google.gson.Gson;
+import com.ryderbelserion.crazyenchantments.objects.ConfigOptions;
+import com.ryderbelserion.fusion.core.api.exceptions.FusionException;
+import com.ryderbelserion.fusion.paper.api.scheduler.FoliaScheduler;
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
@@ -24,33 +28,31 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.FireworkMeta;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.serialize.SerializationException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class Methods {
 
-    @NotNull
     private final CrazyEnchantments plugin = JavaPlugin.getPlugin(CrazyEnchantments.class);
 
-    @NotNull
+    private final ConfigOptions options = this.plugin.getOptions();
+
     private final Starter starter = this.plugin.getStarter();
 
-    // Plugin Support.
-    @NotNull
     private final PluginSupport pluginSupport = this.starter.getPluginSupport();
-
-    @NotNull
-    private final OraxenSupport oraxenSupport = this.starter.getOraxenSupport();
 
     public EnchantmentType getFromName(String name) {
         for (EnchantmentType enchantmentType : MenuManager.getEnchantmentTypes()) {
@@ -230,8 +232,11 @@ public class Methods {
      * @param item The {@link ItemStack} to give to the player.
      */
     public void addItemToInventory(@NotNull Player player, @NotNull ItemStack item) {
-        player.getInventory().addItem(item).values().forEach(x -> player.getWorld().dropItem(player.getLocation(), x));
+        final World world = player.getWorld();
+        final Location loc = player.getLocation();
+        player.getInventory().addItem(item).values().forEach(x -> world.dropItem(loc, x));
     }
+
     public void addItemToInventory(@NotNull Player player, @NotNull List<Item> itemList) {
         itemList.forEach(x -> addItemToInventory(player, x.getItemStack()));
     }
@@ -257,6 +262,32 @@ public class Methods {
         fireWork(loc, new ArrayList<>(colors));
     }
 
+    private static final Gson gson = new Gson();
+
+    public static Gson getGson() {
+        return gson;
+    }
+
+    public static List<String> getStringList(@NotNull final CommentedConfigurationNode configurationNode, @NotNull final List<String> defaultValue, @NotNull final Object... path) {
+        final CommentedConfigurationNode node = configurationNode.node(path);
+
+        try {
+            final List<String> list = node.getList(String.class);
+
+            if (list != null) {
+                return list;
+            }
+
+            return defaultValue;
+        } catch (final SerializationException exception) {
+            throw new FusionException(String.format("Failed to serialize %s!", node.path()), exception);
+        }
+    }
+
+    public static List<String> getStringList(@NotNull final CommentedConfigurationNode configurationNode, @NotNull final Object... path) {
+        return getStringList(configurationNode, List.of(), path);
+    }
+
     public void fireWork(@NotNull Location loc, @NotNull ArrayList<Color> colors) {
         Firework firework = loc.getWorld().spawn(loc, Firework.class);
         FireworkMeta fireworkMeta = firework.getFireworkMeta();
@@ -269,9 +300,20 @@ public class Methods {
         fireworkMeta.setPower(0);
         firework.setFireworkMeta(fireworkMeta);
 
-        this.plugin.getFireworkDamageListener().addFirework(firework);
+        addFirework(firework);
 
-        this.plugin.getServer().getRegionScheduler().runDelayed(this.plugin, loc, task -> firework.detonate(), 2);
+        new FoliaScheduler(this.plugin, loc) {
+            @Override
+            public void run() {
+                firework.detonate();
+            }
+        }.runDelayed(2);
+    }
+
+    public void addFirework(final Entity firework) {
+        final PersistentDataContainer container = firework.getPersistentDataContainer();
+
+        container.set(DataKeys.no_firework_damage.getNamespacedKey(), PersistentDataType.BOOLEAN, true);
     }
 
     public Enchantment getEnchantment(@NotNull String enchantmentName) {
@@ -289,66 +331,67 @@ public class Methods {
     }
 
     public int getMaxDurability(@NotNull ItemStack item) {
-        if (!PluginSupport.SupportedPlugins.ORAXEN.isPluginLoaded()) return item.getType().getMaxDurability();
+        int durability = item.getType().getMaxDurability();
 
-        return this.oraxenSupport.getMaxDurability(item);
+        if (item.hasData(DataComponentTypes.MAX_DAMAGE)) {
+            @Nullable final Integer damage = item.getData(DataComponentTypes.MAX_DAMAGE);
+
+            if (damage != null) {
+                durability = damage;
+            }
+        }
+
+        return durability;
     }
 
     public int getDurability(@NotNull ItemStack item) {
-        if (!PluginSupport.SupportedPlugins.ORAXEN.isPluginLoaded()) {
-            ItemMeta meta = item.getItemMeta();
-            if (meta instanceof Damageable) return ((Damageable) item.getItemMeta()).getDamage();
-            return 0;
+        int durability = 0;
+
+        if (item.hasData(DataComponentTypes.DAMAGE)) {
+            @Nullable final Integer damage = item.getData(DataComponentTypes.DAMAGE);
+
+            if (damage != null) {
+                durability = damage;
+            }
         }
 
-        return this.oraxenSupport.getDamage(item);
+        return durability;
     }
 
     public void setDurability(@NotNull ItemStack item, int newDamage) {
         newDamage = Math.max(newDamage, 0);
 
-        if (!PluginSupport.SupportedPlugins.ORAXEN.isPluginLoaded()) {
-            ItemMeta meta = item.getItemMeta();
-
-            if (meta instanceof Damageable damageable) {
-                damageable.setDamage(newDamage);
-                item.setItemMeta(damageable);
-            }
-
-            return;
-        }
-
-        this.oraxenSupport.setDamage(item, newDamage);
+        item.setData(DataComponentTypes.DAMAGE, newDamage);
     }
 
     public void removeDurability(@NotNull ItemStack item, @NotNull Player player) {
-        if (getMaxDurability(item) == 0) return;
+        final int maxDurability = getMaxDurability(item);
+        final int durability = getDurability(item);
 
-        if (item.hasItemMeta()) {
+        if (maxDurability == 0 || item.hasData(DataComponentTypes.UNBREAKABLE)) return;
 
-            ItemMeta meta = item.getItemMeta();
+        if (item.hasData(DataComponentTypes.ENCHANTMENTS)) {
+            final boolean hasUnbreaking = item.getEnchantments().containsKey(Enchantment.UNBREAKING);
 
-            if (meta.isUnbreakable()) return;
+            if (hasUnbreaking) {
+                final int level = item.getEnchantmentLevel(Enchantment.UNBREAKING);
 
-            if (meta.hasEnchants()) {
-                if (meta.hasEnchant(Enchantment.UNBREAKING)) {
-                    if (randomPicker(1, 1 + item.getEnchantmentLevel(Enchantment.UNBREAKING))) {
-                        if (getDurability(item) > getMaxDurability(item)) {
-                            player.getInventory().remove(item);
-                        } else {
-                            setDurability(item, getDurability(item) + 1);
-                        }
+                if (randomPicker(1, 1 + level)) {
+                    if (durability > maxDurability) {
+                        player.getInventory().remove(item);
+                    } else {
+                        setDurability(item, durability + 1);
                     }
-
-                    return;
                 }
+
+                return;
             }
         }
 
-        if (getDurability(item) > getMaxDurability(item)) {
+        if (durability > maxDurability) {
             player.getInventory().remove(item);
         } else {
-            setDurability(item, getDurability(item) + 1);
+            setDurability(item, durability + 1);
         }
     }
 
@@ -373,7 +416,6 @@ public class Methods {
     }
 
     private void spawnExplodeParticles(@NotNull World world, @NotNull Location location) {
-
         world.spawnParticle(Particle.FLAME, location, 200);
         world.spawnParticle(Particle.CLOUD, location, 30, .4F, .5F, .4F);
         world.spawnParticle(Particle.EXPLOSION, location, 2);
@@ -442,19 +484,20 @@ public class Methods {
 
     public Entity lightning(@NotNull LivingEntity entity) {
         Location loc = entity.getLocation();
+
         Entity lightning = null;
+
         if (loc.getWorld() != null) lightning = loc.getWorld().strikeLightning(loc);
-        int lightningSoundRange = Files.CONFIG.getFile().getInt("Settings.EnchantmentOptions.Lightning-Sound-Range", 160);
 
         try {
-            loc.getWorld().playSound(loc, Sound.ENTITY_LIGHTNING_BOLT_IMPACT, (float) lightningSoundRange / 16f, 1);
+            loc.getWorld().playSound(loc, Sound.ENTITY_LIGHTNING_BOLT_IMPACT, (float) this.options.getLightningSoundRange() / 16f, 1);
         } catch (Exception ignore) {}
 
         return lightning;
     }
 
-    public void switchCurrency(@NotNull Player player, @NotNull Currency option, @NotNull String one, @NotNull String two, @NotNull String cost) {
-        HashMap<String, String> placeholders = new HashMap<>();
+    public void switchCurrency(@NotNull final Player player, @NotNull final Currency option, @NotNull final String one, @NotNull final String two, @NotNull final String cost) {
+        Map<String, String> placeholders = new HashMap<>();
 
         placeholders.put(one, cost);
         placeholders.put(two, cost);

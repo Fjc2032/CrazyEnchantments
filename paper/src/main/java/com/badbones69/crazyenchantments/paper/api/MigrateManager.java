@@ -8,7 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import java.io.File;
 
-public class MigrateManager {
+public class MigrateManager { //todo() replace this
 
     @NotNull
     private static final CrazyEnchantments plugin = JavaPlugin.getPlugin(CrazyEnchantments.class);

@@ -2,7 +2,6 @@ package com.badbones69.crazyenchantments.paper.api.objects;
 
 import com.badbones69.crazyenchantments.paper.api.economy.Currency;
 import com.badbones69.crazyenchantments.paper.api.builders.ItemBuilder;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,8 +25,12 @@ public class Category {
     private final List<CEnchantment> enchantmentList;
     private final List<CEnchantment> enabledEnchantments;
     
-    public Category(String name, int slot, boolean inGUI, ItemBuilder displayItem, int cost, Currency currency, int rarity, LostBook lostBook,
-    int maxSuccessRate, int minSuccessRate, int maxDestroyRate, int minDestroyRate, boolean useMaxLevel, int maxLevel, int minLevel) {
+    public Category(final String name, final int slot, final boolean inGUI, final ItemBuilder displayItem, final int cost, final Currency currency, final int rarity, final LostBook lostBook,
+                    final int maxSuccessRate, final int minSuccessRate, final int maxDestroyRate, final int minDestroyRate, final boolean useMaxLevel, final int maxLevel, final int minLevel) {
+        if (slot == -1) {
+            throw new IllegalArgumentException("Slot in the Category config section must be a positive integer i.e. cannot be -1, and must be greater than 0");
+        }
+
         this.name = name;
         this.slot = slot - 1;
         this.inGUI = inGUI;
@@ -115,13 +118,13 @@ public class Category {
         return this.enchantmentList;
     }
     
-    public void addEnchantment(CEnchantment enchantment) {
+    public void addEnchantment(final CEnchantment enchantment) {
         this.enchantmentList.add(enchantment);
 
         if (enchantment.isActivated()) this.enabledEnchantments.add(enchantment);
     }
     
-    public void removeEnchantment(CEnchantment enchantment) {
+    public void removeEnchantment(final CEnchantment enchantment) {
         this.enchantmentList.remove(enchantment);
         this.enabledEnchantments.remove(enchantment);
     }

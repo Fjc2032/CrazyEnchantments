@@ -5,7 +5,7 @@ import org.bukkit.entity.Entity;
 
 public class EntityUtils {
 
-    public static Material getHeadMaterial(Entity entity) {
+    public static Material getHeadMaterial(final Entity entity) {
         return switch (entity.getType()) {
             case ZOMBIE -> Material.ZOMBIE_HEAD;
             case SKELETON -> Material.SKELETON_SKULL;

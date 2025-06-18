@@ -1,19 +1,22 @@
 package com.badbones69.crazyenchantments.paper.api.enums;
 
-import com.badbones69.crazyenchantments.paper.api.FileManager.Files;
+import com.badbones69.crazyenchantments.paper.CrazyEnchantments;
+import com.badbones69.crazyenchantments.paper.Methods;
 import com.badbones69.crazyenchantments.paper.api.enums.pdc.DataKeys;
 import com.badbones69.crazyenchantments.paper.api.builders.ItemBuilder;
 import com.badbones69.crazyenchantments.paper.api.utils.ColorUtils;
+import com.ryderbelserion.crazyenchantments.objects.ConfigOptions;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.ItemLore;
+import io.papermc.paper.persistence.PersistentDataContainerView;
 import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
+import org.spongepowered.configurate.CommentedConfigurationNode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,28 +33,27 @@ public enum Scrolls {
     private final String configName;
     private final List<String> knownNames;
     
-    Scrolls(String name, String configName, List<String> knowNames) {
+    Scrolls(final String name, final String configName, final List<String> knowNames) {
         this.name = name;
         this.knownNames = knowNames;
         this.configName = configName;
     }
     
-    public static void loadScrolls() {
-        FileConfiguration config = Files.CONFIG.getFile();
+    public static void loadScrolls(final CommentedConfigurationNode config) {
         itemBuilderScrolls.clear();
 
-        for (Scrolls scroll : values()) {
-            String path = "Settings." + scroll.getConfigName() + ".";
-            itemBuilderScrolls.put(scroll, new ItemBuilder()
-            .setName(config.getString(path + "Name", "Error getting name."))
-            .setLore(config.getStringList(path + "Item-Lore"))
-            .setMaterial(config.getString(path + "Item", "BOOK"))
-            .setGlow(config.getBoolean(path + "Glowing", false)));
+        for (final Scrolls scroll : values()) {
+            final CommentedConfigurationNode child = config.node(scroll.getConfigName());
+
+            itemBuilderScrolls.put(scroll, new ItemBuilder().setName(config.node("Name").getString("Error getting name."))
+            .setLore(Methods.getStringList(child, "Item-Lore"))
+            .setMaterial(child.node("Item").getString("BOOK"))
+            .setGlow(config.node("Glowing").getBoolean(false)));
         }
     }
     
-    public static Scrolls getFromName(String nameString) {
-        for (Scrolls scroll : Scrolls.values()) {
+    public static Scrolls getFromName(final String nameString) {
+        for (final Scrolls scroll : Scrolls.values()) {
             if (scroll.getKnownNames().contains(nameString.toLowerCase())) return scroll;
         }
 
@@ -76,86 +78,80 @@ public enum Scrolls {
 
     private static final NamespacedKey scroll = DataKeys.scroll.getNamespacedKey();
 
-    public static Scrolls getFromPDC(ItemStack item) {
-        PersistentDataContainer data = item.getItemMeta().getPersistentDataContainer();
-        if (!item.hasItemMeta() || !data.has(scroll)) return null;
+    public static Scrolls getFromPDC(final ItemStack item) {
+        final PersistentDataContainerView data = item.getPersistentDataContainer();
+
+        if (!data.has(scroll)) return null;
 
         return getFromName(data.get(scroll, PersistentDataType.STRING));
     }
 
     public ItemStack getScroll() {
-        ItemStack item = itemBuilderScrolls.get(this).build();
-        ItemMeta meta = item.getItemMeta();
-        meta.getPersistentDataContainer().set(scroll, PersistentDataType.STRING, this.configName);
-        item.setItemMeta(meta);
+        final ItemStack item = itemBuilderScrolls.get(this).build();
+
+        item.editPersistentDataContainer(container -> {
+            container.set(scroll, PersistentDataType.STRING, this.configName);
+        });
+
         return item;
     }
 
-    public ItemStack getScroll(int amount) {
-        ItemStack item = itemBuilderScrolls.get(this).setAmount(amount).build();
-        ItemMeta meta = item.getItemMeta();
-        meta.getPersistentDataContainer().set(scroll, PersistentDataType.STRING, this.configName);
-        item.setItemMeta(meta);
+    public ItemStack getScroll(final int amount) {
+        final ItemStack item = itemBuilderScrolls.get(this).setAmount(amount).build();
+
+        item.editPersistentDataContainer(container -> {
+            container.set(scroll, PersistentDataType.STRING, this.configName);
+        });
+
         return item;
     }
 
     private static final NamespacedKey whiteScrollProtectionKey = DataKeys.white_scroll_protection.getNamespacedKey();
 
+    private static final CrazyEnchantments plugin = JavaPlugin.getPlugin(CrazyEnchantments.class);
+
+    private static final ConfigOptions options = plugin.getOptions();
+
     public static String getWhiteScrollProtectionName() {
-        String protectNamed;
-
-        FileConfiguration config = Files.CONFIG.getFile();
-
-        protectNamed = ColorUtils.color(config.getString("Settings.WhiteScroll.ProtectedName"));
-
-        return protectNamed;
+        return ColorUtils.color(options.getWhiteScrollProtectedName());
     }
 
-    public static boolean hasWhiteScrollProtection(@NotNull ItemStack item) {
-        return item.hasItemMeta() && hasWhiteScrollProtection(item.getItemMeta());
+    public static boolean hasWhiteScrollProtection(@NotNull final ItemStack item) {
+        return item.hasItemMeta() && hasWhiteScrollProtection(item.getPersistentDataContainer());
     }
 
-    public static boolean hasWhiteScrollProtection(@Nullable ItemMeta meta) {
-        return meta != null && hasWhiteScrollProtection(meta.getPersistentDataContainer());
-    }
-
-    public static boolean hasWhiteScrollProtection(@Nullable PersistentDataContainer data) {
+    public static boolean hasWhiteScrollProtection(@Nullable final PersistentDataContainerView data) {
         return data != null && data.has(whiteScrollProtectionKey);
     }
 
-    public static ItemStack addWhiteScrollProtection(@NotNull ItemStack item) {
-        assert item.hasItemMeta();
-        ItemMeta meta = item.getItemMeta();
-        List<Component> lore = item.lore() != null ? item.lore() : new ArrayList<>();
+    public static ItemStack addWhiteScrollProtection(@NotNull final ItemStack item) {
+        final ItemLore itemLore = item.getData(DataComponentTypes.LORE);
 
-        assert lore != null;
+        List<Component> lore = new ArrayList<>(itemLore != null ? itemLore.styledLines() : new ArrayList<>());
+
         lore.add(ColorUtils.legacyTranslateColourCodes(getWhiteScrollProtectionName()));
-        meta.getPersistentDataContainer().set(whiteScrollProtectionKey, PersistentDataType.BOOLEAN, true);
 
-        meta.lore(lore);
-        item.setItemMeta(meta);
+        item.editPersistentDataContainer(container -> container.set(whiteScrollProtectionKey, PersistentDataType.BOOLEAN, true));
+
+        item.setData(DataComponentTypes.LORE, ItemLore.lore().addLines(lore).build());
+
         return item;
     }
 
-    public static ItemStack removeWhiteScrollProtection(@NotNull ItemStack item) {
-        if (!item.hasItemMeta()) return item;
+    public static ItemStack removeWhiteScrollProtection(@NotNull final ItemStack item) {
+        if (item.getPersistentDataContainer().has(whiteScrollProtectionKey, PersistentDataType.BOOLEAN)) {
+            item.editPersistentDataContainer(container -> container.remove(whiteScrollProtectionKey));
+        }
 
-        ItemMeta meta = item.getItemMeta();
-        if (meta.getPersistentDataContainer().has(whiteScrollProtectionKey, PersistentDataType.BOOLEAN)) meta.getPersistentDataContainer().remove(whiteScrollProtectionKey);
+        final List<Component> lore = item.lore();
 
-        if (item.lore() == null) {
-            item.setItemMeta(meta);
+        if (lore == null || lore.isEmpty()) {
             return item;
         }
 
-        List<Component> lore = item.lore();
+        lore.removeIf(loreComponent -> ColorUtils.toPlainText(loreComponent).contains(ColorUtils.stripStringColour(getWhiteScrollProtectionName())));
 
-        lore.removeIf(loreComponent -> ColorUtils.toPlainText(loreComponent)
-                .contains(ColorUtils.stripStringColour(getWhiteScrollProtectionName())));
-        meta.lore(lore);
-
-        meta.lore(lore);
-        item.setItemMeta(meta);
+        item.setData(DataComponentTypes.LORE, ItemLore.lore().addLines(lore).build());
 
         return item;
     }

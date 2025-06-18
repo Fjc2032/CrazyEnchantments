@@ -7,26 +7,26 @@ public class DustData {
     private final int max;
     private final int chance;
 
-    public DustData(String dustConfigName, int min, int max, int chance) {
+    public DustData(final String dustConfigName, final int min, final int max, final int chance) {
         this.name = dustConfigName;
         this.min = min;
         this.max = max;
         this.chance = chance;
     }
 
-    public int getMax() {
+    public final int getMax() {
         return this.max;
     }
 
-    public int getMin() {
+    public final int getMin() {
         return this.min;
     }
 
-    public String getConfigName() {
+    public final String getConfigName() {
         return this.name;
     }
 
-    public int getChance() {
+    public final int getChance() {
         return this.chance;
     }
 }

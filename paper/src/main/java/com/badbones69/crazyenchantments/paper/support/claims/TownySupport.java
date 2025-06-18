@@ -13,18 +13,18 @@ import org.jline.utils.Log;
 
 public class TownySupport implements ClaimSupport {
 
-    public boolean isFriendly(Player player, Player other) {
+    public boolean isFriendly(final Player player, final Player other) {
         return CombatUtil.isAlly(player.getName(), other.getName());
     }
 
-    public boolean inTerritory(Player player) {
-        TownyAPI api = TownyAPI.getInstance();
+    public boolean inTerritory(final Player player) {
+        final TownyAPI api = TownyAPI.getInstance();
 
         if (api == null) return true;
 
-        TownBlock block = api.getTownBlock(player.getLocation());
+        final TownBlock block = api.getTownBlock(player.getLocation());
 
-        Resident resident = api.getResident(player.getUniqueId());
+        final Resident resident = api.getResident(player.getUniqueId());
 
         try {
             if (block != null && block.hasTown()) {
@@ -32,16 +32,16 @@ public class TownySupport implements ClaimSupport {
 
                 if (resident.hasTown() && resident.getTown().equals(block.getTown())) return true;
             }
-        } catch (NotRegisteredException e) {
+        } catch (final NotRegisteredException e) {
             Log.error(e);
         }
 
         return false;
     }
 
-    public boolean canBreakBlock(Player player, Block block) { return true; }
+    public boolean canBreakBlock(final Player player, final Block block) { return true; }
 
-    public static boolean allowsCombat(Location location) {
+    public static boolean allowsCombat(final Location location) {
         TownyAPI api = TownyAPI.getInstance();
 
         if (api == null) return true;

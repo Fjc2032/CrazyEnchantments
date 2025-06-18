@@ -6,14 +6,14 @@ import org.bukkit.entity.Player;
 
 public class SuperiorSkyBlockSupport {
 
-    public boolean inTerritory(Player player) {
-        SuperiorPlayer superiorPlayer = SuperiorSkyblockAPI.getPlayer(player);
+    public boolean inTerritory(final Player player) {
+        final SuperiorPlayer superiorPlayer = SuperiorSkyblockAPI.getPlayer(player);
 
         return superiorPlayer.isInsideIsland();
     }
 
-    public boolean isFriendly(Player player, Player other) {
-        SuperiorPlayer superiorPlayer = SuperiorSkyblockAPI.getPlayer(player.getUniqueId()), otherPlayer = SuperiorSkyblockAPI.getPlayer(other.getUniqueId());
+    public boolean isFriendly(final Player player, final Player other) {
+        final SuperiorPlayer superiorPlayer = SuperiorSkyblockAPI.getPlayer(player.getUniqueId()), otherPlayer = SuperiorSkyblockAPI.getPlayer(other.getUniqueId());
 
         return superiorPlayer.getIsland() != null && superiorPlayer.getIsland().isMember(otherPlayer);
     }

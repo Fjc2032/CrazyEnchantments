@@ -18,7 +18,7 @@ public class ArmorEnchantment {
      * @param damageAmplifier The damage amplifier that is added to the damage.
      * @param isLevelAddedToAmplifier If the level of the enchantment on the item is added to the damage amplifier.
      */
-    public ArmorEnchantment(CEnchantments enchantment, double damageAmplifier, boolean isLevelAddedToAmplifier) {
+    public ArmorEnchantment(final CEnchantments enchantment, final double damageAmplifier, final boolean isLevelAddedToAmplifier) {
         this.enchantment = enchantment;
         this.damageAmplifier = damageAmplifier;
         this.isLevelAddedToAmplifier = isLevelAddedToAmplifier;
@@ -31,7 +31,7 @@ public class ArmorEnchantment {
      * @param potionEffect The effects that are added to the entity that is hit.
      * @param isLevelAddedToAmplifier If the level of the enchantment on the item is added to the potion amplifier.
      */
-    public ArmorEnchantment(CEnchantments enchantment, PotionEffects potionEffect, boolean isLevelAddedToAmplifier) {
+    public ArmorEnchantment(final CEnchantments enchantment, final PotionEffects potionEffect, final boolean isLevelAddedToAmplifier) {
         this(enchantment, Collections.singletonList(potionEffect), isLevelAddedToAmplifier);
     }
     
@@ -41,7 +41,7 @@ public class ArmorEnchantment {
      * @param potionEffects The effects that are added to the entity that is hit.
      * @param isLevelAddedToAmplifier If the level of the enchantment on the item is added to the potion amplifier.
      */
-    public ArmorEnchantment(CEnchantments enchantment, List<PotionEffects> potionEffects, boolean isLevelAddedToAmplifier) {
+    public ArmorEnchantment(final CEnchantments enchantment, final List<PotionEffects> potionEffects, final boolean isLevelAddedToAmplifier) {
         this.enchantment = enchantment;
         this.potionEffects = potionEffects;
         this.isLevelAddedToAmplifier = isLevelAddedToAmplifier;

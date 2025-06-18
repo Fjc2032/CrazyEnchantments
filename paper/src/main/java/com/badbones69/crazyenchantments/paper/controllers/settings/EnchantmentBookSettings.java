@@ -1,6 +1,7 @@
 package com.badbones69.crazyenchantments.paper.controllers.settings;
 
-import com.badbones69.crazyenchantments.paper.api.FileManager.Files;
+import com.badbones69.crazyenchantments.paper.CrazyEnchantments;
+import com.badbones69.crazyenchantments.paper.Methods;
 import com.badbones69.crazyenchantments.paper.api.economy.Currency;
 import com.badbones69.crazyenchantments.paper.api.enums.CEnchantments;
 import com.badbones69.crazyenchantments.paper.api.enums.pdc.DataKeys;
@@ -14,57 +15,35 @@ import com.badbones69.crazyenchantments.paper.api.builders.ItemBuilder;
 import com.badbones69.crazyenchantments.paper.api.utils.ColorUtils;
 import com.badbones69.crazyenchantments.paper.api.utils.EnchantUtils;
 import com.google.common.collect.Lists;
-import com.google.gson.Gson;
+import com.ryderbelserion.crazyenchantments.enums.FileKeys;
+import com.ryderbelserion.crazyenchantments.objects.ConfigOptions;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.ItemLore;
+import io.papermc.paper.persistence.PersistentDataContainerView;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Color;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class EnchantmentBookSettings {
+    
+    private final CrazyEnchantments plugin = JavaPlugin.getPlugin(CrazyEnchantments.class);
 
-    private ItemBuilder enchantmentBook;
+    private final ComponentLogger logger = this.plugin.getComponentLogger();
+    
+    private final ConfigOptions options = this.plugin.getOptions();
 
     private final List<Category> categories = Lists.newArrayList();
 
     private final List<CEnchantment> registeredEnchantments = Lists.newArrayList();
-
+  
     private final Gson gson = new Gson();
-
     private CEnchantments cEnchantments;
+    public final Map<UUID, Long> playerCooldowns = new HashMap<>();
+  
+    private ItemBuilder enchantmentBook;
 
-    public final Map<UUID, Long> playerCooldowns = new ConcurrentHashMap<>();
-
-    /**
-     *
-     * @return True if unsafe enchantments are enabled.
-     */
-    public boolean useUnsafeEnchantments() {
-        FileConfiguration config = Files.CONFIG.getFile();
-
-        return config.getBoolean("Settings.EnchantmentOptions.UnSafe-Enchantments");
-    }
-
-    @Deprecated(since = "1.20.6")
-    public boolean hasEnchantment(ItemMeta meta, CEnchantment enchantment) {
-        getEnchantments(meta);
-        PersistentDataContainer data = meta.getPersistentDataContainer();
-
-        if (!data.has(DataKeys.enchantments.getNamespacedKey())) return false;
-
-        String itemData = data.get(DataKeys.enchantments.getNamespacedKey(), PersistentDataType.STRING);
-        if (itemData == null) return false;
-
-        return this.gson.fromJson(itemData, Enchant.class).hasEnchantment(enchantment.getName());
-    }
 
     /**
      * This method converts an ItemStack into a CEBook.
@@ -72,24 +51,24 @@ public class EnchantmentBookSettings {
      * @return If the book is a CEBook it will return the CEBook object and if not it will return null.
      */
     @Nullable
-    public CEBook getCEBook(ItemStack book) {
-        if (!book.hasItemMeta()) return null;
-        ItemMeta meta = book.getItemMeta();
-        if (!meta.getPersistentDataContainer().has(DataKeys.stored_enchantments.getNamespacedKey())) return null;
+    public CEBook getCEBook(final ItemStack book) {
+        final PersistentDataContainerView view = book.getPersistentDataContainer();
 
-        EnchantedBook data = this.gson.fromJson(meta.getPersistentDataContainer().get(DataKeys.stored_enchantments.getNamespacedKey(), PersistentDataType.STRING), EnchantedBook.class);
+        if (!view.has(DataKeys.stored_enchantments.getNamespacedKey())) return null;
+
+        EnchantedBook data = Methods.getGson().fromJson(view.get(DataKeys.stored_enchantments.getNamespacedKey(), PersistentDataType.STRING), EnchantedBook.class);
        
         CEnchantment enchantment = null;
-        for (CEnchantment enchant : getRegisteredEnchantments()) {
+
+        for (final CEnchantment enchant : getRegisteredEnchantments()) {
             if (enchant.getName().equalsIgnoreCase(data.getName())) {
                 enchantment = enchant;
+
                 break;
             }
         }
 
-        return new CEBook(enchantment, data.getLevel(), book.getAmount())
-                .setSuccessRate(data.getSuccessChance())
-                .setDestroyRate(data.getDestroyChance());
+        return new CEBook(enchantment, data.getLevel(), book.getAmount()).setSuccessRate(data.getSuccessChance()).setDestroyRate(data.getDestroyChance());
     }
 
     /**
@@ -98,17 +77,20 @@ public class EnchantmentBookSettings {
      * @return A new scrambled book.
      */
     @Nullable
-    public ItemStack getNewScrambledBook(ItemStack book) {
-        if (!book.hasItemMeta()) return null;
+    public ItemStack getNewScrambledBook(final ItemStack book) {
+        final PersistentDataContainerView view = book.getPersistentDataContainer();
 
-        EnchantedBook data = this.gson.fromJson(book.getItemMeta().getPersistentDataContainer().get(DataKeys.stored_enchantments.getNamespacedKey(), PersistentDataType.STRING), EnchantedBook.class);
+        final EnchantedBook data = Methods.getGson().fromJson(view.get(DataKeys.stored_enchantments.getNamespacedKey(), PersistentDataType.STRING), EnchantedBook.class);
 
         CEnchantment enchantment = null;
+
         int bookLevel = 0;
 
-        for (CEnchantment enchantment1 : getRegisteredEnchantments()) {
+        for (final CEnchantment enchantment1 : getRegisteredEnchantments()) {
             if (!enchantment1.getName().equalsIgnoreCase(data.getName())) continue;
+
             enchantment = enchantment1;
+
             bookLevel = data.getLevel();
         }
 
@@ -122,15 +104,17 @@ public class EnchantmentBookSettings {
      * @param book The item you are checking.
      * @return True if it is and false if not.
      */
-    public boolean isEnchantmentBook(ItemStack book) {
+    public boolean isEnchantmentBook(final ItemStack book) {
+        if (book == null) return false;
 
-        if (book == null || book.getItemMeta() == null) return false;
-        if (!book.getItemMeta().getPersistentDataContainer().has(DataKeys.stored_enchantments.getNamespacedKey())) return false;
+        final PersistentDataContainerView view = book.getPersistentDataContainer();
 
-        String dataString = book.getItemMeta().getPersistentDataContainer().get(DataKeys.stored_enchantments.getNamespacedKey(), PersistentDataType.STRING);
-        EnchantedBook data = this.gson.fromJson(dataString, EnchantedBook.class);
+        if (!view.has(DataKeys.stored_enchantments.getNamespacedKey())) return false;
 
-        for (CEnchantment enchantment : getRegisteredEnchantments()) {
+        final String dataString = view.get(DataKeys.stored_enchantments.getNamespacedKey(), PersistentDataType.STRING);
+        final EnchantedBook data = Methods.getGson().fromJson(dataString, EnchantedBook.class);
+
+        for (final CEnchantment enchantment : getRegisteredEnchantments()) {
             if (enchantment.getName().equalsIgnoreCase(data.getName())) return true;
         }
 
@@ -166,7 +150,7 @@ public class EnchantmentBookSettings {
      *
      * @param enchantmentBook The book data to use for the itemBuilder.
      */
-    public void setEnchantmentBook(@NotNull ItemBuilder enchantmentBook) {
+    public void setEnchantmentBook(@NotNull final ItemBuilder enchantmentBook) {
         this.enchantmentBook = enchantmentBook;
     }
 
@@ -176,32 +160,22 @@ public class EnchantmentBookSettings {
      * @return A Map of all enchantments and their levels on the item.
      */
     @NotNull
-    public Map<CEnchantment, Integer> getEnchantments(@Nullable ItemStack item) {
-        if (item == null || item.getItemMeta() == null) return Collections.emptyMap();
+    public Map<CEnchantment, Integer> getEnchantments(@Nullable final ItemStack item) {
+        if (item == null) return Collections.emptyMap();
 
-        return getEnchantments(item.getItemMeta());
-    }
+        final PersistentDataContainerView view = item.getPersistentDataContainer();
 
-    @NotNull
-    public Map<CEnchantment, Integer> getEnchantments(@Nullable ItemMeta meta) {
-        if (meta == null) return Collections.emptyMap();
+        final Map<CEnchantment, Integer> enchantments = new HashMap<>();
 
-        return getEnchantments(meta.getPersistentDataContainer());
-    }
-
-    @NotNull
-    public Map<CEnchantment, Integer> getEnchantments(@NotNull PersistentDataContainer container) {
-        Map<CEnchantment, Integer> enchantments = new HashMap<>();
-
-        String data = container.get(DataKeys.enchantments.getNamespacedKey(), PersistentDataType.STRING);
+        final String data = view.get(DataKeys.enchantments.getNamespacedKey(), PersistentDataType.STRING);
 
         if (data == null) return Collections.emptyMap();
 
-        Enchant enchants = this.gson.fromJson(data, Enchant.class);
+        final Enchant enchants = Methods.getGson().fromJson(data, Enchant.class);
 
         if (enchants.isEmpty()) return Collections.emptyMap();
 
-        for (CEnchantment enchantment : getRegisteredEnchantments()) {
+        for (final CEnchantment enchantment : getRegisteredEnchantments()) {
             if (!enchantment.isActivated()) continue;
 
             if (enchants.hasEnchantment(enchantment.getName())) enchantments.put(enchantment, enchants.getLevel(enchantment.getName()));
@@ -215,8 +189,7 @@ public class EnchantmentBookSettings {
      * @param item Item you want to get the enchantments from.
      * @return A list of enchantments the item has.
      */
-    @Deprecated(since = "1.20", forRemoval = true)
-    public List<CEnchantment> getEnchantmentsOnItem(ItemStack item) {
+    public List<CEnchantment> getEnchantmentsOnItem(final ItemStack item) {
         return new ArrayList<>(getEnchantments(item).keySet());
     }
 
@@ -225,13 +198,11 @@ public class EnchantmentBookSettings {
      * @param item to check.
      * @return Amount of enchantments on the item.
      */
-    public int getEnchantmentAmount(@NotNull ItemStack item, boolean includeVanillaEnchantments) {
+    public int getEnchantmentAmount(@NotNull final ItemStack item, final boolean includeVanillaEnchantments) {
         int amount = getEnchantments(item).size();
 
-        if (includeVanillaEnchantments) {
-            if (item.hasItemMeta()) {
-                if (item.getItemMeta().hasEnchants()) amount += item.getItemMeta().getEnchants().size();
-            }
+        if (includeVanillaEnchantments && item.hasData(DataComponentTypes.ENCHANTMENTS)) {
+            amount += item.getEnchantments().size();
         }
 
         return amount;
@@ -250,48 +221,59 @@ public class EnchantmentBookSettings {
      * Loads in all config options.
      */
     public void populateMaps() {
-        FileConfiguration config = Files.CONFIG.getFile();
+        @NotNull final CommentedConfigurationNode config = FileKeys.config.getConfig();
 
-        for (String category : config.getConfigurationSection("Categories").getKeys(false)) {
-            String path = "Categories." + category;
-            LostBook lostBook = new LostBook(
-                    config.getInt(path + ".LostBook.Slot"),
-                    config.getBoolean(path + ".LostBook.InGUI"),
-                    new ItemBuilder()
-                            .setMaterial(config.getString(path + ".LostBook.Item", "BOOK"))
-                            .setPlayerName(config.getString(path + ".LostBook.Player"))
-                            .setName(config.getString(path + ".LostBook.Name", "Error getting name."))
-                            .setLore(config.getStringList(path + ".LostBook.Lore"))
-                            .setGlow(config.getBoolean(path + ".LostBook.Glowing", true)),
-                    config.getInt(path + ".LostBook.Cost"),
-                    Currency.getCurrency(config.getString(path + ".LostBook.Currency")),
-                    config.getBoolean(path + ".LostBook.FireworkToggle", false),
-                    getColors(config.getString(path + ".LostBook.FireworkColors", "Red, White, Blue")),
-                    config.getBoolean(path + ".LostBook.Sound-Toggle", false),
-                    config.getString(path + ".LostBook.Sound", "BLOCK_ANVIL_PLACE"));
+        final boolean hasSection = config.hasChild("Categories");
 
-            this.categories.add(new Category(
-                    category,
-                    config.getInt(path + ".Slot"),
-                    config.getBoolean(path + ".InGUI", true),
-                    new ItemBuilder()
-                            .setMaterial(config.getString(path + ".Item", ColorUtils.getRandomPaneColor().getName()))
-                            .setPlayerName(config.getString(path + ".Player"))
-                            .setName(config.getString(path + ".Name", "Error getting name."))
-                            .setLore(config.getStringList(path + ".Lore"))
-                            .setGlow(config.getBoolean(path + ".Glowing", false)),
-                    config.getInt(path + ".Cost"),
-                    Currency.getCurrency(config.getString(path + ".Currency")),
-                    config.getInt(path + ".Rarity"),
-                    lostBook,
-                    config.getInt(path + ".EnchOptions.SuccessPercent.Max"),
-                    config.getInt(path + ".EnchOptions.SuccessPercent.Min"),
-                    config.getInt(path + ".EnchOptions.DestroyPercent.Max"),
-                    config.getInt(path + ".EnchOptions.DestroyPercent.Min"),
-                    config.getBoolean(path + ".EnchOptions.MaxLvlToggle"),
-                    config.getInt(path + ".EnchOptions.LvlRange.Max"),
-                    config.getInt(path + ".EnchOptions.LvlRange.Min")));
+        if (!hasSection) {
+            this.logger.error("Could not find the Categories section in the config.yml");
+
+            return;
         }
+        
+        final Map<Object, CommentedConfigurationNode> childrenMap = config.node("Categories").childrenMap();
+        
+        childrenMap.forEach((object, child) -> {
+            final CommentedConfigurationNode lostBook = child.node("LostBook");
+
+            final LostBook book = new LostBook(
+                    lostBook.node("Slot").getInt(-1),
+                    lostBook.node("InGUI").getBoolean(true),
+                    new ItemBuilder().setMaterial(lostBook.node("Item").getString("BOOK"))
+                            .setPlayerName(lostBook.node("Player").getString(""))
+                            .setLore(Methods.getStringList(lostBook, "Lore"))
+                            .setGlow(lostBook.node("Glowing").getBoolean(true)),
+                    lostBook.node("Cost").getInt(10000),
+                    Currency.getCurrency(lostBook.node("Currency").getString("Vault")),
+                    lostBook.node("FireworkToggle").getBoolean(false),
+                    getColors(lostBook.node("FireworkColors").getString("Red, White, Blue")),
+                    lostBook.node("Sound-Toggle").getBoolean(false),
+                    lostBook.node("Sound").getString("BLOCK_ANVIL_PLACE")
+            );
+
+            final Category category = new Category(object.toString(),
+                    child.node("Slot").getInt(-1),
+                    child.node("InGUI").getBoolean(true),
+                    new ItemBuilder().setMaterial(child.node("Item").getString(ColorUtils.getRandomPaneColor().getName()))
+                            .setPlayerName(child.node("Player").getString(""))
+                            .setName(child.node("Name").getString(""))
+                            .setLore(Methods.getStringList(child, "Lore"))
+                            .setGlow(child.node("Glowing").getBoolean(false)),
+                    child.node("Cost").getInt(10000),
+                    Currency.getCurrency(child.node("Currency").getString("Vault")),
+                    child.node("Rarity").getInt(2),
+                    book,
+                    child.node("EnchOptions", "SuccessPercent", "Max").getInt(90),
+                    child.node("EnchOptions", "SuccessPercent", "Min").getInt(10),
+                    child.node("EnchOptions", "DestroyPercent", "Max").getInt(10),
+                    child.node("EnchOptions", "DestroyPercent", "Min").getInt(0),
+                    child.node("EnchOptions", "MaxLvlToggle").getBoolean(true),
+                    child.node("EnchOptions", "LvlRange", "Max").getInt(2),
+                    child.node("EnchOptions", "LvlRange", "Min").getInt(1)
+            );
+
+            this.categories.add(category);
+        });
     }
 
     /**
@@ -299,16 +281,17 @@ public class EnchantmentBookSettings {
      * @return The category object.
      */
     @Nullable
-    public Category getCategory(String name) {
-        for (Category category : this.categories) {
+    public Category getCategory(final String name) {
+        for (final Category category : this.categories) {
             if (category.getName().equalsIgnoreCase(name)) return category;
         }
 
         return null;
     }
 
-    private List<Color> getColors(String string) {
-        List<Color> colors = new ArrayList<>();
+    private List<Color> getColors(final String string) {
+        final List<Color> colors = new ArrayList<>();
+
         ColorUtils.color(colors, string);
 
         return colors;
@@ -319,91 +302,87 @@ public class EnchantmentBookSettings {
      * @param enchant The enchantment you want the level from.
      * @return The level the enchantment has.
      */
-    public int getLevel(@NotNull ItemStack item, @NotNull CEnchantment enchant) {
-        String data = item.getItemMeta().getPersistentDataContainer().get(DataKeys.enchantments.getNamespacedKey(), PersistentDataType.STRING);
+    public int getLevel(@NotNull final ItemStack item, @NotNull final CEnchantment enchant) {
+        final String data = item.getPersistentDataContainer().get(DataKeys.enchantments.getNamespacedKey(), PersistentDataType.STRING);
 
-        int level = data == null ? 0 : this.gson.fromJson(data, Enchant.class).getLevel(enchant.getName());
+        int level = data == null ? 0 : Methods.getGson().fromJson(data, Enchant.class).getLevel(enchant.getName());
 
-        if (!useUnsafeEnchantments() && level > enchant.getMaxLevel()) level = enchant.getMaxLevel();
+        if (!this.options.isUseUnsafeEnchantments() && level > enchant.getMaxLevel()) level = enchant.getMaxLevel();
 
         return level;
     }
 
     /**
-     * @param item Item you want to remove the enchantment from.
+     * @param itemStack Item you want to remove the enchantment from.
      * @param enchant Enchantment you want removed.
      * @return Item without the enchantment.
      */
-    @NotNull
-    public ItemStack removeEnchantment(@NotNull ItemStack item, @NotNull CEnchantment enchant) {
-        if (!item.hasItemMeta()) return item;
+    public @NotNull ItemStack removeEnchantment(@NotNull final ItemStack itemStack, @NotNull final CEnchantment enchant) {
+        final PersistentDataContainerView view = itemStack.getPersistentDataContainer();
 
-        item.setItemMeta(removeEnchantment(item.getItemMeta(), enchant));
-
-        return item;
-    }
-
-    @NotNull
-    public ItemMeta removeEnchantment(@NotNull ItemMeta meta, @NotNull CEnchantment enchant) {
-        List<Component> lore = meta.lore();
+        final List<Component> lore = itemStack.lore();
 
         if (lore != null) {
-            lore.removeIf(loreComponent -> ColorUtils.toPlainText(loreComponent)
-                    .contains(ColorUtils.stripStringColour(enchant.getCustomName())));
-            meta.lore(lore);
+            lore.removeIf(loreComponent -> ColorUtils.toPlainText(loreComponent).contains(ColorUtils.stripStringColour(enchant.getCustomName())));
+
+            itemStack.setData(DataComponentTypes.LORE, ItemLore.lore().addLines(lore).build());
         }
 
         Enchant data;
 
-        if (meta.getPersistentDataContainer().has(DataKeys.enchantments.getNamespacedKey())) {
-            data = this.gson.fromJson(meta.getPersistentDataContainer().get(DataKeys.enchantments.getNamespacedKey(), PersistentDataType.STRING), Enchant.class);
+        if (view.has(DataKeys.enchantments.getNamespacedKey())) {
+            data = Methods.getGson().fromJson(view.get(DataKeys.enchantments.getNamespacedKey(), PersistentDataType.STRING), Enchant.class);
         } else {
             data = new Enchant(new HashMap<>());
         }
 
         data.removeEnchantment(enchant.getName());
 
-        if (data.isEmpty()) {
-            if (meta.getPersistentDataContainer().has(DataKeys.enchantments.getNamespacedKey()))
-                meta.getPersistentDataContainer().remove(DataKeys.enchantments.getNamespacedKey());
+        if (data.isEmpty() && view.has(DataKeys.enchantments.getNamespacedKey())) {
+            itemStack.editPersistentDataContainer(container -> {
+                container.remove(DataKeys.enchantments.getNamespacedKey());
+            });
         } else {
-            meta.getPersistentDataContainer().set(DataKeys.enchantments.getNamespacedKey(), PersistentDataType.STRING, this.gson.toJson(data));
+            itemStack.editPersistentDataContainer(container -> {
+                container.set(DataKeys.enchantments.getNamespacedKey(), PersistentDataType.STRING, Methods.getGson().toJson(data));
+            });
         }
 
-        return meta;
+        return itemStack;
     }
 
-    @NotNull
-    public ItemMeta removeEnchantments(@NotNull ItemMeta meta, @NotNull List<CEnchantment> enchants) {
+    public void removeEnchantments(@NotNull ItemStack itemStack, @NotNull List<CEnchantment> enchants) {
+        final PersistentDataContainerView view = itemStack.getPersistentDataContainer();
 
-        List<Component> lore = meta.lore();
+        final List<Component> lore = itemStack.lore();
 
         if (lore != null) {
-            for (CEnchantment enchant : enchants) {
-                lore.removeIf(loreComponent -> ColorUtils.toPlainText(loreComponent)
-                        .contains(ColorUtils.stripStringColour(enchant.getCustomName())));
-                meta.lore(lore);
+            for (final CEnchantment enchant : enchants) {
+                lore.removeIf(loreComponent -> ColorUtils.toPlainText(loreComponent).contains(ColorUtils.stripStringColour(enchant.getCustomName())));
+
+                itemStack.setData(DataComponentTypes.LORE, ItemLore.lore().addLines(lore).build());
             }
         }
 
         Enchant data;
 
-        if (meta.getPersistentDataContainer().has(DataKeys.enchantments.getNamespacedKey())) {
-            data = this.gson.fromJson(meta.getPersistentDataContainer().get(DataKeys.enchantments.getNamespacedKey(), PersistentDataType.STRING), Enchant.class);
+        if (view.has(DataKeys.enchantments.getNamespacedKey())) {
+            data = Methods.getGson().fromJson(view.get(DataKeys.enchantments.getNamespacedKey(), PersistentDataType.STRING), Enchant.class);
         } else {
             data = new Enchant(new HashMap<>());
         }
 
         enchants.forEach(enchant -> data.removeEnchantment(enchant.getName()));
 
-        if (data.isEmpty()) {
-            if (meta.getPersistentDataContainer().has(DataKeys.enchantments.getNamespacedKey()))
-                meta.getPersistentDataContainer().remove(DataKeys.enchantments.getNamespacedKey());
+        if (data.isEmpty() && view.has(DataKeys.enchantments.getNamespacedKey())) {
+            itemStack.editPersistentDataContainer(container -> {
+                container.remove(DataKeys.enchantments.getNamespacedKey());
+            });
         } else {
-            meta.getPersistentDataContainer().set(DataKeys.enchantments.getNamespacedKey(), PersistentDataType.STRING, this.gson.toJson(data));
+            itemStack.editPersistentDataContainer(container -> {
+                container.set(DataKeys.enchantments.getNamespacedKey(), PersistentDataType.STRING, Methods.getGson().toJson(data));
+            });
         }
-
-        return meta;
     }
 
     /**

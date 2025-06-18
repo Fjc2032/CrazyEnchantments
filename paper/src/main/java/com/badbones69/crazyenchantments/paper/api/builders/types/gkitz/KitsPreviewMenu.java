@@ -7,13 +7,13 @@ import org.bukkit.inventory.Inventory;
 
 public class KitsPreviewMenu extends InventoryBuilder {
 
-    public KitsPreviewMenu(Player player, int size, String title, GKitz kit) {
+    public KitsPreviewMenu(final Player player, final int size, final String title, final GKitz kit) {
         super(player, size, title, kit);
     }
 
     @Override
     public InventoryBuilder build() {
-        Inventory inv = getInventory();
+        final Inventory inv = getInventory();
 
         getKit().getPreviewItems().forEach(inv::addItem);
 
