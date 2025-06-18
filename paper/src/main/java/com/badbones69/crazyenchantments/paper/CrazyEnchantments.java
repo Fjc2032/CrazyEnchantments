@@ -1,12 +1,11 @@
 package com.badbones69.crazyenchantments.paper;
 
+import com.badbones69.crazyenchantments.paper.api.CrazyManager;
 import com.badbones69.crazyenchantments.paper.api.FileManager.Files;
 import com.badbones69.crazyenchantments.paper.api.builders.types.BaseMenu;
 import com.badbones69.crazyenchantments.paper.api.builders.types.blacksmith.BlackSmithMenu;
 import com.badbones69.crazyenchantments.paper.api.builders.types.gkitz.KitsMenu;
 import com.badbones69.crazyenchantments.paper.api.builders.types.tinkerer.TinkererMenu;
-import com.badbones69.crazyenchantments.paper.api.objects.CEnchantment;
-import com.badbones69.crazyenchantments.paper.api.utils.FileUtils;
 import com.badbones69.crazyenchantments.paper.commands.BlackSmithCommand;
 import com.badbones69.crazyenchantments.paper.commands.CECommand;
 import com.badbones69.crazyenchantments.paper.commands.CETab;
@@ -14,7 +13,6 @@ import com.badbones69.crazyenchantments.paper.commands.GkitzCommand;
 import com.badbones69.crazyenchantments.paper.commands.GkitzTab;
 import com.badbones69.crazyenchantments.paper.commands.TinkerCommand;
 import com.badbones69.crazyenchantments.paper.controllers.BossBarController;
-import com.badbones69.crazyenchantments.paper.controllers.CommandChecker;
 import com.badbones69.crazyenchantments.paper.controllers.LostBookController;
 import com.badbones69.crazyenchantments.paper.enchantments.AllyEnchantments;
 import com.badbones69.crazyenchantments.paper.enchantments.ArmorEnchantments;
@@ -30,16 +28,11 @@ import com.badbones69.crazyenchantments.paper.listeners.DustControlListener;
 import com.badbones69.crazyenchantments.paper.listeners.FireworkDamageListener;
 import com.badbones69.crazyenchantments.paper.listeners.MiscListener;
 import com.badbones69.crazyenchantments.paper.listeners.ProtectionCrystalListener;
+import com.badbones69.crazyenchantments.paper.listeners.ScramblerListener;
+import com.badbones69.crazyenchantments.paper.listeners.ScrollListener;
 import com.badbones69.crazyenchantments.paper.listeners.ShopListener;
+import com.badbones69.crazyenchantments.paper.listeners.SlotCrystalListener;
 import com.badbones69.crazyenchantments.paper.listeners.server.WorldSwitchListener;
-import com.badbones69.crazyenchantments.paper.support.interfaces.mmoitems.CrazyEnchantStats;
-import com.badbones69.crazyenchantments.paper.support.interfaces.mmoitems.MMOItemsEventHook;
-import com.badbones69.crazyenchantments.paper.support.interfaces.mmoitems.MMOItemsSupport;
-import com.badbones69.crazyenchantments.paper.support.interfaces.mmoitems.data.CrazyEnchantsData;
-import com.badbones69.crazyenchantments.paper.utils.Metrics;
-import net.Indyuce.mmoitems.MMOItems;
-import net.Indyuce.mmoitems.comp.enchants.EnchantPlugin;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
@@ -54,45 +47,39 @@ public class CrazyEnchantments extends JavaPlugin {
     // Plugin Listeners.
     public final PluginManager pluginManager = getServer().getPluginManager();
 
-    private FireworkDamageListener fireworkDamageListener;
     private ArmorEnchantments armorEnchantments;
 
-    private final BossBarController bossBarController = new BossBarController(this);
+    private BossBarController bossBarController;
+
+    private CrazyManager crazyManager;
+
+    private FusionPaper fusion;
+    private FileManager fileManager;
+    private ConfigOptions options;
+
+    private CrazyInstance instance;
 
 
     @Override
     public void onEnable() {
+        this.fusion = new FusionPaper(this);
+
+        this.instance = new CrazyInstance(this.fileManager = this.fusion.getFileManager(), getDataPath());
+
+        this.instance.init(); // initialize
+
+        this.options = instance.getOptions();
+
+        this.bossBarController = new BossBarController();
+
         this.starter = new Starter();
         this.starter.run();
 
         this.starter.getCurrencyAPI().loadCurrency();
 
-        FileConfiguration config = Files.CONFIG.getFile();
-        FileConfiguration tinker = Files.TINKER.getFile();
+        this.crazyManager = this.starter.getCrazyManager();
 
-        if (!config.contains("Settings.CESuccessOverride")) {
-            config.set("Settings.CESuccessOverride", "-1");
-
-            Files.CONFIG.saveFile();
-        }
-
-        if (!config.contains("Settings.CESuccessOverride")) {
-            config.set("Settings.CEFailureOverride", "-1");
-
-            Files.CONFIG.saveFile();
-        }
-
-        if (!config.contains("Settings.Toggle-Metrics")) {
-            config.set("Settings.Toggle-Metrics", false);
-
-            Files.CONFIG.saveFile();
-        }
-
-        if (!config.contains("Settings.Refresh-Potion-Effects-On-World-Change")) {
-            config.set("Settings.Refresh-Potion-Effects-On-World-Change", false);
-            
-            Files.CONFIG.saveFile();
-        }
+        final FileConfiguration tinker = Files.TINKER.getFile();
 
         if (!tinker.contains("Settings.Tinker-Version")) {
             tinker.set("Settings.Tinker-Version", 1.0);
@@ -100,13 +87,17 @@ public class CrazyEnchantments extends JavaPlugin {
             Files.TINKER.saveFile();
         }
 
-        if (config.getBoolean("Settings.Toggle-Metrics")) new Metrics(this, 4494);
-
-        this.pluginManager.registerEvents(this.fireworkDamageListener = new FireworkDamageListener(), this);
-        this.pluginManager.registerEvents(new ShopListener(), this);
+        if (this.options.isMetricsEnabled()) new Metrics(this, 4494);
 
         // Load what we need to properly enable the plugin.
-        this.starter.getCrazyManager().load();
+        this.crazyManager.load();
+
+        this.pluginManager.registerEvents(new ScramblerListener(), this);
+        this.pluginManager.registerEvents(new ScrollListener(), this);
+        this.pluginManager.registerEvents(new SlotCrystalListener(), this);
+
+        this.pluginManager.registerEvents(new FireworkDamageListener(), this);
+        this.pluginManager.registerEvents(new ShopListener(), this);
 
         this.pluginManager.registerEvents(new MiscListener(), this);
         this.pluginManager.registerEvents(new DustControlListener(), this);
@@ -131,17 +122,8 @@ public class CrazyEnchantments extends JavaPlugin {
         this.pluginManager.registerEvents(new AuraListener(), this);
 
         this.pluginManager.registerEvents(new LostBookController(), this);
-        this.pluginManager.registerEvents(new CommandChecker(), this);
 
         this.pluginManager.registerEvents(new WorldSwitchListener(), this);
-
-        this.pluginManager.registerEvents(new MMOItemsEventHook(), this);
-
-        if (this.starter.getCrazyManager().isGkitzEnabled()) {
-            getLogger().info("G-Kitz support is now enabled.");
-
-            this.pluginManager.registerEvents(new KitsMenu.KitsListener(), this);
-        }
 
         registerCommand(getCommand("crazyenchantments"), new CETab(), new CECommand());
 
@@ -149,15 +131,14 @@ public class CrazyEnchantments extends JavaPlugin {
         registerCommand(getCommand("blacksmith"), null, new BlackSmithCommand());
 
         registerCommand(getCommand("gkit"), new GkitzTab(), new GkitzCommand());
-
-        FileUtils.loadFiles();
-
     }
 
     @Override
     public void onDisable() {
-        getServer().getGlobalRegionScheduler().cancelTasks(this);
-        getServer().getAsyncScheduler().cancelTasks(this);
+        final Server server = getServer();
+
+        server.getGlobalRegionScheduler().cancelTasks(this);
+        server.getAsyncScheduler().cancelTasks(this);
 
         this.bossBarController.removeAllBossBars();
 
@@ -165,10 +146,10 @@ public class CrazyEnchantments extends JavaPlugin {
 
         if (this.starter.getAllyManager() != null) this.starter.getAllyManager().forceRemoveAllies();
 
-        getServer().getOnlinePlayers().forEach(this.starter.getCrazyManager()::unloadCEPlayer);
+        server.getOnlinePlayers().forEach(this.crazyManager::unloadCEPlayer);
     }
 
-    private void registerCommand(PluginCommand pluginCommand, TabCompleter tabCompleter, CommandExecutor commandExecutor) {
+    private void registerCommand(final PluginCommand pluginCommand, final TabCompleter tabCompleter, final CommandExecutor commandExecutor) {
         if (pluginCommand != null) {
             pluginCommand.setExecutor(commandExecutor);
 
@@ -176,13 +157,28 @@ public class CrazyEnchantments extends JavaPlugin {
         }
     }
 
-    public Starter getStarter() {
-        return this.starter;
+    public final FileManager getFileManager() {
+        return this.fileManager;
     }
 
-    // Plugin Listeners.
-    public FireworkDamageListener getFireworkDamageListener() {
-        return this.fireworkDamageListener;
+    public final CrazyInstance getInstance() {
+        return this.instance;
+    }
+
+    public final ConfigOptions getOptions() {
+        return this.options;
+    }
+
+    public final FusionPaper getFusion() {
+        return this.fusion;
+    }
+
+    public CrazyManager getCrazyManager() {
+        return this.crazyManager;
+    }
+
+    public Starter getStarter() {
+        return this.starter;
     }
 
     public PluginManager getPluginManager() {
@@ -194,7 +190,7 @@ public class CrazyEnchantments extends JavaPlugin {
     }
 
     public boolean isLogging() {
-        return true;
+        return this.fusion.isVerbose();
     }
 
 

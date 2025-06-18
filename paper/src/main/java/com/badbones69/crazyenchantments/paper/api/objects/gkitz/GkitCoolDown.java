@@ -17,7 +17,7 @@ public class GkitCoolDown {
      * @param gkit The gkit this is tied to.
      * @param coolDownTime When the cool-down ends.
      */
-    public GkitCoolDown(GKitz gkit, Calendar coolDownTime) {
+    public GkitCoolDown(final GKitz gkit, final Calendar coolDownTime) {
         this.gkit = gkit;
         this.coolDownTime = coolDownTime;
     }
@@ -34,7 +34,7 @@ public class GkitCoolDown {
         return Calendar.getInstance().after(this.coolDownTime);
     }
     
-    public String getCoolDownLeft(String message) {
+    public String getCoolDownLeft(final String message) {
         long days = 0, hours = 0, minutes = 0, seconds = 0, total;
 
         int second = 1000, minute = second*60, hour = minute*60, day = hour*24;

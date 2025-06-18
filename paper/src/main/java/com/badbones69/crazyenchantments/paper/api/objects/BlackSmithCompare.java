@@ -10,7 +10,7 @@ public class BlackSmithCompare {
     private final Map<Enchantment, Integer> newVanillaEnchantments = new HashMap<>();
     private final Map<CEnchantment, Integer> newCEnchantments = new HashMap<>();
     
-    public BlackSmithCompare(CEItem mainCE, CEItem subCE) {
+    public BlackSmithCompare(final CEItem mainCE, final CEItem subCE) {
         for (Entry<Enchantment, Integer> entry : subCE.getVanillaEnchantments().entrySet()) {
             Enchantment enchantment = entry.getKey();
 

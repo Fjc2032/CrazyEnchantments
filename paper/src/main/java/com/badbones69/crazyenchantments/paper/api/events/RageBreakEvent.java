@@ -16,7 +16,7 @@ public class RageBreakEvent extends Event implements Cancellable {
     private final ItemStack weapon;
     private boolean cancel;
     
-    public RageBreakEvent(Player player, Entity damager, ItemStack weapon) {
+    public RageBreakEvent(final Player player, final Entity damager, final ItemStack weapon) {
         this.player = player;
         this.damager = damager;
         this.weapon = weapon;
@@ -57,7 +57,7 @@ public class RageBreakEvent extends Event implements Cancellable {
      * @param cancel true if you wish to cancel this event
      */
     @Override
-    public void setCancelled(boolean cancel) {
+    public void setCancelled(final boolean cancel) {
         this.cancel = cancel;
     }
 

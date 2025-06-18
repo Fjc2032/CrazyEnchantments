@@ -11,9 +11,9 @@ import org.bukkit.entity.Player;
 
 public class FactionsUUIDSupport implements ClaimSupport {
 
-    public boolean isFriendly(Player player, Player other) {
-        FPlayer fPlayer = FPlayers.getInstance().getByPlayer(player);
-        FPlayer oPlayer = FPlayers.getInstance().getByPlayer(other);
+    public boolean isFriendly(final Player player, final Player other) {
+        final FPlayer fPlayer = FPlayers.getInstance().getByPlayer(player);
+        final FPlayer oPlayer = FPlayers.getInstance().getByPlayer(other);
 
         if (fPlayer == null || oPlayer == null) return false;
 
@@ -29,23 +29,23 @@ public class FactionsUUIDSupport implements ClaimSupport {
         }
     }
 
-    public boolean inTerritory(Player player) {
-        FPlayer fPlayer = FPlayers.getInstance().getByPlayer(player);
+    public boolean inTerritory(final Player player) {
+        final FPlayer fPlayer = FPlayers.getInstance().getByPlayer(player);
 
         return !isWilderness(fPlayer) && (fPlayer.isInOwnTerritory() || fPlayer.isInAllyTerritory());
     }
 
-    public boolean canBreakBlock(Player player, Block block) {
+    public boolean canBreakBlock(final Player player, final Block block) {
         Faction fBlock = Board.getInstance().getFactionAt(new FLocation(block.getLocation()));
 
         return isWilderness(fBlock) || FPlayers.getInstance().getByPlayer(player).getFaction() == fBlock;
     }
 
-    private boolean isWilderness(FPlayer player) {
+    private boolean isWilderness(final FPlayer player) {
         return isWilderness(player.getFaction());
     }
 
-    private boolean isWilderness(Faction faction) {
+    private boolean isWilderness(final Faction faction) {
         return faction != null && faction.isWilderness();
     }
 }

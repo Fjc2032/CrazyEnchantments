@@ -39,6 +39,7 @@ Enchantments:
         - 'Simple'
     #All the categories the Enchantment can be found in
     Categories:
+
       - 'Simple'
   #Imperium Enchants Do not change this line.
   Shuffle:
@@ -291,6 +292,7 @@ Enchantments:
         - 'Simple'
     Categories:
       - 'Simple'
+
   #Do not change this line.
   BurnShield:
     Enabled: true
@@ -878,6 +880,30 @@ Enchantments:
       Description:
         - '&7Has a chance to'
         - '&7deal double the damage.'
+        - ''
+        - '&6Found in:'
+        - '&7 - &a&l&nCommon'
+        - '&7 - &9&l&nRare'
+        - '&7 - &4&l&nLegendary'
+        - '&6Enchantable Items: &aAxes'
+    Categories:
+      - 'Common'
+      - 'Rare'
+      - 'Legendary'
+  TreeFeller:
+    Enabled: true
+    Sound: "ENTITY_PLAYER_LEVELUP"
+    Name: '&7TreeFeller'
+    MaxPower: 5
+    Enchantment-Type: 'Axe'
+    Chance-System:
+      Base: 5
+      Increase: 1
+    Info:
+      Name: '&e&lTreeFeller &7(&bI-&bV&7)'
+      Description:
+        - '&7Lets you cut down'
+        - '&7trees a lot faster.'
         - ''
         - '&6Found in:'
         - '&7 - &a&l&nCommon'
@@ -1748,6 +1774,8 @@ Enchantments:
         - '&6Enchantable Items: &aPickaxes'
     Categories:
       - 'Mythical'
+    Conflicts:
+      - "Blast"
   #Do not change this line.
   Blast:
     Enabled: true
@@ -1770,6 +1798,8 @@ Enchantments:
       - 'Common'
       - 'Rare'
       - 'Legendary'
+    Conflicts:
+      - "VeinMiner"
   #Do not change this line.
   Blizzard:
     Enabled: true

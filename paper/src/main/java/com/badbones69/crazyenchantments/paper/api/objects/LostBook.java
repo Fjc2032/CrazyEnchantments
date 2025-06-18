@@ -1,18 +1,22 @@
 package com.badbones69.crazyenchantments.paper.api.objects;
 
 import com.badbones69.crazyenchantments.paper.CrazyEnchantments;
-import com.badbones69.crazyenchantments.paper.api.FileManager.Files;
 import com.badbones69.crazyenchantments.paper.api.economy.Currency;
 import com.badbones69.crazyenchantments.paper.api.enums.pdc.DataKeys;
 import com.badbones69.crazyenchantments.paper.api.builders.ItemBuilder;
+import com.ryderbelserion.crazyenchantments.objects.ConfigOptions;
 import org.bukkit.Color;
 import org.bukkit.Sound;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LostBook {
+
+    private final CrazyEnchantments plugin = JavaPlugin.getPlugin(CrazyEnchantments.class);
+
+    private final ConfigOptions options = this.plugin.getOptions();
 
     private final int slot;
     private final boolean inGUI;
@@ -24,8 +28,12 @@ public class LostBook {
     private final boolean useSound;
     private Sound sound;
 
-    public LostBook(int slot, boolean inGUI, ItemBuilder displayItem, int cost, Currency currency,
-    boolean useFirework, List<Color> fireworkColors, boolean useSound, String sound) {
+    public LostBook(final int slot, final boolean inGUI, final ItemBuilder displayItem, final int cost, final Currency currency, final boolean useFirework,
+                    final List<Color> fireworkColors, final boolean useSound, final String sound) {
+        if (slot == -1) {
+            throw new IllegalArgumentException("Slot in the LostBook config section must be a positive integer i.e. cannot be -1, and must be greater than 0");
+        }
+
         this.slot = slot - 1;
         this.inGUI = inGUI;
         this.displayItem = displayItem;
@@ -35,11 +43,9 @@ public class LostBook {
         this.fireworkColors = fireworkColors;
 
         try { // If the sound doesn't exist it will not error.
-            this.sound = Sound.valueOf(sound);
+            this.sound = Sound.valueOf(sound); //todo() mojang mapped
         } catch (Exception e) {
-            CrazyEnchantments plugin = JavaPlugin.getPlugin(CrazyEnchantments.class);
-            plugin.getServer().getLogger().info(("The sound " + sound + " is not a sound found in this minecraft version."));
-            this.sound = null;
+            this.sound = Sound.UI_BUTTON_CLICK;
         }
 
         this.useSound = sound != null && useSound;
@@ -81,21 +87,20 @@ public class LostBook {
         return this.sound;
     }
     
-    public ItemBuilder getLostBook(Category category) {
+    public ItemBuilder getLostBook(final Category category) {
         return getLostBook(category, 1);
     }
 
-    public ItemBuilder getLostBook(Category category, int amount) {
-        FileConfiguration file = Files.CONFIG.getFile();
-        HashMap<String, String> placeholders = new HashMap<>();
+    public ItemBuilder getLostBook(final Category category, final int amount) {
+        Map<String, String> placeholders = new HashMap<>();
         placeholders.put("%Category%", category.getDisplayItem().getName());
-        return new ItemBuilder()
-        .setMaterial(file.getString("Settings.LostBook.Item", "BOOK"))
-        .setAmount(amount)
-        .setName(file.getString("Settings.LostBook.Name", "Error getting name."))
-        .setNamePlaceholders(placeholders)
-        .setLore(file.getStringList("Settings.LostBook.Lore"))
-        .setLorePlaceholders(placeholders)
-        .addStringPDC(DataKeys.lost_book.getNamespacedKey(), category.getName());
+
+        return new ItemBuilder().setMaterial(this.options.getLostBookItem())
+                .setAmount(amount)
+                .setName(this.options.getLostBookName())
+                .setNamePlaceholders(placeholders)
+                .setLore(this.options.getLostBookLore())
+                .setLorePlaceholders(placeholders)
+                .addKey(DataKeys.lost_book.getNamespacedKey(), category.getName());
     }
 }

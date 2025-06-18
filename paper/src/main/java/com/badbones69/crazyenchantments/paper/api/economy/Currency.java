@@ -8,7 +8,7 @@ public enum Currency {
     
     private final String name;
     
-    Currency(String name) {
+    Currency(final String name) {
         this.name = name;
     }
     
@@ -17,8 +17,8 @@ public enum Currency {
      * @param currency The currency name you are checking.
      * @return True if it is supported and false if not.
      */
-    public static boolean isCurrency(String currency) {
-        for (Currency value : Currency.values()) {
+    public static boolean isCurrency(final String currency) {
+        for (final Currency value : Currency.values()) {
             if (currency.equalsIgnoreCase(value.getName())) return true;
         }
 
@@ -30,8 +30,8 @@ public enum Currency {
      * @param currency The currency you want.
      * @return The currency enum.
      */
-    public static Currency getCurrency(String currency) {
-        for (Currency value : Currency.values()) {
+    public static Currency getCurrency(final String currency) {
+        for (final Currency value : Currency.values()) {
             if (currency.equalsIgnoreCase(value.getName())) return value;
         }
 
@@ -42,7 +42,7 @@ public enum Currency {
      * Get the name of the currency.
      * @return The name of the currency.
      */
-    public String getName() {
-        return name;
+    public final String getName() {
+        return this.name;
     }
 }

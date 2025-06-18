@@ -4,10 +4,10 @@ import org.bukkit.block.Block;
 
 public interface CropManagerVersion {
     
-    void fullyGrowPlant(Block block);
+    void fullyGrowPlant(final Block block);
     
-    boolean isFullyGrown(Block block);
+    boolean isFullyGrown(final Block block);
     
-    void hydrateSoil(Block soil);
+    void hydrateSoil(final Block soil);
     
 }

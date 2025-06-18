@@ -22,7 +22,7 @@ public class BuyBookEvent extends Event {
      * @param price Price of the book.
      * @param book CEBook being bought.
      */
-    public BuyBookEvent(CEPlayer player, Currency currency, int price, CEBook book) {
+    public BuyBookEvent(final CEPlayer player, final Currency currency, final int price, final CEBook book) {
         this.book = book;
         this.price = price;
         this.player = player;

@@ -22,7 +22,11 @@ public enum DataKeys {
     limit_reducer("Limit_Reducer", PersistentDataType.INTEGER),
     slot_crystal("Slot_Crystal", PersistentDataType.BOOLEAN),
     gkit_type("gkit", PersistentDataType.STRING),
-    random_number("random_number", PersistentDataType.STRING);
+    random_number("random_number", PersistentDataType.STRING),
+
+    trade_button("trade_button", PersistentDataType.STRING),
+    back_left("back_left", PersistentDataType.STRING),
+    back_right("back_right", PersistentDataType.STRING);
 
     @NotNull
     private final CrazyEnchantments plugin = JavaPlugin.getPlugin(CrazyEnchantments.class);
@@ -30,16 +34,16 @@ public enum DataKeys {
     private final String NamespacedKey;
     private final PersistentDataType type;
 
-    DataKeys(String NamespacedKey, PersistentDataType type) {
+    DataKeys(final String NamespacedKey, final PersistentDataType type) {
         this.NamespacedKey = NamespacedKey;
         this.type = type;
     }
 
-    public NamespacedKey getNamespacedKey() {
+    public final NamespacedKey getNamespacedKey() {
         return new NamespacedKey(this.plugin, this.NamespacedKey);
     }
 
-    public PersistentDataType getType() {
+    public final PersistentDataType getType() {
         return this.type;
     }
 }

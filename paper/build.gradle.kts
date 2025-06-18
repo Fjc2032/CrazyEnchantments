@@ -1,18 +1,10 @@
 plugins {
-    alias(libs.plugins.paperweight)
-
-    alias(libs.plugins.runPaper)
-    alias(libs.plugins.shadow)
+    `config-paper`
 }
 
-base {
-    archivesName.set(rootProject.name)
-}
+project.group = "${rootProject.group}.paper"
 
 repositories {
-    mavenCentral()
-    maven("https://repo.papermc.io/repository/maven-public")
-
     maven("https://repo.md-5.net/content/repositories/snapshots")
 
     maven("https://ci.ender.zone/plugin/repository/everything")
@@ -22,14 +14,14 @@ repositories {
     maven("https://repo.bg-software.com/repository/api")
 
     maven("https://maven.enginehub.org/repo")
-
-    maven("https://repo.oraxen.com/releases")
-
-    maven("https://nexus.phoenixdevt.fr/repository/maven-public/")
 }
 
 dependencies {
-    paperweight.paperDevBundle(libs.versions.paper)
+    implementation(project(":common"))
+
+    implementation(libs.fusion.paper)
+
+    implementation(libs.metrics)
 
     compileOnly(libs.informative.annotations)
 
@@ -38,8 +30,6 @@ dependencies {
     }
 
     compileOnly(libs.griefprevention)
-
-    compileOnly(libs.oraxen)
 
     compileOnly(libs.worldguard)
     compileOnly(libs.worldedit)
@@ -69,12 +59,6 @@ dependencies {
     compileOnly("net.Indyuce:MMOItems-API:6.9.5-SNAPSHOT")
 }
 
-val component: SoftwareComponent = components["java"]
-
-paperweight {
-    paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
-}
-
 tasks {
     configurations.all { //todo() FIX ME later, fucking forced dependencies, give me a fucking break
         resolutionStrategy {
@@ -82,29 +66,6 @@ tasks {
             force("com.google.guava:guava:33.3.1-jre")
             force("com.google.code.gson:gson:2.11.0")
             force("it.unimi.dsi:fastutil:8.5.15")
-        }
-    }
-
-    publishing {
-        repositories {
-            maven {
-                url = uri("https://repo.crazycrew.us/releases")
-
-                credentials {
-                    this.username = System.getenv("gradle_username")
-                    this.password = System.getenv("gradle_password")
-                }
-            }
-        }
-
-        publications{
-            create<MavenPublication>("maven") {
-                groupId = rootProject.group.toString()
-                artifactId = "${rootProject.name.lowercase()}-paper-api"
-                version = rootProject.version.toString()
-
-                from(component)
-            }
         }
     }
 
@@ -116,30 +77,11 @@ tasks {
         minecraftVersion(libs.versions.minecraft.get())
     }
 
-    assemble {
-        doLast {
-            copy {
-                from(shadowJar.get())
-                into(rootProject.projectDir.resolve("jars"))
-            }
-        }
-    }
-
     shadowJar {
-        archiveBaseName.set(rootProject.name)
-        archiveClassifier.set("")
-    }
-
-    processResources {
-        inputs.properties("name" to rootProject.name)
-        inputs.properties("version" to project.version)
-        inputs.properties("group" to "${project.group}.paper")
-        inputs.properties("description" to project.description)
-        inputs.properties("apiVersion" to libs.versions.minecraft.get())
-        inputs.properties("website" to "https://modrinth.com/plugin/crazyenchantments")
-
-        filesMatching("plugin.yml") {
-            expand(inputs.properties)
+        listOf(
+            "org.bstats"
+        ).forEach {
+            relocate(it, "libs.$it")
         }
     }
 }

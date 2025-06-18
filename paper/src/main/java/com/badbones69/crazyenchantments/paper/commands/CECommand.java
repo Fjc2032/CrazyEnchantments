@@ -16,25 +16,23 @@ import com.badbones69.crazyenchantments.paper.api.enums.CEnchantments;
 import com.badbones69.crazyenchantments.paper.api.enums.Dust;
 import com.badbones69.crazyenchantments.paper.api.enums.Messages;
 import com.badbones69.crazyenchantments.paper.api.enums.Scrolls;
-import com.badbones69.crazyenchantments.paper.api.enums.pdc.DataKeys;
-import com.badbones69.crazyenchantments.paper.api.enums.pdc.Enchant;
 import com.badbones69.crazyenchantments.paper.api.managers.ShopManager;
 import com.badbones69.crazyenchantments.paper.api.objects.CEBook;
 import com.badbones69.crazyenchantments.paper.api.objects.CEnchantment;
 import com.badbones69.crazyenchantments.paper.api.objects.Category;
 import com.badbones69.crazyenchantments.paper.api.objects.enchants.EnchantmentType;
 import com.badbones69.crazyenchantments.paper.api.builders.ItemBuilder;
+import com.badbones69.crazyenchantments.paper.api.objects.items.ScramblerData;
 import com.badbones69.crazyenchantments.paper.api.utils.ColorUtils;
-import com.badbones69.crazyenchantments.paper.api.utils.FileUtils;
 import com.badbones69.crazyenchantments.paper.api.utils.NumberUtils;
 import com.badbones69.crazyenchantments.paper.controllers.settings.EnchantmentBookSettings;
 import com.badbones69.crazyenchantments.paper.controllers.settings.ProtectionCrystalSettings;
-import com.badbones69.crazyenchantments.paper.listeners.ScramblerListener;
-import com.badbones69.crazyenchantments.paper.support.PluginSupport;
-import com.google.gson.Gson;
-import net.kyori.adventure.text.Component;
+import com.ryderbelserion.crazyenchantments.CrazyInstance;
+import com.ryderbelserion.crazyenchantments.enums.FileKeys;
+import com.ryderbelserion.fusion.paper.FusionPaper;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -43,11 +41,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-
 import java.util.*;
 
 //TODO() Update commands
@@ -55,38 +50,41 @@ public class CECommand implements CommandExecutor {
 
     private final CrazyEnchantments plugin = JavaPlugin.getPlugin(CrazyEnchantments.class);
 
+    private final CrazyInstance crazyInstance = this.plugin.getInstance();
+
+    private final FusionPaper fusion = this.plugin.getFusion();
+
+    private final Server server = this.plugin.getServer();
+
     private final Starter starter = this.plugin.getStarter();
 
     private final FileManager fileManager = this.starter.getFileManager();
 
     private final Methods methods = this.starter.getMethods();
 
-    private final CrazyManager crazyManager = this.starter.getCrazyManager();
+    private final CrazyManager crazyManager = this.plugin.getCrazyManager();
+
+    private final ScramblerData scramblerData = this.crazyManager.getScramblerData();
 
     // Settings.
     private final ProtectionCrystalSettings protectionCrystalSettings = this.starter.getProtectionCrystalSettings();
     private final EnchantmentBookSettings enchantmentBookSettings = this.starter.getEnchantmentBookSettings();
 
-    // Plugin Support.
-    private final PluginSupport pluginSupport = this.starter.getPluginSupport();
-
-    // Listeners
-    private final ScramblerListener scramblerListener = this.starter.getScramblerListener();
-
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String commandLabel, String[] args) {
-        boolean isPlayer = sender instanceof Player;
+        final boolean isPlayer = sender instanceof Player;
 
         if (args.length == 0) { // /ce
             if (!isPlayer) {
                 sender.sendMessage(Messages.PLAYERS_ONLY.getMessage());
+
                 return true;
             }
 
             if (hasPermission(sender, "gui")) {
-                Player player = (Player) sender;
+                final Player player = (Player) sender;
 
-                ShopManager shopManager = this.starter.getShopManager();
+                final ShopManager shopManager = this.starter.getShopManager();
 
                 player.openInventory(new ShopMenu(player, shopManager.getInventorySize(), shopManager.getInventoryName()).build().getInventory());
             }
@@ -95,7 +93,6 @@ public class CECommand implements CommandExecutor {
         }
         switch (args[0].toLowerCase()) {
             case "check-enchants" -> { // /ce check-enchants <Player> /ce <arg1> <arg2>
-
                 if (!isPlayer) return true; // Player only due to not wanting to handle colour parsing for console currently.
 
                 if (!hasPermission(sender, "checkenchants")) return true;
@@ -105,10 +102,11 @@ public class CECommand implements CommandExecutor {
                     return true;
                 }
 
-                Player target = methods.getPlayer(args[1]);
+                final Player target = methods.getPlayer(args[1]);
 
                 if (target == null) {
                     sender.sendMessage(Messages.NOT_ONLINE.getMessage());
+
                     return true;
                 }
 
@@ -116,48 +114,7 @@ public class CECommand implements CommandExecutor {
 
                 return true;
             }
-            case "updateenchants" -> {
 
-                if (!isPlayer) return true;
-                if (!hasPermission(sender, "updateenchants")) return true;
-
-                Gson gson = new Gson();
-                Player player = (Player) sender;
-                Enchant enchants = new Enchant(null);
-                ArrayList<Component> lore = new ArrayList<>();
-                ItemStack item = player.getInventory().getItemInMainHand();
-                if (!item.hasItemMeta() || item.lore() == null) return true;
-                ItemMeta meta = item.getItemMeta();
-
-                if (meta.getPersistentDataContainer().has(DataKeys.enchantments.getNamespacedKey())) {
-                    enchants = gson.fromJson(meta.getPersistentDataContainer().get(DataKeys.enchantments.getNamespacedKey(), PersistentDataType.STRING), Enchant.class);
-                }
-
-                for (Component line : meta.lore()) {
-                    String strippedName = ColorUtils.toPlainText(line);
-                    boolean addedLine = false;
-
-                    for (CEnchantment activeEnchant : this.enchantmentBookSettings.getRegisteredEnchantments()) {
-                        if (!strippedName.toLowerCase().contains(ColorUtils.stripStringColour(activeEnchant.getCustomName()).toLowerCase()) &&
-                                !strippedName.toLowerCase().contains(activeEnchant.getName().toLowerCase())) continue;
-
-                        if (enchants.hasEnchantment(activeEnchant.getName())) break;
-
-                        enchants.addEnchantment(activeEnchant.getName(), NumberUtils.convertLevelInteger(strippedName.split(" ")[strippedName.split(" ").length - 1]));
-                        lore.add(ColorUtils.legacyTranslateColourCodes(activeEnchant.getCustomName() + " " + NumberUtils.toRoman(enchants.getLevel(activeEnchant.getName()))));
-                        addedLine = true;
-                        break;
-                    }
-                    if (!addedLine) lore.add(line);
-                }
-
-                meta.lore(lore);
-                if (!enchants.isEmpty())
-                    meta.getPersistentDataContainer().set(DataKeys.enchantments.getNamespacedKey(), PersistentDataType.STRING, gson.toJson(enchants));
-                item.setItemMeta(meta);
-                player.getInventory().setItemInMainHand(item);
-                return true;
-            }
             case "convert" -> {
                 if (hasPermission(sender, "convert")) {
                     sender.sendMessage(ColorUtils.color("""
@@ -168,6 +125,7 @@ public class CECommand implements CommandExecutor {
                             &eMake sure to check console for more information.
                             &8&m=======================================================
                             """));
+
                     MigrateManager.convert();
                 }
 
@@ -179,39 +137,45 @@ public class CECommand implements CommandExecutor {
 
                 return true;
             }
+
             case "reload" -> { // /ce reload
                 if (hasPermission(sender, "reload")) {
+                    this.fusion.reload(false); // reload fusion api
+
+                    this.crazyInstance.reload();
+
                     this.crazyManager.getCEPlayers().forEach(name -> this.crazyManager.backupCEPlayer(name.getPlayer()));
+
                     this.fileManager.setup();
+
                     MenuManager.load(); // Load crazyManager after as it will set the enchants in each category.
+
                     this.crazyManager.load();
 
-                    BlackSmithManager.load();
+                    BlackSmithManager.load(FileKeys.config.getConfig());
+
                     KitsManager.load();
 
                     sender.sendMessage(Messages.CONFIG_RELOAD.getMessage());
-
-                    FileUtils.loadFiles();
                 }
 
                 return true;
             }
+
             case "limit" -> {
-                if (hasPermission(sender, "limit")) {
-                    HashMap<String, String> placeholders = new HashMap<>();
+                if (hasPermission(sender, "limit") && sender instanceof Player player) {
+                    final Map<String, String> placeholders = new HashMap<>();
 
                     placeholders.put("%bypass%", String.valueOf(sender.hasPermission("crazyenchantments.bypass.limit")));
 
-                    assert sender instanceof Player;
-                    Player player = (Player) sender;
-                    ItemStack item = player.getInventory().getItemInMainHand();
+                    final ItemStack item = player.getInventory().getItemInMainHand();
 
-                    int limit = this.crazyManager.getPlayerMaxEnchantments(player);
-                    int baseLimit = this.crazyManager.getPlayerBaseEnchantments(player);
-                    int slotModifier = item.isEmpty() ? 0 : this.crazyManager.getEnchantmentLimiter(item);
-                    int enchantAmount = item.isEmpty() ? 0 : this.enchantmentBookSettings.getEnchantmentAmount(item, this.crazyManager.checkVanillaLimit());
+                    final int limit = this.crazyManager.getPlayerMaxEnchantments(player);
+                    final int baseLimit = this.crazyManager.getPlayerBaseEnchantments(player);
+                    final int slotModifier = item.isEmpty() ? 0 : this.crazyManager.getEnchantmentLimiter(item);
+                    final int enchantAmount = item.isEmpty() ? 0 : this.enchantmentBookSettings.getEnchantmentAmount(item, this.crazyManager.checkVanillaLimit());
 
-                    int canAdd = Math.min(baseLimit - slotModifier, limit);
+                    final int canAdd = Math.min(baseLimit - slotModifier, limit);
 
                     placeholders.put("%limit%", String.valueOf(limit));
                     placeholders.put("%baseLimit%", String.valueOf(baseLimit));
@@ -230,12 +194,13 @@ public class CECommand implements CommandExecutor {
 
             case "debug" -> { // /ce debug
                 if (hasPermission(sender, "debug")) {
-                    List<String> brokenEnchantments = new ArrayList<>();
-                    List<String> brokenEnchantmentTypes = new ArrayList<>();
+                    final List<String> brokenEnchantments = new ArrayList<>();
+                    final List<String> brokenEnchantmentTypes = new ArrayList<>();
 
-                    for (CEnchantments enchantment : CEnchantments.values()) {
-                        if (!Files.ENCHANTMENTS.getFile().contains("Enchantments." + enchantment.getName()))
-                            brokenEnchantments.add(enchantment.getName());
+                    final FileConfiguration enchantments = Files.ENCHANTMENTS.getFile();
+
+                    for (final CEnchantments enchantment : CEnchantments.values()) {
+                        if (!enchantments.contains("Enchantments." + enchantment.getName())) brokenEnchantments.add(enchantment.getName());
 
                         if (enchantment.getType() == null) brokenEnchantmentTypes.add(enchantment.getName());
                     }
@@ -266,6 +231,7 @@ public class CECommand implements CommandExecutor {
 
                             for (String broke : brokenEnchantmentTypes) {
                                 sender.sendMessage(ColorUtils.color("&c#" + i + ": &6" + broke));
+
                                 i++;
                             }
                         }
@@ -281,17 +247,17 @@ public class CECommand implements CommandExecutor {
 
             case "fix" -> { // /ce fix
                 if (hasPermission(sender, "fix")) {
-                    List<CEnchantments> brokenEnchantments = new ArrayList<>();
-                    FileConfiguration file = Files.ENCHANTMENTS.getFile();
+                    final List<CEnchantments> brokenEnchantments = new ArrayList<>();
 
-                    for (CEnchantments enchantment : CEnchantments.values()) {
-                        if (!file.contains("Enchantments." + enchantment.getName()))
-                            brokenEnchantments.add(enchantment);
+                    final FileConfiguration file = Files.ENCHANTMENTS.getFile();
+
+                    for (final CEnchantments enchantment : CEnchantments.values()) {
+                        if (!file.contains("Enchantments." + enchantment.getName())) brokenEnchantments.add(enchantment);
                     }
 
                     sender.sendMessage(ColorUtils.color("&7Fixed a total of " + brokenEnchantments.size() + " enchantments."));
 
-                    for (CEnchantments enchantment : brokenEnchantments) {
+                    for (final CEnchantments enchantment : brokenEnchantments) {
                         String path = "Enchantments." + enchantment.getName();
                         file.set(path + ".Enabled", true);
                         file.set(path + ".Name", enchantment.getName());
@@ -301,9 +267,13 @@ public class CECommand implements CommandExecutor {
                         file.set(path + ".Enchantment-Type", enchantment.getType().getName());
                         file.set(path + ".Info.Name", "&e&l" + enchantment.getName() + " &7(&bI&7)");
                         file.set(path + ".Info.Description", enchantment.getDescription());
-                        List<String> categories = new ArrayList<>();
+
+                        final List<String> categories = new ArrayList<>();
+
                         this.enchantmentBookSettings.getCategories().forEach(category -> categories.add(category.getName()));
+
                         file.set(path + ".Categories", categories);
+
                         Files.ENCHANTMENTS.saveFile();
                     }
                 }
@@ -315,18 +285,19 @@ public class CECommand implements CommandExecutor {
                 if (hasPermission(sender, "info")) {
                     if (args.length == 1) {
 
-                        if (!isPlayer) {
+                        if (!(sender instanceof Player player)) {
                             sender.sendMessage(Messages.PLAYERS_ONLY.getMessage());
+
                             return true;
                         }
 
-                        MenuManager.openInfoMenu((Player) sender);
+                        MenuManager.openInfoMenu(player);
                     } else {
                         EnchantmentType enchantmentType = methods.getFromName(args[1]);
 
-                        if (enchantmentType != null) {
-                            assert sender instanceof Player;
-                            MenuManager.openInfoMenu((Player) sender, enchantmentType);
+                        if (enchantmentType != null && sender instanceof Player player) {
+                            MenuManager.openInfoMenu(player, enchantmentType);
+
                             return true;
                         }
 
@@ -334,7 +305,9 @@ public class CECommand implements CommandExecutor {
 
                         if (enchantment != null) {
                             sender.sendMessage(enchantment.getInfoName());
+
                             enchantment.getInfoDescription().forEach(sender::sendMessage);
+
                             return true;
                         }
 
@@ -348,21 +321,23 @@ public class CECommand implements CommandExecutor {
             case "spawn" -> { // /ce spawn <enchantment> [level:#/world:<world>/x:#/y:#/z:#]
                 if (hasPermission(sender, "spawn")) {
                     if (args.length >= 2) {
-                        CEnchantment enchantment = this.crazyManager.getEnchantmentFromName(args[1]);
-                        Category category = this.enchantmentBookSettings.getCategory(args[1]);
-                        Location location = isPlayer ? ((Player) sender).getLocation() : new Location(this.plugin.getServer().getWorlds().getFirst(), 0, 0, 0);
+                        final CEnchantment enchantment = this.crazyManager.getEnchantmentFromName(args[1]);
+                        final Category category = this.enchantmentBookSettings.getCategory(args[1]);
+                        final Location location = isPlayer ? ((Player) sender).getLocation() : new Location(this.server.getWorlds().getFirst(), 0, 0, 0);
+
                         int level = 1;
 
                         if (enchantment == null && category == null) {
                             sender.sendMessage(Messages.NOT_AN_ENCHANTMENT.getMessage());
+
                             return true;
                         }
 
-                        for (String optionString : args) {
+                        for (final String optionString : args) {
                             try {
-                                String option = optionString.split(":")[0];
-                                String value = optionString.split(":")[1];
-                                boolean isInt = NumberUtils.isInt(value);
+                                final String option = optionString.split(":")[0];
+                                final String value = optionString.split(":")[1];
+                                final boolean isInt = NumberUtils.isInt(value);
 
                                 switch (option.toLowerCase()) {
                                     case "level" -> {
@@ -374,7 +349,8 @@ public class CECommand implements CommandExecutor {
                                     }
 
                                     case "world" -> {
-                                        World world = this.plugin.getServer().getWorld(value);
+                                        World world = this.server.getWorld(value);
+
                                         if (world != null) location.setWorld(world);
                                     }
 
@@ -395,7 +371,8 @@ public class CECommand implements CommandExecutor {
                         }
 
                         location.getWorld().dropItemNaturally(location, category == null ? new CEBook(enchantment, level).buildBook() : category.getLostBook().getLostBook(category).build());
-                        HashMap<String, String> placeholders = new HashMap<>();
+
+                        final Map<String, String> placeholders = new HashMap<>();
 
                         placeholders.put("%World%", location.getWorld().getName());
                         placeholders.put("%X%", String.valueOf(location.getBlockX()));
@@ -418,25 +395,29 @@ public class CECommand implements CommandExecutor {
 
                 if (args.length < 3) {
                     sender.sendMessage(ColorUtils.getPrefix() + ColorUtils.color("&c/ce give <Player> <itemString>"));
+
                     return true;
                 }
 
-                StringBuilder sb = new StringBuilder();
+                final StringBuilder sb = new StringBuilder();
+
                 for (int i = 2; i < args.length; i++) {
                     sb.append(args[i]).append(" ");
                 }
 
-                Player target = this.methods.getPlayer(args[1]);
+                final Player target = this.methods.getPlayer(args[1]);
 
                 if (target == null) {
                     sender.sendMessage(Messages.NOT_ONLINE.getMessage());
+
                     return true;
                 }
 
-                ItemStack item = ItemBuilder.convertString(sb.toString()).build();
+                final ItemStack item = ItemBuilder.convertString(sb.toString()).build();
 
                 if (item == null) {
                     sender.sendMessage(Messages.INVALID_ITEM_STRING.getMessage());
+
                     return true;
                 }
 
@@ -450,18 +431,20 @@ public class CECommand implements CommandExecutor {
 
                 if (args.length < 3) {
                     sender.sendMessage(ColorUtils.getPrefix() + ColorUtils.color("&c/ce bottle <Player> <storedAmount> <Amount>"));
+
                     return true;
                 }
 
                 if (!checkInt(sender, args[2])) return true;
 
-                Player target = this.methods.getPlayer(args[1]);
-                ItemStack item = TinkererManager.getXPBottle(args[2], Files.TINKER.getFile());
-                int amount = args.length == 4 && NumberUtils.isInt(args[3]) ? Integer.parseInt(args[3]) : 1;
+                final Player target = this.methods.getPlayer(args[1]);
+                final ItemStack item = TinkererManager.getXPBottle(args[2], Files.TINKER.getFile());
+                final int amount = args.length == 4 && NumberUtils.isInt(args[3]) ? Integer.parseInt(args[3]) : 1;
                 item.setAmount(amount);
 
                 if (target == null) {
                     sender.sendMessage(Messages.NOT_ONLINE.getMessage());
+
                     return true;
                 }
 
@@ -478,12 +461,14 @@ public class CECommand implements CommandExecutor {
 
                         if (args.length <= 3 && !isPlayer) {
                             sender.sendMessage(Messages.PLAYERS_ONLY.getMessage());
+
                             return true;
                         }
 
                         int amount = 1;
                         Player player;
-                        Category category = this.enchantmentBookSettings.getCategory(args[1]);
+
+                        final Category category = this.enchantmentBookSettings.getCategory(args[1]);
 
                         if (args.length >= 3) {
                             if (!checkInt(sender, args[2])) return true;
@@ -500,15 +485,17 @@ public class CECommand implements CommandExecutor {
                         }
 
                         if (category != null) {
-
                             this.methods.addItemToInventory(player, category.getLostBook().getLostBook(category, amount).build());
 
                             return true;
                         }
 
-                        HashMap<String, String> placeholders = new HashMap<>();
+                        Map<String, String> placeholders = new HashMap<>();
+
                         placeholders.put("%Category%", args[1]);
+
                         sender.sendMessage(Messages.NOT_A_CATEGORY.getMessage(placeholders));
+
                         return true;
                     }
 
@@ -525,6 +512,7 @@ public class CECommand implements CommandExecutor {
 
                     if (args.length <= 2 && !isPlayer) {
                         sender.sendMessage(Messages.PLAYERS_ONLY.getMessage());
+
                         return true;
                     }
 
@@ -536,6 +524,7 @@ public class CECommand implements CommandExecutor {
 
                     if (args.length >= 3) {
                         if (!this.methods.isPlayerOnline(args[2], sender)) return true;
+
                         player = this.methods.getPlayer(args[2]);
                     } else {
                         player = (Player) sender;
@@ -543,11 +532,13 @@ public class CECommand implements CommandExecutor {
 
                     if (this.methods.isInventoryFull(player)) return true;
 
-                    this.methods.addItemToInventory(player, scramblerListener.getScramblers(amount));
+                    this.methods.addItemToInventory(player, this.scramblerData.getScramblers(amount));
 
-                    HashMap<String, String> placeholders = new HashMap<>();
+                    final Map<String, String> placeholders = new HashMap<>();
+
                     placeholders.put("%Amount%", String.valueOf(amount));
                     placeholders.put("%Player%", player.getName());
+
                     sender.sendMessage(Messages.GIVE_SCRAMBLER_CRYSTAL.getMessage(placeholders));
                     player.sendMessage(Messages.GET_SCRAMBLER.getMessage(placeholders));
                 }
@@ -562,6 +553,7 @@ public class CECommand implements CommandExecutor {
 
                     if (args.length <= 2 && !isPlayer) {
                         sender.sendMessage(Messages.PLAYERS_ONLY.getMessage());
+
                         return true;
                     }
 
@@ -580,11 +572,12 @@ public class CECommand implements CommandExecutor {
 
                     if (this.methods.isInventoryFull(player)) return true;
 
+                    this.methods.addItemToInventory(player, this.protectionCrystalSettings.getCrystal(amount));
+                    Map<String, String> placeholders = new HashMap<>();
 
-                    this.methods.addItemToInventory(player, this.protectionCrystalSettings.getCrystals(amount));
-                    HashMap<String, String> placeholders = new HashMap<>();
                     placeholders.put("%Amount%", String.valueOf(amount));
                     placeholders.put("%Player%", player.getName());
+
                     sender.sendMessage(Messages.GIVE_PROTECTION_CRYSTAL.getMessage(placeholders));
                     player.sendMessage(Messages.GET_PROTECTION_CRYSTAL.getMessage(placeholders));
                 }
@@ -599,6 +592,7 @@ public class CECommand implements CommandExecutor {
 
                     if (args.length <= 2 && !isPlayer) {
                         sender.sendMessage(Messages.PLAYERS_ONLY.getMessage());
+
                         return true;
                     }
 
@@ -617,13 +611,17 @@ public class CECommand implements CommandExecutor {
 
                     if (this.methods.isInventoryFull(player)) return true;
 
-                    ItemStack item = starter.getSlotCrystalListener().getSlotCrystal();
+                    final ItemStack item = this.crazyManager.getSlotCrystal();
+
                     item.setAmount(amount);
 
                     this.methods.addItemToInventory(player, item);
-                    HashMap<String, String> placeholders = new HashMap<>();
+
+                    final Map<String, String> placeholders = new HashMap<>();
+
                     placeholders.put("%Amount%", String.valueOf(amount));
                     placeholders.put("%Player%", player.getName());
+
                     sender.sendMessage(Messages.GIVE_SLOT_CRYSTAL.getMessage(placeholders));
                     player.sendMessage(Messages.GET_SLOT_CRYSTAL.getMessage(placeholders));
                 }
@@ -635,11 +633,13 @@ public class CECommand implements CommandExecutor {
                 if (hasPermission(sender, "dust")) {
                     if (args.length >= 2) {
                         Player player;
+
                         int amount = 1;
                         int percent = 0;
 
                         if (args.length == 2 && !isPlayer) {
                             sender.sendMessage(Messages.PLAYERS_ONLY.getMessage());
+
                             return true;
                         }
 
@@ -656,6 +656,7 @@ public class CECommand implements CommandExecutor {
                         } else {
                             if (!isPlayer) {
                                 sender.sendMessage(Messages.PLAYERS_ONLY.getMessage());
+
                                 return true;
                             } else {
                                 player = (Player) sender;
@@ -668,12 +669,13 @@ public class CECommand implements CommandExecutor {
                             percent = Integer.parseInt(args[4]);
                         }
 
-                        Dust dust = Dust.getFromName(args[1]);
+                        final Dust dust = Dust.getFromName(args[1]);
 
                         if (dust != null) {
                             this.methods.addItemToInventory(player, args.length >= 5 ? dust.getDust(percent, amount) : dust.getDust(amount));
 
-                            HashMap<String, String> placeholders = new HashMap<>();
+                            final Map<String, String> placeholders = new HashMap<>();
+
                             placeholders.put("%Amount%", String.valueOf(amount));
                             placeholders.put("%Player%", player.getName());
 
@@ -708,6 +710,7 @@ public class CECommand implements CommandExecutor {
                 if (hasPermission(sender, "scroll")) {
                     if (args.length >= 2) {
                         int amount = 1;
+
                         String name = sender.getName();
 
                         if (args.length >= 3) {
@@ -723,14 +726,16 @@ public class CECommand implements CommandExecutor {
                         } else {
                             if (!isPlayer) {
                                 sender.sendMessage(Messages.PLAYERS_ONLY.getMessage());
+
                                 return true;
                             }
                         }
 
-                        Scrolls scroll = Scrolls.getFromName(args[1]);
+                        final Scrolls scroll = Scrolls.getFromName(args[1]);
 
                         if (scroll != null) {
                             this.methods.addItemToInventory(this.methods.getPlayer(name), scroll.getScroll(amount));
+
                             return true;
                         }
                     }
@@ -745,6 +750,7 @@ public class CECommand implements CommandExecutor {
 
                     if (!isPlayer) {
                         sender.sendMessage(Messages.PLAYERS_ONLY.getMessage());
+
                         return true;
                     }
 
@@ -758,26 +764,34 @@ public class CECommand implements CommandExecutor {
                             level = args[2];
                         }
 
-                        Enchantment vanillaEnchantment = this.methods.getEnchantment(args[1]);
-                        CEnchantment ceEnchantment = this.crazyManager.getEnchantmentFromName(args[1]);
-                        boolean isVanilla = vanillaEnchantment != null;
+                        final Enchantment vanillaEnchantment = this.methods.getEnchantment(args[1]);
+                        final CEnchantment ceEnchantment = this.crazyManager.getEnchantmentFromName(args[1]);
+                        final boolean isVanilla = vanillaEnchantment != null;
 
                         if (vanillaEnchantment == null && ceEnchantment == null) {
                             sender.sendMessage(Messages.NOT_AN_ENCHANTMENT.getMessage());
+
                             return true;
                         }
 
                         if (this.methods.getItemInHand(player).getType() == Material.AIR) {
                             sender.sendMessage(Messages.DOESNT_HAVE_ITEM_IN_HAND.getMessage());
+
                             return true;
                         }
 
                         if (isVanilla) {
-                            ItemStack item = this.methods.getItemInHand(player).clone();
+                            final ItemStack item = this.methods.getItemInHand(player).clone();
+
                             item.addUnsafeEnchantment(vanillaEnchantment, Integer.parseInt(level));
+
                             this.methods.setItemInHand(player, item);
                         } else {
-                            this.methods.setItemInHand(player, this.crazyManager.addEnchantment(this.methods.getItemInHand(player), ceEnchantment, Integer.parseInt(level)));
+                            final ItemStack item = this.methods.getItemInHand(player).clone();
+
+                            this.crazyManager.addEnchantment(item, ceEnchantment, Integer.parseInt(level));
+
+                            this.methods.setItemInHand(player, item);
                         }
 
                         return true;
@@ -794,44 +808,59 @@ public class CECommand implements CommandExecutor {
 
                     if (!isPlayer) {
                         sender.sendMessage(Messages.PLAYERS_ONLY.getMessage());
+
                         return true;
                     }
 
                     if (args.length >= 2) {
-                        Player player = (Player) sender;
-                        Enchantment vanillaEnchantment = this.methods.getEnchantment(args[1]);
-                        CEnchantment ceEnchantment = this.crazyManager.getEnchantmentFromName(args[1]);
+                        final Player player = (Player) sender;
+
+                        final Enchantment vanillaEnchantment = this.methods.getEnchantment(args[1]);
+
+                        final CEnchantment ceEnchantment = this.crazyManager.getEnchantmentFromName(args[1]);
+
                         boolean isVanilla = vanillaEnchantment != null;
 
                         if (vanillaEnchantment == null && ceEnchantment == null) {
                             sender.sendMessage(Messages.NOT_AN_ENCHANTMENT.getMessage());
+
                             return true;
                         }
 
                         if (this.methods.getItemInHand(player).getType() == Material.AIR) {
                             sender.sendMessage(Messages.DOESNT_HAVE_ITEM_IN_HAND.getMessage());
+
                             return true;
                         }
 
-                        ItemStack item = this.methods.getItemInHand(player);
+                        final ItemStack item = this.methods.getItemInHand(player);
 
                         if (isVanilla) {
-                            ItemStack clone = this.methods.getItemInHand(player).clone();
+                            final ItemStack clone = item.clone();
+
                             clone.removeEnchantment(vanillaEnchantment);
+
                             this.methods.setItemInHand(player, clone);
+
                             return true;
                         } else {
                             if (this.enchantmentBookSettings.getEnchantments(item).containsKey(ceEnchantment)) {
                                 this.methods.setItemInHand(player, this.enchantmentBookSettings.removeEnchantment(item, ceEnchantment));
-                                HashMap<String, String> placeholders = new HashMap<>();
+
+                                final Map<String, String> placeholders = new HashMap<>();
+
                                 placeholders.put("%Enchantment%", ceEnchantment.getCustomName());
+
                                 player.sendMessage(Messages.REMOVED_ENCHANTMENT.getMessage(placeholders).replaceAll("&", ""));
+
                                 return true;
                             }
                         }
 
-                        HashMap<String, String> placeholders = new HashMap<>();
+                        final Map<String, String> placeholders = new HashMap<>();
+
                         placeholders.put("%Enchantment%", args[1]);
+
                         sender.sendMessage(Messages.DOESNT_HAVE_ENCHANTMENT.getMessage(placeholders));
                     }
 
@@ -847,12 +876,16 @@ public class CECommand implements CommandExecutor {
 
                         if (args.length == 2 && !isPlayer) {
                             sender.sendMessage(Messages.PLAYERS_ONLY.getMessage());
+
                             return true;
                         }
 
-                        CEnchantment enchantment = this.crazyManager.getEnchantmentFromName(args[1]);
+                        final CEnchantment enchantment = this.crazyManager.getEnchantmentFromName(args[1]);
+
                         int level = 1;
+
                         int amount = 1;
+
                         Player player;
 
                         if (args.length >= 3) {
@@ -862,6 +895,7 @@ public class CECommand implements CommandExecutor {
                                 level = this.methods.getRandomNumber(args[2]);
                             } else {
                                 sender.sendMessage(Messages.NOT_A_NUMBER.getMessage().replace("%Arg%", args[2]).replace("%arg%", args[2]));
+
                                 return true;
                             }
                         }
@@ -878,18 +912,24 @@ public class CECommand implements CommandExecutor {
                             player = this.methods.getPlayer(args[4]);
                         } else {
                             assert sender instanceof Player;
+
                             player = (Player) sender;
                         }
 
                         if (enchantment == null) {
                             sender.sendMessage(Messages.NOT_AN_ENCHANTMENT.getMessage());
+
                             return true;
                         }
 
-                        HashMap<String, String> placeholders = new HashMap<>();
+                        Map<String, String> placeholders = new HashMap<>();
+
                         placeholders.put("%Player%", player.getName());
+
                         sender.sendMessage(Messages.SEND_ENCHANTMENT_BOOK.getMessage(placeholders));
+
                         this.methods.addItemToInventory(player, new CEBook(enchantment, level, amount).buildBook());
+
                         return true;
                     }
 
@@ -901,21 +941,20 @@ public class CECommand implements CommandExecutor {
 
             default -> {
                 sender.sendMessage(ColorUtils.getPrefix("&cDo /ce help for more info."));
+
                 return false;
             }
         }
     }
 
-    private void sendArmorStats(Player target, Player sender) {
-
+    private void sendArmorStats(final Player target, final Player sender) {
         Arrays.stream(target.getEquipment().getArmorContents()).filter(Objects::nonNull).forEach(item -> {
-
-            StringBuilder enchantmentsString = new StringBuilder();
+            final StringBuilder enchantmentsString = new StringBuilder();
 
             String main = Messages.MAIN_UPDATE_ENCHANTS.getMessageNoPrefix();
             main = main.replace("%item%", item.getType().toString());
 
-            enchantmentBookSettings.getEnchantments(item).forEach((enchantment, level) -> enchantmentsString.append(Messages.BASE_UPDATE_ENCHANTS.getMessageNoPrefix(
+            this.enchantmentBookSettings.getEnchantments(item).forEach((enchantment, level) -> enchantmentsString.append(Messages.BASE_UPDATE_ENCHANTS.getMessageNoPrefix(
                     new HashMap<>() {{
                         put("%enchant%", enchantment.getName());
                         put("%level%", String.valueOf(level));
@@ -926,18 +965,18 @@ public class CECommand implements CommandExecutor {
 
             sender.sendMessage(main);
         });
-
     }
 
-    private boolean checkInt(CommandSender sender, String arg) {
+    private boolean checkInt(final CommandSender sender, final String arg) {
         if (NumberUtils.isInt(arg)) return true;
 
         sender.sendMessage(Messages.NOT_A_NUMBER.getMessage().replace("%Arg%", arg).replace("%arg%", arg));
+
         return false;
 
     }
 
-    private boolean hasPermission(CommandSender sender, String permission) {
+    private boolean hasPermission(final CommandSender sender, final String permission) {
         return this.methods.hasPermission(sender, permission, true);
     }
 }

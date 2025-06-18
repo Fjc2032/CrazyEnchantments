@@ -27,6 +27,7 @@ public class TinkerCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String commandLabel, String[] args) {
         if (!(sender instanceof Player player)) {
             sender.sendMessage(Messages.PLAYERS_ONLY.getMessage());
+
             return true;
         }
 

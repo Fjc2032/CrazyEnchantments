@@ -7,6 +7,7 @@ import com.badbones69.crazyenchantments.paper.api.events.AuraActiveEvent;
 import com.badbones69.crazyenchantments.paper.api.objects.CEnchantment;
 import com.badbones69.crazyenchantments.paper.controllers.settings.EnchantmentBookSettings;
 import org.bukkit.Location;
+import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -14,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
@@ -25,6 +27,10 @@ public class AuraListener implements Listener {
 
     @NotNull
     private final CrazyEnchantments plugin = JavaPlugin.getPlugin(CrazyEnchantments.class);
+
+    private final Server server = this.plugin.getServer();
+
+    private final PluginManager pluginManager = this.server.getPluginManager();
 
     @NotNull
     private final Starter starter = this.plugin.getStarter();
@@ -42,50 +48,48 @@ public class AuraListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerMoveEvent(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
-        Location from = event.getFrom();
-        Location to = event.getTo();
+        final Player player = event.getPlayer();
+        final Location from = event.getFrom();
+        final Location to = event.getTo();
 
-        if (from.getBlockX() == to.getBlockX()
-        && from.getBlockY() == to.getBlockY()
-        && from.getBlockZ() == to.getBlockZ()) return;
+        if (from.getBlockX() == to.getBlockX() && from.getBlockY() == to.getBlockY() && from.getBlockZ() == to.getBlockZ()) return;
 
-        List<Player> players = getNearbyPlayers(player);
+        final List<Player> players = getNearbyPlayers(player);
 
         if (players.isEmpty()) return;
 
-        EntityEquipment playerEquipment = player.getEquipment();
+        final EntityEquipment playerEquipment = player.getEquipment();
 
         for (ItemStack item : playerEquipment.getArmorContents()) { // The player that moves.
-            Map<CEnchantment, Integer> itemEnchantments = this.enchantmentBookSettings.getEnchantments(item);
+            final Map<CEnchantment, Integer> itemEnchantments = this.enchantmentBookSettings.getEnchantments(item);
+
             itemEnchantments.forEach((enchantment, level) -> {
                 CEnchantments enchantmentEnum = getAuraEnchantmentEnum(enchantment);
 
-                if (enchantmentEnum != null) players.forEach((other) -> this.plugin.getServer().getPluginManager().callEvent(new AuraActiveEvent(player, other, enchantmentEnum, level)));
-
+                if (enchantmentEnum != null) players.forEach((other) -> this.pluginManager.callEvent(new AuraActiveEvent(player, other, enchantmentEnum, level)));
             });
         }
 
-        for (Player other : players) {
-            EntityEquipment otherEquipment = other.getEquipment();
+        for (final Player other : players) {
+            final EntityEquipment otherEquipment = other.getEquipment();
 
-            for (ItemStack item : otherEquipment.getArmorContents()) { // The other players moving.
-                Map<CEnchantment, Integer> itemEnchantments = this.enchantmentBookSettings.getEnchantments(item);
+            for (final ItemStack item : otherEquipment.getArmorContents()) { // The other players moving.
+                final Map<CEnchantment, Integer> itemEnchantments = this.enchantmentBookSettings.getEnchantments(item);
+
                 itemEnchantments.forEach((enchantment, level) -> {
-                    CEnchantments enchantmentEnum = getAuraEnchantmentEnum(enchantment);
+                    final CEnchantments enchantmentEnum = getAuraEnchantmentEnum(enchantment);
 
-                    if (enchantmentEnum != null) this.plugin.getServer().getPluginManager().callEvent(new AuraActiveEvent(other, player, enchantmentEnum, level));
-
+                    if (enchantmentEnum != null) this.pluginManager.callEvent(new AuraActiveEvent(other, player, enchantmentEnum, level));
                 });
             }
         }
     }
 
-    private CEnchantments getAuraEnchantmentEnum(CEnchantment enchantment) {
+    private CEnchantments getAuraEnchantmentEnum(final CEnchantment enchantment) {
         return Arrays.stream(AURA_ENCHANTMENTS).filter(enchantmentEnum -> enchantmentEnum.getName().equals(enchantment.getName())).findFirst().orElse(null);
     }
 
-    private List<Player> getNearbyPlayers(Player player) {
+    private List<Player> getNearbyPlayers(final Player player) {
         return player.getNearbyEntities(3, 3, 3).stream().filter((entity) ->
                 entity instanceof Player && !entity.getUniqueId().equals(player.getUniqueId())).map(entity -> (Player) entity).collect(Collectors.toList());
     }

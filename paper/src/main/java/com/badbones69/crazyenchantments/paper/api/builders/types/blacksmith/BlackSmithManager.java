@@ -1,15 +1,25 @@
 package com.badbones69.crazyenchantments.paper.api.builders.types.blacksmith;
 
-import com.badbones69.crazyenchantments.paper.api.FileManager.Files;
+import com.badbones69.crazyenchantments.paper.CrazyEnchantments;
+import com.badbones69.crazyenchantments.paper.Methods;
 import com.badbones69.crazyenchantments.paper.api.economy.Currency;
 import com.badbones69.crazyenchantments.paper.api.builders.ItemBuilder;
 import com.badbones69.crazyenchantments.paper.api.utils.ColorUtils;
+import com.ryderbelserion.crazyenchantments.objects.ConfigOptions;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
+import org.spongepowered.configurate.CommentedConfigurationNode;
+import java.util.List;
 
 public class BlackSmithManager {
+
+    private static final CrazyEnchantments plugin = JavaPlugin.getPlugin(CrazyEnchantments.class);
+
+    private static final ConfigOptions options = plugin.getOptions();
 
     private static ItemStack exitButton;
     private static ItemStack redGlass,blueGlass,grayGlass;
@@ -25,19 +35,19 @@ public class BlackSmithManager {
     /**
      * Initially loads all things we need.
      */
-    public static void load() {
+    public static void load(final CommentedConfigurationNode node) {
         redGlass = new ItemBuilder().setMaterial(Material.RED_STAINED_GLASS_PANE).setName(" ").build();
         grayGlass = new ItemBuilder().setMaterial(Material.GRAY_STAINED_GLASS_PANE).setName(" ").build();
         blueGlass = new ItemBuilder().setMaterial(Material.LIGHT_BLUE_STAINED_GLASS_PANE).setName(" ").build();
 
-        get(Files.CONFIG.getFile());
+        get(node);
     }
 
     /**
      * Refreshes the values that require config options.
      */
-    public static void refresh() {
-        get(Files.CONFIG.getFile());
+    public static void refresh(final CommentedConfigurationNode node) {
+        get(node);
     }
 
     /**
@@ -121,30 +131,32 @@ public class BlackSmithManager {
         return maxEnchantments;
     }
 
-    private static ConfigurationSection getSection(FileConfiguration config) {
+    private static ConfigurationSection getSection(@NotNull final FileConfiguration config) {
         return config.getConfigurationSection("Settings.BlackSmith");
     }
 
-    private static void get(FileConfiguration config) {
-        ConfigurationSection section = getSection(config);
+    private static void get(@NotNull final CommentedConfigurationNode config) {
+        final CommentedConfigurationNode child = config.node("Settings", "BlackSmith");
 
-        // If section is null, do nothing.
-        if (section == null) return;
-
-        exitButton = new ItemBuilder()
-                .setMaterial(Material.BARRIER)
-                .setName(section.getString("Results.None", "&c&lNo Results."))
-                .setLore(section.getStringList("Results.Not-Found-Lore"))
+        exitButton = new ItemBuilder().setMaterial(Material.BARRIER)
+                .setName(child.node("Results", "None").getString("&c&lNo Results."))
+                .setLore(Methods.getStringList(child, List.of(
+                        "&7No results could be found.",
+                        "&7Please put in two books of",
+                        "&7the same enchantment and level.",
+                        "&7Or put in two items to combined",
+                        "&7the enchantments on them."
+                ) ,"Results", "Not-Found-Lore"))
                 .build();
 
-        inventoryName = ColorUtils.color(section.getString("GUIName"));
-        itemCost = section.getString("Results.Found", "&c&lCost: &6&l%cost% XP");
-        currency = Currency.getCurrency(section.getString("Transaction.Currency", "XP_LEVEL"));
+        inventoryName = ColorUtils.color(child.node("GUIName").getString("&8&lThe Black Smith"));
+        itemCost = child.node("Results", "Found").getString("&c&lCost: &6&l%cost% XP");
+        currency = Currency.getCurrency(child.node("Transaction", "Currency").getString("XP_Level"));
 
-        bookUpgrade = section.getInt("Transaction.Costs.Book-Upgrade", 5);
-        levelUp = section.getInt("Transaction.Costs.Power-Up", 5);
-        addEnchantment = section.getInt("Transaction.Costs.Add-Enchantment", 3);
+        bookUpgrade = child.node("Transaction", "Costs", "Book-Upgrade", 5).getInt(5);
+        levelUp = child.node("Transaction", "Costs", "Power-Up", 5).getInt(5);
+        addEnchantment = child.node("Transaction", "Costs", "Add-Enchantment").getInt(3);
 
-        maxEnchantments = config.getBoolean("Settings.EnchantmentOptions.MaxAmountOfEnchantmentsToggle", true);
+        maxEnchantments = options.isMaxAmountOfEnchantsToggle();
     }
 }

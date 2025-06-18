@@ -26,8 +26,6 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,10 +67,12 @@ public class AllyEnchantments implements Listener {
             // If the player is trying to hurt their own ally stop the damage.
             if (this.allyManager.isAlly(player, enemy)) {
                 event.setCancelled(true);
+
                 return;
             }
             if (inCoolDown(player)) {
                 this.allyManager.setEnemy(player, enemy);
+
                 return;
             }
 
@@ -81,39 +81,44 @@ public class AllyEnchantments implements Listener {
         }
     }
 
-    private void checkAndSpawn(Player player, LivingEntity enemy) {
-        for (ItemStack armor : player.getEquipment().getArmorContents()) {
-            Map<CEnchantment, Integer> enchants = this.bookSettings.getEnchantments(armor);
+    private void checkAndSpawn(final Player player, final LivingEntity enemy) {
+        for (final ItemStack armor : player.getEquipment().getArmorContents()) {
+            final Map<CEnchantment, Integer> enchants = this.bookSettings.getEnchantments(armor);
+
             if (enchants.isEmpty()) continue;
 
             checkAllyType(enemy, player, enchants, armor);
         }
     }
 
-    private void checkAllyType(LivingEntity enemy, Player player, Map<CEnchantment, Integer> enchants, ItemStack item) {
-
+    private void checkAllyType(final LivingEntity enemy, final Player player, final Map<CEnchantment, Integer> enchants, final ItemStack item) {
         if (EnchantUtils.isEventActive(CEnchantments.TAMER, player, item, enchants)) {
             int power = enchants.get(CEnchantments.TAMER.getEnchantment());
+
             spawnAllies(player, enemy, AllyType.WOLF, power);
         }
 
         if (EnchantUtils.isEventActive(CEnchantments.GUARDS, player, item, enchants)) {
             int power = enchants.get(CEnchantments.GUARDS.getEnchantment());
+
             spawnAllies(player, enemy, AllyType.IRON_GOLEM, power);
         }
 
         if (EnchantUtils.isEventActive(CEnchantments.BEEKEEPER, player, item, enchants)) {
             int power = enchants.get(CEnchantments.BEEKEEPER.getEnchantment());
+
             spawnAllies(player, enemy, AllyType.BEE, power);
         }
 
         if (EnchantUtils.isEventActive(CEnchantments.NECROMANCER, player, item, enchants)) {
             int power = enchants.get(CEnchantments.NECROMANCER.getEnchantment());
+
             spawnAllies(player, enemy, AllyType.ZOMBIE, power * 2);
         }
 
         if (EnchantUtils.isEventActive(CEnchantments.INFESTATION, player, item, enchants)) {
             int power = enchants.get(CEnchantments.INFESTATION.getEnchantment());
+
             spawnAllies(player, enemy, AllyType.ENDERMITE, power * 3);
             spawnAllies(player, enemy, AllyType.SILVERFISH, power * 3);
         }
@@ -122,12 +127,14 @@ public class AllyEnchantments implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onAllyTarget(EntityTargetEvent event) {
         if (event.getTarget() == null) return; // For when the entity forgets.
-        AllyMob allyMob = this.allyManager.getAllyMob(event.getEntity());
-        AllyMob target = this.allyManager.getAllyMob(event.getTarget());
+
+        final AllyMob allyMob = this.allyManager.getAllyMob(event.getEntity());
+        final AllyMob target = this.allyManager.getAllyMob(event.getTarget());
 
         // Stop ally mob from attacking other mobs owned by the player.
         if (allyMob != null && target != null && allyMob.getOwner().getUniqueId() == target.getOwner().getUniqueId()) {
             event.setCancelled(true);
+
             return;
         }
 
@@ -154,7 +161,7 @@ public class AllyEnchantments implements Listener {
     public void onAllyDespawn(ChunkUnloadEvent event) {
         if (event.getChunk().getEntities().length < 1) return;
 
-        for (Entity entity : event.getChunk().getEntities()) {
+        for (final Entity entity : event.getChunk().getEntities()) {
             if (!(entity instanceof LivingEntity livingEntity)) continue;
 
             if (this.allyManager.isAllyMob(livingEntity)) this.allyManager.getAllyMob(livingEntity).forceRemoveAlly();
@@ -166,26 +173,31 @@ public class AllyEnchantments implements Listener {
         this.allyManager.forceRemoveAllies(event.getPlayer());
     }
 
-    private void spawnAllies(Player player, LivingEntity enemy, AllyType allyType, int amount) {
-        Calendar coolDown = Calendar.getInstance();
+    private void spawnAllies(final Player player, final LivingEntity enemy, final AllyType allyType, final int amount) {
+        final Calendar coolDown = Calendar.getInstance();
+
         coolDown.add(Calendar.MINUTE, 2);
 
         this.allyCoolDown.put(player.getUniqueId(), coolDown);
 
         for (int i = 0; i < amount; i++) {
-            AllyMob ally = new AllyMob(player, allyType);
+            final AllyMob ally = new AllyMob(player, allyType);
+
             ally.spawnAlly(60);
+
             ally.attackEnemy(enemy);
         }
     }
 
-    private boolean inCoolDown(Player player) {
-        if (this.allyCoolDown.containsKey(player.getUniqueId())) {
+    private boolean inCoolDown(final Player player) {
+        final UUID uuid = player.getUniqueId();
+
+        if (this.allyCoolDown.containsKey(uuid)) {
             // Right now is before the player's cool-down ends.
-            if (Calendar.getInstance().before(this.allyCoolDown.get(player.getUniqueId()))) return true;
+            if (Calendar.getInstance().before(this.allyCoolDown.get(uuid))) return true;
 
             // Remove the player because their cool-down is over.
-            this.allyCoolDown.remove(player.getUniqueId());
+            this.allyCoolDown.remove(uuid);
         }
 
         return false;

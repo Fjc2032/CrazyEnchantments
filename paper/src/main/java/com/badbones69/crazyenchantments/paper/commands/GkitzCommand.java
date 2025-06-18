@@ -19,6 +19,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class GkitzCommand implements CommandExecutor {
 
@@ -32,7 +33,7 @@ public class GkitzCommand implements CommandExecutor {
     private final Methods methods = this.starter.getMethods();
 
     @NotNull
-    private final CrazyManager crazyManager = this.starter.getCrazyManager();
+    private final CrazyManager crazyManager = this.plugin.getCrazyManager();
     
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String commandLabel, String[] args) {
@@ -43,6 +44,7 @@ public class GkitzCommand implements CommandExecutor {
 
                 if (!isPlayer) {
                     sender.sendMessage(Messages.PLAYERS_ONLY.getMessage());
+
                     return true;
                 }
 
@@ -54,25 +56,30 @@ public class GkitzCommand implements CommandExecutor {
                 if (hasPermission(sender, "gkitz")) {
                     FileConfiguration gkitz = FileManager.Files.GKITZ.getFile();
 
-                    player.openInventory(new KitsMenu(player, gkitz.getInt("Settings.GUI-Size"), gkitz.getString("Settings.Inventory-Name")).build().getInventory());
+                    player.openInventory(new KitsMenu(player, gkitz.getInt("Settings.GUI-Size", 27), gkitz.getString("Settings.Inventory-Name", "&8List of all Gkitz")).build().getInventory());
                 }
 
             } else {
                 if (args[0].equalsIgnoreCase("reset")) { // /gkitz reset <kit> [player]
                     if (hasPermission(sender, "reset")) {
                         Player player;
+
                         if (args.length < 2) {
                             sender.sendMessage(ColorUtils.getPrefix() + ColorUtils.color("&c/GKitz Reset <Kit> [Player]"));
+
                             return true;
                         }
 
-                        GKitz kit = this.crazyManager.getGKitFromName(args[1]);
+                        final GKitz kit = this.crazyManager.getGKitFromName(args[1]);
 
                         if (kit == null) {
-                            HashMap<String, String> placeholders = new HashMap<>();
+                            Map<String, String> placeholders = new HashMap<>();
+
                             placeholders.put("%Kit%", args[1]);
                             placeholders.put("%Gkit%", args[1]);
+
                             sender.sendMessage(Messages.NOT_A_GKIT.getMessage(placeholders));
+
                             return true;
                         }
 
@@ -85,6 +92,7 @@ public class GkitzCommand implements CommandExecutor {
                         } else {
                             if (!isPlayer) {
                                 sender.sendMessage(Messages.PLAYERS_ONLY.getMessage());
+
                                 return true;
                             } else {
                                 player = (Player) sender;
@@ -92,25 +100,32 @@ public class GkitzCommand implements CommandExecutor {
                         }
 
                         this.crazyManager.getCEPlayer(player).removeCoolDown(kit);
-                        HashMap<String, String> placeholders = new HashMap<>();
+
+                        Map<String, String> placeholders = new HashMap<>();
 
                         placeholders.put("%Player%", player.getName());
                         placeholders.put("%Gkit%", kit.getName());
                         placeholders.put("%Kit%", kit.getName());
+
                         sender.sendMessage(Messages.RESET_GKIT.getMessage(placeholders));
 
                     }
                 } else {
                     if (hasPermission(sender, "gkitz")) {
                         boolean adminGive = false; // An admin is giving the kit.
-                        GKitz kit = this.crazyManager.getGKitFromName(args[0]);
+
+                        final GKitz kit = this.crazyManager.getGKitFromName(args[0]);
+
                         Player player;
 
                         if (kit == null) {
-                            HashMap<String, String> placeholders = new HashMap<>();
+                            Map<String, String> placeholders = new HashMap<>();
+
                             placeholders.put("%Kit%", args[0]);
                             placeholders.put("%Gkit%", args[0]);
+
                             sender.sendMessage(Messages.NOT_A_GKIT.getMessage(placeholders));
+
                             return true;
                         }
 
@@ -120,6 +135,7 @@ public class GkitzCommand implements CommandExecutor {
                             } else {
                                 if (hasPermission(sender, "crazyenchantments.gkitz.give")) {
                                     player = this.methods.getPlayer(args[1]); // Targeting a player.
+
                                     adminGive = true;
                                 } else {
                                     return true;
@@ -128,20 +144,23 @@ public class GkitzCommand implements CommandExecutor {
                         } else {
                             if (!isPlayer) {
                                 sender.sendMessage(Messages.PLAYERS_ONLY.getMessage());
+
                                 return true;
                             } else {
                                 player = (Player) sender; // The player is the sender.
                             }
                         }
 
-                        CEPlayer cePlayer = this.crazyManager.getCEPlayer(player);
-                        HashMap<String, String> placeholders = new HashMap<>();
+                        final CEPlayer cePlayer = this.crazyManager.getCEPlayer(player);
+                        Map<String, String> placeholders = new HashMap<>();
+
                         placeholders.put("%Player%", player.getName());
                         placeholders.put("%Kit%", kit.getDisplayItem().getItemMeta().getDisplayName());
 
                         if (cePlayer.hasGkitPermission(kit) || adminGive) {
                             if (cePlayer.canUseGKit(kit) || adminGive) {
                                 cePlayer.giveGKit(kit);
+
                                 player.sendMessage(Messages.RECEIVED_GKIT.getMessage(placeholders));
 
                                 if (adminGive) {
@@ -151,10 +170,12 @@ public class GkitzCommand implements CommandExecutor {
                                 }
                             } else {
                                 sender.sendMessage(ColorUtils.getPrefix() + cePlayer.getCoolDown(kit).getCoolDownLeft(Messages.STILL_IN_COOLDOWN.getMessage(placeholders)));
+
                                 return true;
                             }
                         } else {
                             sender.sendMessage(Messages.NO_GKIT_PERMISSION.getMessage(placeholders));
+
                             return true;
                         }
                     }
@@ -167,7 +188,7 @@ public class GkitzCommand implements CommandExecutor {
         return false;
     }
     
-    private boolean hasPermission(CommandSender sender, String permission) {
+    private boolean hasPermission(final CommandSender sender, final String permission) {
         return this.methods.hasPermission(sender, permission, true);
     }
 }

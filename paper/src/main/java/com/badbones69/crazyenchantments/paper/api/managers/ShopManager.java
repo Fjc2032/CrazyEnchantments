@@ -1,17 +1,17 @@
 package com.badbones69.crazyenchantments.paper.api.managers;
 
 import com.badbones69.crazyenchantments.paper.CrazyEnchantments;
+import com.badbones69.crazyenchantments.paper.Methods;
 import com.badbones69.crazyenchantments.paper.Starter;
-import com.badbones69.crazyenchantments.paper.api.FileManager.Files;
 import com.badbones69.crazyenchantments.paper.api.enums.ShopOption;
 import com.badbones69.crazyenchantments.paper.api.objects.Category;
 import com.badbones69.crazyenchantments.paper.api.objects.LostBook;
 import com.badbones69.crazyenchantments.paper.api.builders.ItemBuilder;
 import com.badbones69.crazyenchantments.paper.api.utils.ColorUtils;
 import com.badbones69.crazyenchantments.paper.controllers.settings.EnchantmentBookSettings;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.spongepowered.configurate.CommentedConfigurationNode;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,21 +34,23 @@ public class ShopManager {
     private final Map<ItemBuilder, Integer> customizerItems = new HashMap<>();
     private final Map<ItemBuilder, Integer> shopItems = new HashMap<>();
     
-    public void load() {
+    public void load(final CommentedConfigurationNode config) {
         this.customizerItems.clear();
         this.shopItems.clear();
-        FileConfiguration config = Files.CONFIG.getFile();
-        this.inventoryName = ColorUtils.color(config.getString("Settings.InvName"));
-        this.inventorySize = config.getInt("Settings.GUISize");
-        this.enchantmentTableShop = config.getBoolean("Settings.EnchantmentOptions.Right-Click-Enchantment-Table");
 
-        for (String customItemString : config.getStringList("Settings.GUICustomization")) {
+        this.inventoryName = ColorUtils.color(config.node("Settings", "InvName").getString("&4&l&nCrazy Enchanter"));
+        this.inventorySize = config.node("Settings", "GUISize").getInt(54);
+        this.enchantmentTableShop = config.node("Settings", "EnchantmentOptions", "Right-Click-Enchantment-Table").getBoolean(false);
+
+        for (final String customItemString : Methods.getStringList(config, "Settings", "GUICustomization")) {
             int slot = 0;
 
             for (String option : customItemString.split(", ")) {
                 if (option.contains("Slot:")) {
                     option = option.replace("Slot:", "");
+
                     slot = Integer.parseInt(option);
+
                     break;
                 }
             }
@@ -56,17 +58,18 @@ public class ShopManager {
             if (slot > this.inventorySize || slot <= 0) continue;
 
             slot--;
+
             this.customizerItems.put(ItemBuilder.convertString(customItemString), slot);
         }
 
-        for (Category category : this.enchantmentBookSettings.getCategories()) {
+        for (final Category category : this.enchantmentBookSettings.getCategories()) {
             if (category.isInGUI()) {
                 if (category.getSlot() > this.inventorySize) continue;
 
                 this.shopItems.put(category.getDisplayItem(), category.getSlot());
             }
 
-            LostBook lostBook = category.getLostBook();
+            final LostBook lostBook = category.getLostBook();
 
             if (lostBook.isInGUI()) {
                 if (lostBook.getSlot() > this.inventorySize) continue;
@@ -75,7 +78,7 @@ public class ShopManager {
             }
         }
 
-        for (ShopOption option : ShopOption.values()) {
+        for (final ShopOption option : ShopOption.values()) {
             if (option.isInGUI()) {
                 if (option.getSlot() > this.inventorySize) continue;
 

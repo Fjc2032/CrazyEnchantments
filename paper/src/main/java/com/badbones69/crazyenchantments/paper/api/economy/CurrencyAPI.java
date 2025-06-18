@@ -7,17 +7,17 @@ import com.badbones69.crazyenchantments.paper.api.enums.ShopOption;
 import com.badbones69.crazyenchantments.paper.api.objects.Category;
 import com.badbones69.crazyenchantments.paper.api.objects.LostBook;
 import com.badbones69.crazyenchantments.paper.support.PluginSupport.SupportedPlugins;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
 
 public class CurrencyAPI {
 
-    @NotNull
     private final CrazyEnchantments plugin = JavaPlugin.getPlugin(CrazyEnchantments.class);
 
-    @NotNull
-    private final Starter starter = plugin.getStarter();
+    private final ComponentLogger logger = this.plugin.getComponentLogger();
+
+    private final Starter starter = this.plugin.getStarter();
 
     /**
      * Get the amount that a player has from a specific currency.
@@ -25,10 +25,10 @@ public class CurrencyAPI {
      * @param currency The currency you wish to get from.
      * @return The amount that the player has of that currency.
      */
-    public int getCurrency(Player player, Currency currency) {
+    public int getCurrency(final Player player, final Currency currency) {
         try {
             return switch (currency) {
-                case VAULT -> (int) starter.getVaultSupport().getVault().getBalance(player);
+                case VAULT -> (int) this.starter.getVaultSupport().getVault().getBalance(player);
                 case XP_LEVEL -> player.getLevel();
                 case XP_TOTAL -> getTotalExperience(player);
             };
@@ -41,7 +41,7 @@ public class CurrencyAPI {
      * @param player The player you wish to take from.
      * @param category The category you wish to use.
      */
-    public void takeCurrency(Player player, Category category) {
+    public void takeCurrency(final Player player, final Category category) {
         takeCurrency(player, category.getCurrency(), category.getCost());
     }
     
@@ -50,7 +50,7 @@ public class CurrencyAPI {
      * @param player The player you wish to take from.
      * @param lostBook The lostbook you wish to use.
      */
-    public void takeCurrency(Player player, LostBook lostBook) {
+    public void takeCurrency(final Player player, final LostBook lostBook) {
         takeCurrency(player, lostBook.getCurrency(), lostBook.getCost());
     }
     
@@ -59,7 +59,7 @@ public class CurrencyAPI {
      * @param player The player you wish to take from.
      * @param option The ShopOption you wish to use.
      */
-    public void takeCurrency(Player player, ShopOption option) {
+    public void takeCurrency(final Player player, final ShopOption option) {
         takeCurrency(player, option.getCurrency(), option.getCost());
     }
     
@@ -69,10 +69,10 @@ public class CurrencyAPI {
      * @param currency The currency you wish to use.
      * @param amount The amount you want to take.
      */
-    public void takeCurrency(Player player, Currency currency, int amount) {
+    public void takeCurrency(final Player player, final Currency currency, final int amount) {
         try {
             switch (currency) {
-                case VAULT -> starter.getVaultSupport().getVault().withdrawPlayer(player, amount);
+                case VAULT -> this.starter.getVaultSupport().getVault().withdrawPlayer(player, amount);
                 case XP_LEVEL -> player.setLevel(player.getLevel() - amount);
                 case XP_TOTAL -> takeTotalExperience(player, amount);
             }
@@ -85,10 +85,10 @@ public class CurrencyAPI {
      * @param currency The currency you want to use.
      * @param amount The amount you are giving to the player.
      */
-    public void giveCurrency(Player player, Currency currency, int amount) {
+    public void giveCurrency(final Player player, final Currency currency, final int amount) {
         try {
             switch (currency) {
-                case VAULT -> starter.getVaultSupport().getVault().depositPlayer(player, amount);
+                case VAULT -> this.starter.getVaultSupport().getVault().depositPlayer(player, amount);
                 case XP_LEVEL -> player.setLevel(player.getLevel() + amount);
                 case XP_TOTAL -> takeTotalExperience(player, -amount);
             }
@@ -101,7 +101,7 @@ public class CurrencyAPI {
      * @param category The category you wish to check.
      * @return True if they have enough to buy it or false if they don't.
      */
-    public boolean canBuy(Player player, Category category) {
+    public boolean canBuy(final Player player, final Category category) {
         return canBuy(player, category.getCurrency(), category.getCost());
     }
     
@@ -111,7 +111,7 @@ public class CurrencyAPI {
      * @param lostBook The lostBook you wish to check.
      * @return True if they have enough to buy it or false if they don't.
      */
-    public boolean canBuy(Player player, LostBook lostBook) {
+    public boolean canBuy(final Player player, final LostBook lostBook) {
         return canBuy(player, lostBook.getCurrency(), lostBook.getCost());
     }
     
@@ -121,7 +121,7 @@ public class CurrencyAPI {
      * @param option The ShopOption you wish to check.
      * @return True if they have enough to buy it or false if they don't.
      */
-    public boolean canBuy(Player player, ShopOption option) {
+    public boolean canBuy(final Player player, final ShopOption option) {
         return canBuy(player, option.getCurrency(), option.getCost());
     }
     
@@ -132,11 +132,11 @@ public class CurrencyAPI {
      * @param cost The cost of the item you are checking.
      * @return True if they have enough to buy it or false if they don't.
      */
-    public boolean canBuy(Player player, Currency currency, int cost) {
+    public boolean canBuy(final Player player, final Currency currency, final int cost) {
         return getCurrency(player, currency) >= cost;
     }
     
-    private void takeTotalExperience(Player player, int amount) {
+    private void takeTotalExperience(final Player player, final int amount) {
         int total = getTotalExperience(player) - amount;
         player.setTotalExperience(0);
         player.setTotalExperience(total);
@@ -152,7 +152,7 @@ public class CurrencyAPI {
         player.setExp(xp);
     }
     
-    private int getTotalExperience(Player player) { // https://www.spigotmc.org/threads/72804
+    private int getTotalExperience(final Player player) { // https://www.spigotmc.org/threads/72804
         int experience;
         int level = player.getLevel();
 
@@ -183,15 +183,15 @@ public class CurrencyAPI {
     public void loadCurrency() {
         for (SupportedPlugins supportedPlugin : SupportedPlugins.values()) {
 
-            if (supportedPlugin.isPluginLoaded() && supportedPlugin.getLoadedPlugin().isEnabled()) {
+            if (supportedPlugin.isPluginLoaded()) {
                 if (supportedPlugin == SupportedPlugins.VAULT) {
-                    starter.setVaultSupport(new VaultSupport());
+                    this.starter.setVaultSupport(new VaultSupport());
                 }
 
                 return;
             }
         }
 
-        plugin.getLogger().warning("No eco plugin found or the eco plugin didn't enable. Any economy based feature will not work.");
+        this.logger.warn("No eco plugin found or the eco plugin didn't enable. Any economy based feature will not work.");
     }
 }

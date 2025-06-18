@@ -18,15 +18,15 @@ public class EventUtils {
         return ignoredEvents;
     }
 
-    public static boolean isIgnoredEvent(Event event) {
+    public static boolean isIgnoredEvent(final Event event) {
         return ignoredEvents.contains(event);
     }
 
-    public static void addIgnoredEvent(Event event) {
+    public static void addIgnoredEvent(final Event event) {
         ignoredEvents.add(event);
     }
 
-    public static void removeIgnoredUUID(UUID uuid) {
+    public static void removeIgnoredUUID(final UUID uuid) {
         ignoredUUIDs.remove(uuid);
     }
 
@@ -34,27 +34,28 @@ public class EventUtils {
         return ignoredUUIDs;
     }
 
-    public static boolean isIgnoredUUID(UUID uuid) {
+    public static boolean isIgnoredUUID(final UUID uuid) {
         return ignoredUUIDs.contains(uuid);
     }
 
-    public static void addIgnoredUUID(UUID uuid) {
+    public static void addIgnoredUUID(final UUID uuid) {
         ignoredUUIDs.add(uuid);
     }
 
-    public static void removeIgnoredEvent(Event event) {
+    public static void removeIgnoredEvent(final Event event) {
         ignoredEvents.remove(event);
     }
 
-    public static boolean containsDrop(EntityDeathEvent event, Material material) {
+    public static boolean containsDrop(final EntityDeathEvent event, final Material material) {
         boolean hasDroppedMat = true;
 
         if (material != null && !material.isAir()) {
             hasDroppedMat = false;
 
-            for (ItemStack drop : event.getDrops()) {
+            for (final ItemStack drop : event.getDrops()) {
                 if (drop.getType() == material) {
                     hasDroppedMat = true;
+
                     break;
                 }
             }

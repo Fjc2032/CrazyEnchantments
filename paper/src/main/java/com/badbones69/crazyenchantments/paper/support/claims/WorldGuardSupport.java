@@ -18,7 +18,7 @@ public class WorldGuardSupport implements WorldGuardVersion {
     private final WorldGuard instance = WorldGuard.getInstance();
     
     @Override
-    public boolean allowsPVP(Location loc) {
+    public boolean allowsPVP(final Location loc) {
         BukkitWorld world = new BukkitWorld(loc.getWorld());
         BlockVector3 v = BlockVector3.at(loc.getX(), loc.getY(), loc.getZ());
 
@@ -26,7 +26,7 @@ public class WorldGuardSupport implements WorldGuardVersion {
             RegionManager set = this.instance.getPlatform().getRegionContainer().get(world);
 
             if (set != null) return set.getApplicableRegions(v).queryState(null, Flags.PVP) != StateFlag.State.DENY;
-        } catch (NullPointerException e) {
+        } catch (final NullPointerException e) {
             return true;
         }
 
@@ -34,7 +34,7 @@ public class WorldGuardSupport implements WorldGuardVersion {
     }
     
     @Override
-    public boolean allowsBreak(Location loc) {
+    public boolean allowsBreak(final Location loc) {
         BukkitWorld world = new BukkitWorld(loc.getWorld());
         BlockVector3 v = BlockVector3.at(loc.getX(), loc.getY(), loc.getZ());
 
@@ -42,7 +42,7 @@ public class WorldGuardSupport implements WorldGuardVersion {
             RegionManager set = this.instance.getPlatform().getRegionContainer().get(world);
 
             if (set != null) return set.getApplicableRegions(v).queryState(null, Flags.BLOCK_BREAK) != StateFlag.State.DENY;
-        } catch (NullPointerException e) {
+        } catch (final NullPointerException e) {
             return true;
         }
 
@@ -50,15 +50,15 @@ public class WorldGuardSupport implements WorldGuardVersion {
     }
     
     @Override
-    public boolean allowsExplosions(Location loc) {
-        BukkitWorld world = new BukkitWorld(loc.getWorld());
-        BlockVector3 v = BlockVector3.at(loc.getX(), loc.getY(), loc.getZ());
+    public boolean allowsExplosions(final Location loc) {
+        final BukkitWorld world = new BukkitWorld(loc.getWorld());
+        final BlockVector3 v = BlockVector3.at(loc.getX(), loc.getY(), loc.getZ());
 
         try {
-            RegionManager set = this.instance.getPlatform().getRegionContainer().get(world);
+            final RegionManager set = this.instance.getPlatform().getRegionContainer().get(world);
 
             if (set != null) return set.getApplicableRegions(v).queryState(null, Flags.OTHER_EXPLOSION) != StateFlag.State.DENY && set.getApplicableRegions(v).queryState(null, Flags.TNT) != StateFlag.State.DENY;
-        } catch (NullPointerException e) {
+        } catch (final NullPointerException e) {
             return true;
         }
 
@@ -66,19 +66,19 @@ public class WorldGuardSupport implements WorldGuardVersion {
     }
     
     @Override
-    public boolean inRegion(String regionName, Location loc) {
-        BukkitWorld world = new BukkitWorld(loc.getWorld());
-        BlockVector3 v = BlockVector3.at(loc.getX(), loc.getY(), loc.getZ());
+    public boolean inRegion(final String regionName, final Location loc) {
+        final BukkitWorld world = new BukkitWorld(loc.getWorld());
+        final BlockVector3 v = BlockVector3.at(loc.getX(), loc.getY(), loc.getZ());
 
         try {
-            RegionManager set = this.instance.getPlatform().getRegionContainer().get(world);
+            final RegionManager set = this.instance.getPlatform().getRegionContainer().get(world);
 
             if (set != null) {
-                for (ProtectedRegion region : set.getApplicableRegions(v).getRegions()) {
+                for (final ProtectedRegion region : set.getApplicableRegions(v).getRegions()) {
                     if (regionName.equalsIgnoreCase(region.getId())) return true;
                 }
             }
-        } catch (NullPointerException e) {
+        } catch (final NullPointerException e) {
             return false;
         }
 
@@ -86,19 +86,19 @@ public class WorldGuardSupport implements WorldGuardVersion {
     }
     
     @Override
-    public boolean isMember(Player player) {
-        BukkitWorld world = new BukkitWorld(player.getLocation().getWorld());
-        BlockVector3 v = BlockVector3.at(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
+    public boolean isMember(final Player player) {
+        final BukkitWorld world = new BukkitWorld(player.getLocation().getWorld());
+        final BlockVector3 v = BlockVector3.at(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
 
         try {
-            RegionManager set = this.instance.getPlatform().getRegionContainer().get(world);
+            final RegionManager set = this.instance.getPlatform().getRegionContainer().get(world);
 
             if (set != null) {
-                for (ProtectedRegion region : set.getApplicableRegions(v).getRegions()) {
+                for (final ProtectedRegion region : set.getApplicableRegions(v).getRegions()) {
                     if (region.getMembers().contains(player.getUniqueId())) return true;
                 }
             }
-        } catch (NullPointerException e) {
+        } catch (final NullPointerException e) {
             return false;
         }
 
@@ -106,19 +106,19 @@ public class WorldGuardSupport implements WorldGuardVersion {
     }
     
     @Override
-    public boolean isOwner(Player player) {
-        BukkitWorld world = new BukkitWorld(player.getLocation().getWorld());
-        BlockVector3 v = BlockVector3.at(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
+    public boolean isOwner(final Player player) {
+        final BukkitWorld world = new BukkitWorld(player.getLocation().getWorld());
+        final BlockVector3 v = BlockVector3.at(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
 
         try {
-            RegionManager set = this.instance.getPlatform().getRegionContainer().get(world);
+            final RegionManager set = this.instance.getPlatform().getRegionContainer().get(world);
 
             if (set != null) {
-                for (ProtectedRegion region : set.getApplicableRegions(v).getRegions()) {
+                for (final ProtectedRegion region : set.getApplicableRegions(v).getRegions()) {
                     if (region.getOwners().contains(player.getUniqueId())) return true;
                 }
             }
-        } catch (NullPointerException e) {
+        } catch (final NullPointerException e) {
             return false;
         }
 

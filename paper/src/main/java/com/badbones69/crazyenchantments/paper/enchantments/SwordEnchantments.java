@@ -18,16 +18,10 @@ import com.badbones69.crazyenchantments.paper.api.utils.EntityUtils;
 import com.badbones69.crazyenchantments.paper.api.utils.EventUtils;
 import com.badbones69.crazyenchantments.paper.controllers.BossBarController;
 import com.badbones69.crazyenchantments.paper.controllers.settings.EnchantmentBookSettings;
-import com.badbones69.crazyenchantments.paper.scheduler.FoliaRunnable;
 import com.badbones69.crazyenchantments.paper.support.PluginSupport;
-import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
-import net.minecraft.world.entity.monster.Blaze;
-import net.minecraft.world.entity.monster.EnderMan;
-import net.minecraft.world.entity.monster.ZombifiedPiglin;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
+import com.ryderbelserion.fusion.paper.api.scheduler.FoliaScheduler;
 import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.Server;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
@@ -41,31 +35,48 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.HashMap;
 import java.util.*;
+
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.monster.Blaze;
+import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.ZombifiedPiglin;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 
 public class SwordEnchantments implements Listener {
 
     @NotNull
     private final CrazyEnchantments plugin = JavaPlugin.getPlugin(CrazyEnchantments.class);
 
+    private final Server server = this.plugin.getServer();
+
+    private final PluginManager pluginManager = this.server.getPluginManager();
+
     @NotNull
     private final Starter starter = this.plugin.getStarter();
 
     @NotNull
-    private final CrazyManager crazyManager = this.starter.getCrazyManager();
+    private final CrazyManager crazyManager = this.plugin.getCrazyManager();
 
     @NotNull
     private final EnchantmentBookSettings enchantmentBookSettings = this.starter.getEnchantmentBookSettings();
@@ -97,11 +108,12 @@ public class SwordEnchantments implements Listener {
         if (this.pluginSupport.isFriendly(event.getDamager(), event.getEntity())) return;
 
         if (this.crazyManager.isBreakRageOnDamageOn() && event.getEntity() instanceof Player player) {
-            CEPlayer cePlayer = this.crazyManager.getCEPlayer(player);
+            final CEPlayer cePlayer = this.crazyManager.getCEPlayer(player);
 
             if (cePlayer != null) {
-                RageBreakEvent rageBreakEvent = new RageBreakEvent(player, event.getDamager(), this.methods.getItemInHand(player));
-                this.plugin.getServer().getPluginManager().callEvent(rageBreakEvent);
+                final RageBreakEvent rageBreakEvent = new RageBreakEvent(player, event.getDamager(), this.methods.getItemInHand(player));
+
+                this.pluginManager.callEvent(rageBreakEvent);
 
                 if (!rageBreakEvent.isCancelled() && cePlayer.hasRage()) {
                     cePlayer.getRageTask().cancel();
@@ -117,33 +129,35 @@ public class SwordEnchantments implements Listener {
         if (!(event.getEntity() instanceof LivingEntity en)) return;
         if (!(event.getDamager() instanceof final Player damager)) return;
 
-        CEPlayer cePlayer = this.crazyManager.getCEPlayer(damager);
-        ItemStack item = this.methods.getItemInHand(damager);
+        final CEPlayer cePlayer = this.crazyManager.getCEPlayer(damager);
+        final ItemStack item = this.methods.getItemInHand(damager);
 
         if (event.getEntity().isDead()) return;
 
-        Map<CEnchantment, Integer> enchantments = this.enchantmentBookSettings.getEnchantments(item);
-        boolean isEntityPlayer = event.getEntity() instanceof Player;
+        final Map<CEnchantment, Integer> enchantments = this.enchantmentBookSettings.getEnchantments(item);
+        final boolean isEntityPlayer = event.getEntity() instanceof Player;
 
         if (isEntityPlayer && EnchantUtils.isEventActive(CEnchantments.DISARMER, damager, item, enchantments)) {
-            Player player = (Player) event.getEntity();
+            final Player player = (Player) event.getEntity();
 
-            EquipmentSlot equipmentSlot = getSlot(this.methods.percentPick(4, 0));
+            final EquipmentSlot equipmentSlot = getSlot(this.methods.percentPick(4, 0));
 
-            ItemStack armor = switch (equipmentSlot) {
-                case HEAD -> player.getEquipment().getHelmet();
-                case CHEST -> player.getEquipment().getChestplate();
-                case LEGS -> player.getEquipment().getLeggings();
-                case FEET -> player.getEquipment().getBoots();
+            final EntityEquipment equipment = player.getEquipment();
+
+            final ItemStack armor = switch (equipmentSlot) {
+                case HEAD -> equipment.getHelmet();
+                case CHEST -> equipment.getChestplate();
+                case LEGS -> equipment.getLeggings();
+                case FEET -> equipment.getBoots();
                 default -> null;
             };
 
             if (armor != null) {
                 switch (equipmentSlot) {
-                    case HEAD -> player.getEquipment().setHelmet(null);
-                    case CHEST -> player.getEquipment().setChestplate(null);
-                    case LEGS -> player.getEquipment().setLeggings(null);
-                    case FEET -> player.getEquipment().setBoots(null);
+                    case HEAD -> equipment.setHelmet(null);
+                    case CHEST -> equipment.setChestplate(null);
+                    case LEGS -> equipment.setLeggings(null);
+                    case FEET -> equipment.setBoots(null);
                 }
 
                 this.methods.addItemToInventory(player, armor);
@@ -151,17 +165,17 @@ public class SwordEnchantments implements Listener {
         }
 
         if (isEntityPlayer && EnchantUtils.isEventActive(CEnchantments.DISORDER, damager, item, enchantments)) {
-
-            Player player = (Player) event.getEntity();
-            Inventory inventory = player.getInventory();
-            List<ItemStack> items = new ArrayList<>();
-            List<Integer> slots = new ArrayList<>();
+            final Player player = (Player) event.getEntity();
+            final Inventory inventory = player.getInventory();
+            final List<ItemStack> items = new ArrayList<>();
+            final List<Integer> slots = new ArrayList<>();
 
             for (int i = 0; i < 9; i++) {
-                ItemStack inventoryItem = inventory.getItem(i);
+                final ItemStack inventoryItem = inventory.getItem(i);
 
                 if (inventoryItem != null) {
                     items.add(inventoryItem);
+
                     inventory.setItem(i, null);
                 }
 
@@ -187,10 +201,11 @@ public class SwordEnchantments implements Listener {
                 if (cePlayer.getRageMultiplier() <= this.crazyManager.getRageMaxLevel())
                     cePlayer.setRageMultiplier(cePlayer.getRageMultiplier() + (enchantments.get(CEnchantments.RAGE.getEnchantment()) * crazyManager.getRageIncrement()));
 
-                int rageUp = cePlayer.getRageLevel() + 1;
+                final int rageUp = cePlayer.getRageLevel() + 1;
 
                 if (cePlayer.getRageMultiplier().intValue() >= rageUp) {
                     rageInformPlayer(damager, Messages.RAGE_RAGE_UP, Map.of("%Level%", String.valueOf(rageUp)), ((float) rageUp / (float) (this.crazyManager.getRageMaxLevel() + 1)));
+
                     cePlayer.setRageLevel(rageUp);
                 }
 
@@ -203,7 +218,7 @@ public class SwordEnchantments implements Listener {
                 rageInformPlayer(damager, Messages.RAGE_BUILDING, ((float) cePlayer.getRageLevel() / (float) this.crazyManager.getRageMaxLevel()));
             }
 
-            cePlayer.setRageTask(new FoliaRunnable(cePlayer.getPlayer().getScheduler(), null) {
+            cePlayer.setRageTask(new FoliaScheduler(this.plugin, null, cePlayer.getPlayer()) {
                 @Override
                 public void run() {
                     cePlayer.setRageMultiplier(0.0);
@@ -212,7 +227,7 @@ public class SwordEnchantments implements Listener {
 
                     rageInformPlayer(damager, Messages.RAGE_COOLED_DOWN, 0f);
                 }
-            }.runDelayed(plugin, 80));
+            }.runDelayed(80));
         }
 
         if (en instanceof Player player && EnchantUtils.isEventActive(CEnchantments.SKILLSWIPE, damager, item, enchantments)) {
@@ -231,9 +246,9 @@ public class SwordEnchantments implements Listener {
         }
 
         if (damager.getHealth() > 0 && EnchantUtils.isEventActive(CEnchantments.LIFESTEAL, damager, item, enchantments)) {
-            int steal = enchantments.get(CEnchantments.LIFESTEAL.getEnchantment());
+            final int steal = enchantments.get(CEnchantments.LIFESTEAL.getEnchantment());
             // Uses getValue as if the player has health boost it is modifying the base so the value after the modifier is needed.
-            double maxHealth = damager.getAttribute(Attribute.MAX_HEALTH).getValue();
+            final double maxHealth = damager.getAttribute(Attribute.MAX_HEALTH).getValue(); //todo() deprecated
 
             if (damager.getHealth() + steal < maxHealth) damager.setHealth(damager.getHealth() + steal);
 
@@ -311,9 +326,9 @@ public class SwordEnchantments implements Listener {
         }
 
         if (EnchantUtils.isEventActive(CEnchantments.PARALYZE, damager, item, enchantments)) {
-
             for (LivingEntity entity : this.methods.getNearbyLivingEntities(2D, damager)) {
                 EntityDamageEvent damageByEntityEvent = new EntityDamageEvent(entity, EntityDamageEvent.DamageCause.MAGIC, DamageSource.builder(DamageType.INDIRECT_MAGIC).withDirectEntity(damager).build(), 5D);
+
                 this.methods.entityEvent(damager, entity, damageByEntityEvent);
             }
 
@@ -463,20 +478,24 @@ public class SwordEnchantments implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         if (event.getEntity().getKiller() == null) return;
 
-        Player damager = event.getEntity().getKiller();
-        Player player = event.getEntity();
-        ItemStack item = this.methods.getItemInHand(damager);
-        Map<CEnchantment, Integer> enchantments = this.enchantmentBookSettings.getEnchantments(item);
+        final Player damager = event.getEntity().getKiller();
+        final Player player = event.getEntity();
+        final ItemStack item = this.methods.getItemInHand(damager);
+        final Map<CEnchantment, Integer> enchantments = this.enchantmentBookSettings.getEnchantments(item);
 
         if (EnchantUtils.isEventActive(CEnchantments.HEADLESS, damager, item, enchantments)) {
-            ItemStack head = new ItemBuilder().setMaterial("PLAYER_HEAD").setPlayerName(player.getName()).build();
+            final ItemStack head = new ItemBuilder().setMaterial("PLAYER_HEAD").setPlayerName(player.getName()).build();
+
             event.getDrops().add(head);
         }
 
-        if (EnchantUtils.isEventActive(CEnchantments.LIFEBLOOM, damager, item, enchantments)) {
-            for (Entity entity : player.getNearbyEntities(10, 10, 10)) {
-                if (!pluginSupport.isFriendly(entity, player)) continue;
-                Player ally = (Player) entity;
+
+        if (EnchantUtils.isEventActive(CEnchantments.REVENGE, damager, item, enchantments)) {
+            for (final Entity entity : player.getNearbyEntities(10, 10, 10)) {
+
+                if (!this.pluginSupport.isFriendly(entity, player)) continue;
+
+                final Player ally = (Player) entity;
 
                 ally.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 5 * 20, 1));
                 ally.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 5 * 20, 0));
@@ -488,17 +507,19 @@ public class SwordEnchantments implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityDeath(EntityDeathEvent event) {
         if (event.getEntity().getKiller() != null) {
-            Player damager = event.getEntity().getKiller();
-            ItemStack item = this.methods.getItemInHand(damager);
-            Map<CEnchantment, Integer> enchantments = this.enchantmentBookSettings.getEnchantments(item);
+            final Player damager = event.getEntity().getKiller();
+            final ItemStack item = this.methods.getItemInHand(damager);
+            final Map<CEnchantment, Integer> enchantments = this.enchantmentBookSettings.getEnchantments(item);
 
             if (EnchantUtils.isEventActive(CEnchantments.INQUISITIVE, damager, item, enchantments)) {
                 event.setDroppedExp(event.getDroppedExp() * (enchantments.get(CEnchantments.INQUISITIVE.getEnchantment()) + 1));
             }
 
-            Material headMat = EntityUtils.getHeadMaterial(event.getEntity());
+            final Material headMat = EntityUtils.getHeadMaterial(event.getEntity());
+
             if (headMat != null && !EventUtils.containsDrop(event, headMat)) {
-                double multiplier = this.crazyManager.getDecapitationHeadMap().getOrDefault(headMat, 0.0);
+                final double multiplier = this.crazyManager.getDecapitationHeadMap().getOrDefault(headMat, 0.0);
+
                 if (multiplier != 0.0 && EnchantUtils.isEventActive(CEnchantments.HEADLESS, damager, item, enchantments, multiplier)) {
                     ItemStack head = new ItemBuilder().setMaterial(headMat).build();
                     event.getDrops().add(head);
@@ -525,7 +546,7 @@ public class SwordEnchantments implements Listener {
         }
     }
 
-    private EquipmentSlot getSlot(int slot) {
+    private EquipmentSlot getSlot(final int slot) {
         return switch (slot) {
             case 1 -> EquipmentSlot.CHEST;
             case 2 -> EquipmentSlot.LEGS;
@@ -534,7 +555,7 @@ public class SwordEnchantments implements Listener {
         };
     }
 
-    private void rageInformPlayer(Player player, Messages message, Map<String, String> placeholders, float progress) {
+    private void rageInformPlayer(final Player player, final Messages message, final Map<String, String> placeholders, final float progress) {
         if (message.getMessageNoPrefix().isBlank()) return;
 
         if (this.crazyManager.useRageBossBar()) {
@@ -543,7 +564,8 @@ public class SwordEnchantments implements Listener {
             player.sendMessage(message.getMessage(placeholders));
         }
     }
-    private void rageInformPlayer(Player player, Messages message, float progress) {
+
+    private void rageInformPlayer(final Player player, final Messages message, final float progress) {
         if (message.getMessageNoPrefix().isBlank()) return;
 
         if (this.crazyManager.useRageBossBar()) {
