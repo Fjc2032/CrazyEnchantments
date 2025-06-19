@@ -5,6 +5,8 @@ plugins {
 project.group = "${rootProject.group}.paper"
 
 repositories {
+    mavenCentral()
+
     maven("https://repo.md-5.net/content/repositories/snapshots")
 
     maven("https://ci.ender.zone/plugin/repository/everything")
@@ -14,6 +16,8 @@ repositories {
     maven("https://repo.bg-software.com/repository/api")
 
     maven("https://maven.enginehub.org/repo")
+
+    maven("https://nexus.phoenixdevt.fr/repository/maven-public/")
 }
 
 dependencies {

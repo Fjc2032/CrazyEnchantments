@@ -33,6 +33,13 @@ import com.badbones69.crazyenchantments.paper.listeners.ScrollListener;
 import com.badbones69.crazyenchantments.paper.listeners.ShopListener;
 import com.badbones69.crazyenchantments.paper.listeners.SlotCrystalListener;
 import com.badbones69.crazyenchantments.paper.listeners.server.WorldSwitchListener;
+
+import com.ryderbelserion.crazyenchantments.CrazyInstance;
+import com.ryderbelserion.crazyenchantments.objects.ConfigOptions;
+import com.ryderbelserion.fusion.core.files.FileManager;
+import com.ryderbelserion.fusion.paper.FusionPaper;
+import org.bstats.bukkit.Metrics;
+import org.bukkit.Server;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;

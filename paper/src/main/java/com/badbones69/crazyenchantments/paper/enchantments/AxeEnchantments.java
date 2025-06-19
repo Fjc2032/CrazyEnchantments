@@ -5,6 +5,8 @@ import com.badbones69.crazyenchantments.paper.Methods;
 import com.badbones69.crazyenchantments.paper.Starter;
 import com.badbones69.crazyenchantments.paper.api.CrazyManager;
 import com.badbones69.crazyenchantments.paper.api.enums.CEnchantments;
+import com.badbones69.crazyenchantments.paper.api.enums.pdc.Enchant;
+import com.badbones69.crazyenchantments.paper.api.events.MassBlockBreakEvent;
 import com.badbones69.crazyenchantments.paper.api.objects.CEnchantment;
 import com.badbones69.crazyenchantments.paper.api.builders.ItemBuilder;
 import com.badbones69.crazyenchantments.paper.api.utils.EnchantUtils;
@@ -14,8 +16,9 @@ import com.badbones69.crazyenchantments.paper.controllers.settings.EnchantmentBo
 import com.badbones69.crazyenchantments.paper.support.PluginSupport;
 import com.ryderbelserion.crazyenchantments.objects.ConfigOptions;
 import com.ryderbelserion.fusion.paper.api.scheduler.FoliaScheduler;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -145,13 +148,13 @@ public class AxeEnchantments implements Listener {
         final Map<CEnchantment, Integer> enchantments = this.enchantmentBookSettings.getEnchantments(item);
 
         if (EnchantUtils.isEventActive(CEnchantments.BERSERK, damager, item, enchantments)) {
-                damager.addPotionEffect(new PotionEffect(PotionEffectType.MINING_FATIGUE, (enchantments.get(CEnchantments.BERSERK.getEnchantment()) + 5) * 20, 1));
-                damager.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, (enchantments.get(CEnchantments.BERSERK.getEnchantment()) + 5) * 20, 0));
+            damager.addPotionEffect(new PotionEffect(PotionEffectType.MINING_FATIGUE, (enchantments.get(CEnchantments.BERSERK.getEnchantment()) + 5) * 20, 1));
+            damager.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, (enchantments.get(CEnchantments.BERSERK.getEnchantment()) + 5) * 20, 0));
         }
 
         if (EnchantUtils.isEventActive(CEnchantments.BLESSED, damager, item, enchantments)) removeBadPotions(damager);
 
-        if (EnchantUtils.isEventActive(CEnchantments.FEEDME, damager, item, enchantments)&& damager.getFoodLevel() < 20) {
+        if (EnchantUtils.isEventActive(CEnchantments.FEEDME, damager, item, enchantments) && damager.getFoodLevel() < 20) {
             final int food = 2 * enchantments.get(CEnchantments.FEEDME.getEnchantment());
 
             if (damager.getFoodLevel() + food < 20) damager.setFoodLevel((int) (damager.getSaturation() + food));
@@ -159,7 +162,8 @@ public class AxeEnchantments implements Listener {
             if (damager.getFoodLevel() + food > 20) damager.setFoodLevel(20);
         }
 
-        if (EnchantUtils.isEventActive(CEnchantments.REKT, damager, item, enchantments)) event.setDamage(event.getDamage() * 2);
+        if (EnchantUtils.isEventActive(CEnchantments.REKT, damager, item, enchantments))
+            event.setDamage(event.getDamage() * 2);
 
         if (EnchantUtils.isEventActive(CEnchantments.CURSED, damager, item, enchantments))
             entity.addPotionEffect(new PotionEffect(PotionEffectType.MINING_FATIGUE, (enchantments.get(CEnchantments.CURSED.getEnchantment()) + 9) * 20, 1));
@@ -282,7 +286,7 @@ public class AxeEnchantments implements Listener {
                 if (armor == null) return;
                 ItemMeta meta = armor.getItemMeta();
                 Damageable damageable = (Damageable) meta;
-                int modifier = damageable.getDamage() - (2 + enchant.getLevel("Blacksmith"));
+                int modifier = damageable.getDamage() - (2 + enchantmentBookSettings.getLevel(item, CEnchantments.BLACKSMITH.getEnchantment()));
                 if (modifier < 0) return;
                 damageable.setDamage(modifier);
                 armor.setItemMeta(meta);
@@ -342,7 +346,7 @@ public class AxeEnchantments implements Listener {
 
         final ItemStack item = this.methods.getItemInHand(killer);
         final Map<CEnchantment, Integer> enchantments = this.enchantmentBookSettings.getEnchantments(item);
-        final  Material headMat = EntityUtils.getHeadMaterial(event.getEntity());
+        final Material headMat = EntityUtils.getHeadMaterial(event.getEntity());
 
         if (headMat != null && !EventUtils.containsDrop(event, headMat)) {
             final double multiplier = this.crazyManager.getDecapitationHeadMap().getOrDefault(headMat, 0.0);
@@ -369,13 +373,5 @@ public class AxeEnchantments implements Listener {
         }};
 
         bad.forEach(player::removePotionEffect);
-    }
-
-    public Enchant getEnchant() {
-        return enchant;
-    }
-
-    public void setEnchant(Enchant enchant) {
-        this.enchant = enchant;
     }
 }

@@ -15,6 +15,7 @@ import com.badbones69.crazyenchantments.paper.api.builders.ItemBuilder;
 import com.badbones69.crazyenchantments.paper.api.utils.ColorUtils;
 import com.badbones69.crazyenchantments.paper.api.utils.EnchantUtils;
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
 import com.ryderbelserion.crazyenchantments.enums.FileKeys;
 import com.ryderbelserion.crazyenchantments.objects.ConfigOptions;
 import io.papermc.paper.datacomponent.DataComponentTypes;
@@ -25,6 +26,13 @@ import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Color;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.spongepowered.configurate.CommentedConfigurationNode;
+
+import java.util.*;
 
 public class EnchantmentBookSettings {
     
@@ -156,6 +164,7 @@ public class EnchantmentBookSettings {
 
     /**
      * Note: If the enchantment is not active it will not be added to the Map.
+     *
      * @param item Item you want to get the enchantments from.
      * @return A Map of all enchantments and their levels on the item.
      */
@@ -415,7 +424,7 @@ public class EnchantmentBookSettings {
     public void swapToHeroicEnchant(@NotNull CEnchantments enchant, @Nullable CEnchantment oldEnchant, @NotNull ItemStack item) {
         if (!enchant.isHeroic()) return;
         if (oldEnchant == null) return;
-        if (getEnchantments(item).containsKey(oldEnchant)) removeEnchantment(item.getItemMeta(), oldEnchant);
+        if (getEnchantments(item).containsKey(oldEnchant)) removeEnchantment(item, oldEnchant);
     }
 
     public boolean isHeroic(CEnchantments enchantments) {

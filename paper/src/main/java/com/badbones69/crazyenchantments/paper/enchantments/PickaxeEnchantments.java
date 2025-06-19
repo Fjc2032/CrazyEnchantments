@@ -14,6 +14,7 @@ import com.ryderbelserion.crazyenchantments.objects.ConfigOptions;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Server;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Item;
@@ -155,8 +156,8 @@ public class PickaxeEnchantments implements Listener {
 
 
         final Player player = event.getPlayer();
-        final ItemStack item = this.methods.getItemInHand(player);
-        final Map<CEnchantment, Integer> enchants = this.enchantmentBookSettings.getEnchantments(item);
+        final ItemStack itemInHand = this.methods.getItemInHand(player);
+        Map<CEnchantment, Integer> enchants = this.enchantmentBookSettings.getEnchantments(itemInHand);
 
         final List<Item> oldDrops = event.getItems();
 
@@ -174,22 +175,23 @@ public class PickaxeEnchantments implements Listener {
                 if (!isOre(drop.getType())) continue;
 
                 if (CEnchantments.AUTOSMELT.chanceSuccessful(level)) {
-                    itemEntity.setItemStack(getSmeltedDrop(drop, drop.getAmount()));
+                    entityItem.setItemStack(getSmeltedDrop(drop, drop.getAmount()));
                 }
             }
             return;
         }
 
         if (EnchantUtils.isEventActive(CEnchantments.FURNACE, player, itemInHand, enchants)) {
-            for (Item itemEntity : drops) {
-                ItemStack drop = itemEntity.getItemStack();
-                if (!isSmeltable(drop.getType())) continue;
+            for (int i = 0; i < oldDrops.size(); i++) {
+                final Item entityItem = oldDrops.get(i);
+                for (Item itemEntity : event.getItems()) {
+                    ItemStack drop = itemEntity.getItemStack();
+                    if (!isSmeltable(drop.getType())) continue;
 
+                    itemEntity.setItemStack(drop);
 
-
-                entityItem.setItemStack(drop);
-
-                event.getItems().set(j, entityItem);
+                    event.getItems().set(i, itemEntity);
+                }
             }
         }
     }
@@ -228,7 +230,7 @@ public class PickaxeEnchantments implements Listener {
 
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onExperience(BlockBreakEvent event) {
+    public void onExperience(PlayerInteractEvent event) {
         final Player player = event.getPlayer();
 
         Block block = event.getClickedBlock();

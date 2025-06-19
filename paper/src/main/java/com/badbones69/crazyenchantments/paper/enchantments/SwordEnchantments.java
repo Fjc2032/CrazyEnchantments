@@ -489,19 +489,6 @@ public class SwordEnchantments implements Listener {
             event.getDrops().add(head);
         }
 
-
-        if (EnchantUtils.isEventActive(CEnchantments.REVENGE, damager, item, enchantments)) {
-            for (final Entity entity : player.getNearbyEntities(10, 10, 10)) {
-
-                if (!this.pluginSupport.isFriendly(entity, player)) continue;
-
-                final Player ally = (Player) entity;
-
-                ally.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 5 * 20, 1));
-                ally.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 5 * 20, 0));
-                ally.addPotionEffect(new PotionEffect(PotionEffectType.HASTE, 5 * 20, 1));
-            }
-        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

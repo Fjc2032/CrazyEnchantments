@@ -20,6 +20,12 @@ import com.badbones69.crazyenchantments.paper.controllers.settings.ProtectionCry
 import com.badbones69.crazyenchantments.paper.support.PluginSupport;
 import com.badbones69.crazyenchantments.paper.support.PluginSupport.SupportedPlugins;
 import com.badbones69.crazyenchantments.paper.support.claims.SuperiorSkyBlockSupport;
+import com.badbones69.crazyenchantments.paper.support.interfaces.mmoitems.CrazyEnchantStats;
+import com.badbones69.crazyenchantments.paper.support.interfaces.mmoitems.MMOItemsSupport;
+import com.badbones69.crazyenchantments.paper.support.interfaces.mmoitems.data.EnchantPluginBuilder;
+import com.ryderbelserion.crazyenchantments.enums.FileKeys;
+import net.Indyuce.mmoitems.comp.enchants.EnchantPlugin;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,11 +53,6 @@ public class Starter {
     private SuperiorSkyBlockSupport superiorSkyBlockSupport;
     private PluginSupport pluginSupport;
     private VaultSupport vaultSupport;
-
-    private EnchantPluginBuilder<CEnchantment> enchantPluginBuilder;
-    private EnchantPlugin enchantPlugin;
-    private CrazyEnchantStats crazyEnchantStats;
-    private MMOItemsSupport mmoItemsSupport;
 
     // Plugin Managers.
     private ArmorEnchantmentManager armorEnchantmentManager;
