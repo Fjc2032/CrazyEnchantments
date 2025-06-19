@@ -149,7 +149,7 @@ public class PickaxeEnchantments implements Listener {
         return event.isCancelled();
     }
 
-    //Imperium Enchant AutoSmelt/Furnace vvv
+    //Imperium Enchant AutoSmelt/Furnace
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onDropAlter(BlockDropItemEvent event) {
         if (!isSmeltable(event.getBlockState().getType())) return;
@@ -159,44 +159,35 @@ public class PickaxeEnchantments implements Listener {
         final ItemStack itemInHand = this.methods.getItemInHand(player);
         Map<CEnchantment, Integer> enchants = this.enchantmentBookSettings.getEnchantments(itemInHand);
 
-        final List<Item> oldDrops = event.getItems();
+        final List<Item> drops = event.getItems();
 
         if (EnchantUtils.isEventActive(CEnchantments.AUTOSMELT, player, itemInHand, enchants)) {
             int level = enchants.get(CEnchantments.AUTOSMELT.getEnchantment());
 
 
-            for (int j = 0; j < oldDrops.size(); j++) {
-                final Item entityItem  = oldDrops.get(j);
-
-                ItemStack drop = entityItem.getItemStack();
-
-                int amountToAdd = 0;
-
-                if (!isOre(drop.getType())) continue;
+            for (Item itemEntity : drops) {
+                ItemStack drop = itemEntity.getItemStack();
+                if (isSmeltable(drop.getType())) continue;
 
                 if (CEnchantments.AUTOSMELT.chanceSuccessful(level)) {
-                    entityItem.setItemStack(getSmeltedDrop(drop, drop.getAmount()));
+                    itemEntity.setItemStack(getSmeltedDrop(drop, drop.getAmount()));
                 }
             }
             return;
         }
 
         if (EnchantUtils.isEventActive(CEnchantments.FURNACE, player, itemInHand, enchants)) {
-            for (int i = 0; i < oldDrops.size(); i++) {
-                final Item entityItem = oldDrops.get(i);
-                for (Item itemEntity : event.getItems()) {
-                    ItemStack drop = itemEntity.getItemStack();
-                    if (!isSmeltable(drop.getType())) continue;
+            for (Item itemEntity : drops) {
+                ItemStack drop = itemEntity.getItemStack();
+                if (isSmeltable(drop.getType())) continue;
 
-                    itemEntity.setItemStack(drop);
-
-                    event.getItems().set(i, itemEntity);
-                }
+                itemEntity.setItemStack(getSmeltedDrop(drop, drop.getAmount()));
             }
         }
     }
-    //AutoSmelt/furnace ^^^
-    //Imperium Enchant Experience vvv
+    //AutoSmelt/furnace
+
+    //Imperium Enchant Experience
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onExperience(BlockBreakEvent event) {
         Player player = event.getPlayer();
@@ -226,22 +217,23 @@ public class PickaxeEnchantments implements Listener {
             }
         }
     }
-    //Eperience ^^^
+    //Experience
 
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onExperience(PlayerInteractEvent event) {
+    public void onObsidianBlockBreak(PlayerInteractEvent event) {
         final Player player = event.getPlayer();
+        final ItemStack item = player.getInventory().getItemInMainHand();
+        final Map<CEnchantment, Integer> enchants = Optional.of(this.enchantmentBookSettings.getEnchantments(item)).orElse(Collections.emptyMap());
 
-        Block block = event.getClickedBlock();
+        if (!EnchantUtils.isEventActive(CEnchantments.OBBYDESTROYER, player, item, enchants)) return;
+
+        final Block block = event.getClickedBlock();
+
         if (block == null) return;
-
-
         if (!block.getType().equals(Material.OBSIDIAN)) return;
         player.playSound(player, Sound.BLOCK_CALCITE_BREAK, 10, 10);
         block.setType(Material.AIR);
-
-
 
     }
 
@@ -374,8 +366,8 @@ public class PickaxeEnchantments implements Listener {
                  DARK_OAK_WOOD, STRIPPED_DARK_OAK_LOG, STRIPPED_DARK_OAK_WOOD, MANGROVE_LOG, MANGROVE_WOOD,
                  STRIPPED_MANGROVE_LOG, STRIPPED_MANGROVE_WOOD, CHERRY_LOG, CHERRY_WOOD, STRIPPED_CHERRY_LOG,
                  STRIPPED_CHERRY_WOOD, PALE_OAK_LOG, PALE_OAK_WOOD, STRIPPED_PALE_OAK_LOG, STRIPPED_PALE_OAK_WOOD ->
-                    false;
-            default -> true;
+                    true;
+            default -> false;
 
         };
     }
